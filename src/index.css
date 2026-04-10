@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 225 14% 97%;
+    --foreground: 228 14% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 228 14% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 14% 11%;
+
+    --primary: 249 76% 64%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 228 14% 95%;
+    --secondary-foreground: 228 14% 18%;
+
+    --muted: 228 10% 92%;
+    --muted-foreground: 228 6% 46%;
+
+    --accent: 249 76% 64%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 228 12% 91%;
+    --input: 228 12% 91%;
+    --ring: 249 76% 64%;
+    --radius: 1rem;
+
+    /* Brand colors */
+    --brand-purple: 249 76% 64%;
+    --brand-purple-light: 249 95% 80%;
+    --brand-red: 0 84% 62%;
+    --brand-teal: 173 58% 44%;
+    --brand-blue: 199 65% 48%;
+    --brand-yellow: 43 96% 52%;
+    --brand-lilac: 249 92% 74%;
+    --brand-pink: 340 82% 65%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 228 14% 11%;
+    --sidebar-primary: 249 76% 64%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 12% 96%;
+    --sidebar-accent-foreground: 228 14% 18%;
+    --sidebar-border: 228 12% 91%;
+    --sidebar-ring: 249 76% 64%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-nunito antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fredoka', sans-serif;
+  }
+}
+
+@layer components {
+  /* ═══ Glass Card System ═══ */
+  .glass-card {
+    background: hsla(0, 0%, 100%, 0.78);
+    border: 1px solid hsla(228, 16%, 92%, 0.65);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px hsla(228, 16%, 16%, 0.05);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card-hover {
+    @apply glass-card;
+  }
+  .glass-card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 4px 12px hsla(228, 16%, 16%, 0.08),
+      0 8px 24px hsla(249, 76%, 64%, 0.06);
+    border-color: hsla(249, 76%, 64%, 0.16);
+  }
+  .glass-card-hover:active {
+    transform: translateY(-1px);
+  }
+
+  /* ═══ Gradient Text ═══ */
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--foreground)) 25%, hsl(var(--brand-purple)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ═══ Section Labels ═══ */
+  .section-label {
+    @apply text-[10px] uppercase font-semibold;
+    letter-spacing: 0.12em;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* ═══ Button Glow ═══ */
+  .btn-primary-glow {
+    background: linear-gradient(135deg, hsl(var(--brand-purple)), hsl(var(--brand-lilac)));
+    box-shadow: 0 4px 14px hsla(var(--brand-purple), 0.3);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .btn-primary-glow:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px hsla(var(--brand-purple), 0.4);
+  }
+  .btn-primary-glow:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px hsla(var(--brand-purple), 0.3);
+  }
+
+  /* ═══ Chip System ═══ */
+  .chip {
+    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer select-none;
+    background: hsla(228, 14%, 93%, 0.8);
+    border: 1px solid hsla(228, 14%, 89%, 0.6);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .chip:hover {
+    background: hsla(228, 14%, 90%, 1);
+    border-color: hsla(228, 14%, 85%, 0.8);
+  }
+  .chip-active {
+    background: linear-gradient(135deg, hsl(var(--brand-purple)), hsl(var(--brand-lilac)));
+    border-color: transparent;
+    box-shadow: 0 2px 10px hsla(var(--brand-purple), 0.28);
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* ═══ Type Badge (VÍDEO, PDF, etc) ═══ */
+  .type-badge {
+    @apply text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full;
+  }
+
+  /* ═══ Stat Card ═══ */
+  .stat-card {
+    @apply glass-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4;
+  }
+  .stat-card .stat-icon {
+    @apply w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shrink-0;
+  }
+  .stat-card .stat-value {
+    @apply font-fredoka text-lg sm:text-xl font-bold text-foreground leading-tight;
+  }
+  .stat-card .stat-label {
+    @apply text-[10px] sm:text-[11px] text-muted-foreground font-medium mt-0.5;
+  }
+
+  /* ═══ Activity Card ═══ */
+  .activity-card {
+    @apply glass-card-hover p-5 sm:p-6 flex flex-col;
+  }
+  .activity-card .activity-meta {
+    @apply flex items-center gap-4 text-[11px] text-muted-foreground pt-3 mt-auto;
+    border-top: 1px solid hsla(228, 12%, 91%, 0.5);
+  }
+
+  /* ═══ Orb ═══ */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+@layer utilities {
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-18px); }
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
+  }
+  .animate-float {
+    animation: float 7s ease-in-out infinite;
+  }
+  .animate-float-delayed {
+    animation: float 8s ease-in-out 2s infinite;
+  }
+  .animate-float-slow {
+    animation: float 9s ease-in-out 4s infinite;
+  }
+  .animate-slide-up {
+    animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .animate-pulse-dot {
+    animation: pulse-dot 1.4s ease-in-out infinite;
+  }
+  @keyframes heart-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+  .animate-heart-pulse {
+    animation: heart-pulse 0.3s ease-in-out;
+  }
+}

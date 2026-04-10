@@ -1,0 +1,4 @@
+project_id = "egjvtionimijdzhxiwjd"
+
+[functions.teca-chat]
+verify_jwt = false
