@@ -1,0 +1,26 @@
+# Dependências
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Build
+dist/
+build/
+
+# Variáveis de ambiente (NUNCA commitar)
+.env
+backend/nestjs/.env
+backend/fastapi/.env
+
+# Prisma
+backend/nestjs/node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

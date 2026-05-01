@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PROFESSOR
+  PAI_MAE
+  TERAPEUTA
+}
+
+enum ResourceCategory {
+  NARRATIVE
+  DESCRIPTIVE
+  OPINION
+  POETRY
+  INFORMATIVE
+  GAMES
+}
+
+enum ResourceType {
+  VIDEO
+  PDF
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(PROFESSOR)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  resources  Resource[]
+  favorites  Favorite[]
+  posts      CommunityPost[]
+  likes      PostLike[]
+  comments   PostComment[]
+}
+
+model Resource {
+  id          String           @id @default(uuid())
+  title       String
+  description String
+  category    ResourceCategory
+  type        ResourceType
+  ageRange    String
+  duration    String
+  fileUrl     String?
+  isNew       Boolean          @default(false)
+  downloads   Int              @default(0)
+  rating      Float            @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  author    User       @relation(fields: [authorId], references: [id])
+  authorId  String
+  favorites Favorite[]
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  resourceId String
+
+  @@unique([userId, resourceId])
+}
+
+model CommunityPost {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User           @relation(fields: [authorId], references: [id])
+  authorId String
+  likes    PostLike[]
+  comments PostComment[]
+}
+
+model PostLike {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  post   CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+
+  @@unique([userId, postId])
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  author   User          @relation(fields: [authorId], references: [id])
+  authorId String
+  post     CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   String
+}

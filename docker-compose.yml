@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  # ── Banco de dados PostgreSQL ─────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: aulateca_postgres
+    environment:
+      POSTGRES_USER: aulateca
+      POSTGRES_PASSWORD: aulateca_pass
+      POSTGRES_DB: aulateca_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aulateca -d aulateca_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend principal: NestJS ─────────────────────────────────────────────
+  nestjs:
+    build:
+      context: ./backend/nestjs
+      dockerfile: Dockerfile
+    container_name: aulateca_nestjs
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://aulateca:aulateca_pass@postgres:5432/aulateca_db
+      JWT_SECRET: ${JWT_SECRET:-aulateca_secret_change_in_prod}
+      PORT: 3000
+      FRONTEND_URL: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ── Microsserviço de IA: FastAPI ──────────────────────────────────────────
+  fastapi:
+    build:
+      context: ./backend/fastapi
+      dockerfile: Dockerfile
+    container_name: aulateca_fastapi
+    ports:
+      - "8000:8000"
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
