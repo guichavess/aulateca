@@ -7,6 +7,7 @@ interface StreamChatOptions {
   grade?: string;
   duration?: string;
   bnccAligned?: boolean;
+  useAulateca?: boolean;
   onDelta: (chunk: string) => void;
   onDone: () => void;
   onError: (error: string) => void;
@@ -17,6 +18,7 @@ export async function streamTecaChat({
   grade,
   duration,
   bnccAligned = true,
+  useAulateca = false,
   onDelta,
   onDone,
   onError,
@@ -30,6 +32,7 @@ export async function streamTecaChat({
         grade: grade ?? null,
         duration: duration ?? null,
         bncc_aligned: bnccAligned,
+        use_aulateca: useAulateca,
       }),
     });
 
@@ -60,18 +63,23 @@ export async function streamTecaChat({
 
       let newline: number;
       while ((newline = buffer.indexOf('\n')) !== -1) {
-        let line = buffer.slice(0, newline).replace(/\r$/, '');
+        const line = buffer.slice(0, newline).replace(/\r$/, '');
         buffer = buffer.slice(newline + 1);
 
-        if (!line.startsWith('data: ') || line.trim() === '') continue;
+        if (line === '' || !line.startsWith('data: ')) continue;
 
-        const payload = line.slice(6).trim();
+        const payload = line.slice(6);
         if (payload === '[DONE]') {
           done = true;
           break;
         }
 
-        onDelta(payload);
+        try {
+          const text = JSON.parse(payload);
+          if (typeof text === 'string') onDelta(text);
+        } catch {
+          // payload malformado — ignora este frame
+        }
       }
     }
 

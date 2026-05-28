@@ -21,14 +21,17 @@ export const authService = {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message);
 
-    const profile = await authService.fetchProfile(data.user.id);
+    const profile = await authService.fetchProfile(data.user.id, data.user.email ?? '');
     return {
       token: data.session!.access_token,
       user: profile,
     };
   },
 
-  async register(name: string, email: string, password: string, roleKey: string): Promise<{ token: string; user: AuthUser }> {
+  async register(name: string, email: string, password: string, roleKey: string): Promise<
+    | { status: 'signed-in'; token: string; user: AuthUser }
+    | { status: 'needs-confirmation'; email: string }
+  > {
     const role = ROLE_MAP[roleKey] ?? 'PROFESSOR';
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -36,16 +39,30 @@ export const authService = {
       options: { data: { name, role } },
     });
     if (error) throw new Error(error.message);
-    if (!data.session) throw new Error('Verifique seu e-mail para confirmar o cadastro.');
 
-    const profile = await authService.fetchProfile(data.user!.id);
+    // Sem sessão = o projeto exige confirmação por e-mail. O cadastro foi feito;
+    // sinaliza o estado para a UI tratar sem mostrar erro vermelho.
+    if (!data.session || !data.user) {
+      return { status: 'needs-confirmation', email };
+    }
+
+    const profile = await authService.fetchProfile(data.user.id, data.user.email ?? email);
     return {
+      status: 'signed-in',
       token: data.session.access_token,
       user: profile,
     };
   },
 
-  async fetchProfile(userId: string): Promise<AuthUser> {
+  // O email mora em auth.users (gerenciado pelo Supabase), não em public.profiles.
+  // Aceita o email explícito (de signIn/signUp) ou cai no getUser() como fallback.
+  async fetchProfile(userId: string, email?: string): Promise<AuthUser> {
+    let resolvedEmail = email;
+    if (resolvedEmail === undefined) {
+      const { data: authData } = await supabase.auth.getUser();
+      resolvedEmail = authData.user?.email ?? '';
+    }
+
     const { data, error } = await supabase
       .from('profiles')
       .select('id, name, role, avatar_url')
@@ -57,7 +74,7 @@ export const authService = {
     return {
       id: data.id,
       name: data.name,
-      email: '',
+      email: resolvedEmail,
       role: data.role as UserRole,
       avatarUrl: data.avatar_url ?? undefined,
     };

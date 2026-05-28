@@ -1,7 +1,9 @@
 import React from 'react';
+import { toast } from 'sonner';
 import { Resource } from '@/lib/types';
 import { categoryColorMap, categories } from '@/lib/data';
 import { useApp } from '@/lib/context';
+import { resourcesService } from '@/services/resources.service';
 import { Heart, X, Download, Sparkles } from 'lucide-react';
 
 interface ResourceModalProps {
@@ -14,6 +16,25 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ resource, onClose }) => {
   const color = categoryColorMap[resource.category] || '#6C5CE7';
   const fav = isFavorite(resource.id);
   const cat = categories.find(c => c.id === resource.category);
+
+  const handleDownload = async () => {
+    if (!resource.fileUrl) {
+      toast.info('Arquivo em processamento', { description: 'Este recurso ainda não tem download disponível.' });
+      return;
+    }
+    try {
+      await resourcesService.registerDownload(resource.id);
+    } catch {
+      // contador é nice-to-have — não bloqueia o download
+    }
+    window.open(resource.fileUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleAiHint = () => {
+    toast.info('Sugestões da Teca em breve', {
+      description: 'Vamos integrar dicas personalizadas para este recurso.',
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -64,6 +85,7 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ resource, onClose }) => {
           {/* Actions */}
           <div className="flex gap-2.5 pt-1">
             <button
+              onClick={handleDownload}
               className="flex-1 py-2.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
               style={{ background: color, color: '#fff', boxShadow: `0 4px 14px ${color}40` }}
             >
@@ -75,7 +97,10 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ resource, onClose }) => {
             >
               <Heart size={16} className={fav ? 'text-rose-500 animate-heart-pulse' : 'text-muted-foreground'} style={fav ? { fill: 'currentColor' } : {}} />
             </button>
-            <button className="w-11 h-11 rounded-xl flex items-center justify-center border border-border/50 hover:bg-secondary/60 hover:border-border transition-all duration-200 active:scale-95 text-primary">
+            <button
+              onClick={handleAiHint}
+              className="w-11 h-11 rounded-xl flex items-center justify-center border border-border/50 hover:bg-secondary/60 hover:border-border transition-all duration-200 active:scale-95 text-primary"
+            >
               <Sparkles size={16} />
             </button>
           </div>

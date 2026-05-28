@@ -17,7 +17,34 @@ interface FetchResourcesParams {
   limit?: number;
 }
 
-function toResource(row: any): Resource {
+// Escapa wildcards do ILIKE (% e _) e o próprio caractere de escape (\).
+function escapeIlikePattern(value: string): string {
+  return value.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_');
+}
+
+// Envolve o valor em aspas duplas para que vírgulas/parênteses não sejam
+// interpretados como separadores/agrupadores pelo PostgREST no .or().
+// Aspas internas são duplicadas, conforme parser do PostgREST.
+function quotePostgrestValue(value: string): string {
+  return `"${value.replace(/"/g, '""')}"`;
+}
+
+type ResourceRow = {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  type: string;
+  age_range: string;
+  duration: string;
+  downloads: number | null;
+  rating: number | null;
+  is_new: boolean | null;
+  file_url: string | null;
+  profiles: { name: string } | null;
+};
+
+function toResource(row: ResourceRow): Resource {
   return {
     id: row.id,
     title: row.title,
@@ -30,6 +57,7 @@ function toResource(row: any): Resource {
     rating: row.rating ?? 0,
     isNew: row.is_new ?? false,
     author: row.profiles?.name ?? 'Aulateca',
+    fileUrl: row.file_url ?? null,
   };
 }
 
@@ -48,7 +76,10 @@ export const resourcesService = {
     if (category && category !== 'all') query = query.eq('category', category);
     if (type) query = query.eq('type', type);
     if (ageRange && ageRange !== 'all') query = query.eq('age_range', ageRange);
-    if (search) query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+    if (search) {
+      const pattern = quotePostgrestValue(`%${escapeIlikePattern(search)}%`);
+      query = query.or(`title.ilike.${pattern},description.ilike.${pattern}`);
+    }
 
     const { data, error, count } = await query;
     if (error) throw new Error(error.message);
@@ -72,7 +103,17 @@ export const resourcesService = {
     return toResource(data);
   },
 
-  async create(resource: Omit<Resource, 'id' | 'downloads' | 'rating'>, authorId: string): Promise<Resource> {
+  async fetchByIds(ids: string[]): Promise<Resource[]> {
+    if (ids.length === 0) return [];
+    const { data, error } = await supabase
+      .from('resources')
+      .select('*, profiles(name)')
+      .in('id', ids);
+    if (error) throw new Error(error.message);
+    return (data ?? []).map(toResource);
+  },
+
+  async create(resource: Omit<Resource, 'id' | 'downloads' | 'rating' | 'author'>, authorId: string): Promise<Resource> {
     const { data, error } = await supabase
       .from('resources')
       .insert({

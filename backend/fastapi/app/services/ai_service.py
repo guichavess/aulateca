@@ -30,7 +30,13 @@ async def stream_ai_response(request: ChatRequest) -> AsyncGenerator[str, None]:
     intent = detect_intent(last_user_message)
 
     provider, model = INTENT_MODEL_MAP[intent]
-    system_prompt = get_system_prompt(intent.value, request.grade, request.duration, request.bncc_aligned)
+    system_prompt = get_system_prompt(
+        intent.value,
+        request.grade,
+        request.duration,
+        request.bncc_aligned,
+        request.use_aulateca,
+    )
 
     messages = [{"role": "system", "content": system_prompt}]
     messages += [{"role": m.role.value, "content": m.content} for m in request.messages]

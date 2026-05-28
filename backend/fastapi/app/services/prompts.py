@@ -41,7 +41,13 @@ para professores do Ensino Fundamental no Brasil. Responda de forma clara, prát
 Foque em dúvidas pedagógicas, didáticas e sobre o currículo de Língua Portuguesa."""
 
 
-def get_system_prompt(intent: str, grade: str | None = None, duration: str | None = None, bncc_aligned: bool = True) -> str:
+def get_system_prompt(
+    intent: str,
+    grade: str | None = None,
+    duration: str | None = None,
+    bncc_aligned: bool = True,
+    use_aulateca: bool = False,
+) -> str:
     prompts = {
         "plano": SYSTEM_PLAN,
         "atividade": SYSTEM_ACTIVITY,
@@ -57,6 +63,14 @@ def get_system_prompt(intent: str, grade: str | None = None, duration: str | Non
         extras.append(f"A duração da aula é de {duration}.")
     if not bncc_aligned:
         extras.append("Não é necessário referenciar as habilidades da BNCC explicitamente.")
+    if use_aulateca:
+        # TODO: quando houver RAG sobre o catálogo, injetar aqui os recursos
+        # mais relevantes (pgvector em supabase.resources). Por enquanto,
+        # apenas instrui o modelo a priorizar atividades lúdicas no estilo.
+        extras.append(
+            "Priorize atividades lúdicas no estilo dos recursos da Aulateca "
+            "(jogos, dobraduras, oficinas, dinâmicas em grupo) ao invés de exercícios tradicionais."
+        )
 
     if extras:
         base += "\n\nContexto adicional: " + " ".join(extras)

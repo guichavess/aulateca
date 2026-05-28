@@ -1,34 +1,75 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { categories } from '@/lib/data';
 import { toast } from 'sonner';
+import { useApp } from '@/lib/context';
+import { resourcesService } from '@/services/resources.service';
+import type { AgeRange, CategoryId, ResourceType } from '@/lib/types';
 
-const levels = [
-  { id: 'ef1-initial', label: 'EF1 — 1° ao 3° ano' },
-  { id: 'ef1-final', label: 'EF1 — 4° e 5° ano' },
-  { id: 'ef2', label: 'EF2 — 6° ao 9° ano' },
+const ageRanges: { id: Exclude<AgeRange, 'all'>; label: string }[] = [
+  { id: '6-8', label: 'EF1 — 1° ao 3° ano' },
+  { id: '9-11', label: 'EF1 — 4° e 5° ano' },
+  { id: '12-14', label: 'EF2 — 6° ao 9° ano' },
+];
+
+const types: { id: ResourceType; label: string }[] = [
+  { id: 'pdf', label: 'PDF' },
+  { id: 'video', label: 'Vídeo' },
 ];
 
 const durations = ['10 min', '15 min', '20 min', '25 min', '30 min', '40 min', '50 min', '60 min'];
 
 const CreatePage: React.FC = () => {
+  const { user } = useApp();
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-  const [level, setLevel] = useState('');
+  const [category, setCategory] = useState<Exclude<CategoryId, 'all'> | ''>('');
+  const [ageRange, setAgeRange] = useState<Exclude<AgeRange, 'all'> | ''>('');
+  const [type, setType] = useState<ResourceType | ''>('');
   const [duration, setDuration] = useState('');
-  const [players, setPlayers] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const canSubmit = title.trim() && description.trim() && category && level;
+  const canSubmit =
+    !!title.trim() && !!description.trim() && !!category && !!ageRange && !!type && !!duration && !submitting;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Recurso criado com sucesso! 🎉');
-    setTitle('');
-    setDescription('');
-    setCategory('');
-    setLevel('');
-    setDuration('');
-    setPlayers('');
+    if (!canSubmit) return;
+    if (!user) {
+      toast.error('Você precisa estar logado para publicar.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await resourcesService.create(
+        {
+          title: title.trim(),
+          description: description.trim(),
+          category: category as Exclude<CategoryId, 'all'>,
+          type: type as ResourceType,
+          ageRange: ageRange as Exclude<AgeRange, 'all'>,
+          duration,
+          isNew: true,
+        },
+        user.id,
+      );
+      toast.success('Recurso publicado!');
+      setTitle('');
+      setDescription('');
+      setCategory('');
+      setAgeRange('');
+      setType('');
+      setDuration('');
+      navigate('/explore');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Não foi possível publicar o recurso.';
+      toast.error(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const inputClass =
@@ -74,7 +115,7 @@ const CreatePage: React.FC = () => {
           <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Categoria</label>
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value as typeof category)}
             className={selectClass}
           >
             <option value="">Selecione uma categoria</option>
@@ -88,19 +129,32 @@ const CreatePage: React.FC = () => {
         <div>
           <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Nível / Série</label>
           <select
-            value={level}
-            onChange={(e) => setLevel(e.target.value)}
+            value={ageRange}
+            onChange={(e) => setAgeRange(e.target.value as typeof ageRange)}
             className={selectClass}
           >
             <option value="">Selecione o nível</option>
-            {levels.map((l) => (
+            {ageRanges.map((l) => (
               <option key={l.id} value={l.id}>{l.label}</option>
             ))}
           </select>
         </div>
 
-        {/* Row: Tempo + Jogadores */}
+        {/* Row: Tipo + Tempo */}
         <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Tipo</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value as ResourceType)}
+              className={selectClass}
+            >
+              <option value="">Selecione</option>
+              {types.map((t) => (
+                <option key={t.id} value={t.id}>{t.label}</option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Tempo estimado</label>
             <select
@@ -113,18 +167,6 @@ const CreatePage: React.FC = () => {
                 <option key={d} value={d}>{d}</option>
               ))}
             </select>
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Nº de jogadores</label>
-            <input
-              type="number"
-              min="1"
-              max="40"
-              value={players}
-              onChange={(e) => setPlayers(e.target.value)}
-              placeholder="Ex: 4"
-              className={inputClass}
-            />
           </div>
         </div>
 
@@ -142,7 +184,7 @@ const CreatePage: React.FC = () => {
             cursor: canSubmit ? 'pointer' : 'not-allowed',
           }}
         >
-          Publicar Recurso
+          {submitting ? 'Publicando…' : 'Publicar Recurso'}
         </button>
       </form>
     </div>

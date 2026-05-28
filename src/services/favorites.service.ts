@@ -11,7 +11,7 @@ export const favoritesService = {
       .eq('user_id', user.id);
 
     if (error) throw new Error(error.message);
-    return (data ?? []).map((f: any) => f.resource_id);
+    return (data ?? []).map((f: { resource_id: string }) => f.resource_id);
   },
 
   async add(resourceId: string): Promise<void> {

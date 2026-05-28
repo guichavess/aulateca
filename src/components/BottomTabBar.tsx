@@ -1,11 +1,10 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Home, BookOpen, Heart, CircleUser } from 'lucide-react';
-import tecaIcon from '@/assets/teca-icon.png';
+
 const tabs = [
   { path: '/', label: 'Início', icon: Home },
   { path: '/catalog', label: 'Catálogo', icon: BookOpen },
-  { path: '/ai-plan', label: 'Teca', icon: null, isCenter: true },
   { path: '/favorites', label: 'Favoritos', icon: Heart },
   { path: '/profile', label: 'Perfil', icon: CircleUser },
 ];
@@ -18,7 +17,6 @@ const BottomTabBar: React.FC = () => {
       className="fixed bottom-0 left-0 right-0 z-50"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
-      {/* Background bar */}
       <div
         className="absolute inset-0 border-t border-border/30"
         style={{
@@ -31,21 +29,6 @@ const BottomTabBar: React.FC = () => {
       <div className="relative flex items-end justify-around h-[56px] max-w-lg mx-auto">
         {tabs.map((tab) => {
           const isActive = location.pathname === tab.path;
-
-          if (tab.isCenter) {
-            return (
-              <NavLink
-                key={tab.path}
-                to={tab.path}
-                className="flex flex-col items-center justify-center flex-1"
-                style={{ marginTop: '-12px' }}
-              >
-                <div className="w-14 h-14 flex items-center justify-center transition-transform duration-200 active:scale-90">
-                  <img src={tecaIcon} alt="Teca" className="w-14 h-14 object-contain drop-shadow-lg" />
-                </div>
-              </NavLink>
-            );
-          }
 
           return (
             <NavLink

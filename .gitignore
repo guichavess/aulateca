@@ -11,8 +11,15 @@ build/
 
 # Variáveis de ambiente (NUNCA commitar)
 .env
+.env.local
 backend/nestjs/.env
 backend/fastapi/.env
+
+# Claude Code — configs locais do dev (não compartilhar)
+.claude/settings.local.json
+
+# Notas internas / scratch
+MOCKS.txt
 
 # Prisma
 backend/nestjs/node_modules/

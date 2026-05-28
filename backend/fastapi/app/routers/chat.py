@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from app.models.schemas import ChatRequest
@@ -13,13 +15,15 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 )
 async def chat(request: ChatRequest):
     async def event_generator():
+        # Cada chunk é serializado como JSON para preservar quebras de linha,
+        # espaços de borda e qualquer outro caractere que quebraria o frame SSE.
         async for chunk in stream_ai_response(request):
-            yield f"data: {chunk}\n\n"
+            yield f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(
         event_generator(),
-        media_type="text/event-stream",
+        media_type="text/event-stream; charset=utf-8",
         headers={
             "Cache-Control": "no-cache",
             "X-Accel-Buffering": "no",

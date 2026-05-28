@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Bell, Menu, Search, X, Compass, Gamepad2, FileEdit, BookOpen, Sparkles, MessageCircle, Heart } from 'lucide-react';
+import { Bell, Menu, Search, X, Compass, Gamepad2, FileEdit, BookOpen, MessageCircle, Heart } from 'lucide-react';
+import { toast } from 'sonner';
 import { useApp } from '@/lib/context';
 import mascot from '@/assets/mascot.png';
 import { NavLink } from 'react-router-dom';
@@ -16,7 +17,6 @@ const mobileMenuItems = [
   { path: '/other-activities', label: 'Outras Atividades', icon: FileEdit },
   { path: '/catalog', label: 'Catálogo', icon: BookOpen },
   { path: '/favorites', label: 'Favoritos', icon: Heart },
-  { path: '/ai-plan', label: 'Teca IA', icon: Sparkles },
   { path: '/community', label: 'Comunidade', icon: MessageCircle },
 ];
 
@@ -49,7 +49,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
 
           {/* Right: bell + avatar */}
           <div className="flex items-center gap-2">
-            <button className="relative text-muted-foreground hover:text-foreground p-1.5 transition-colors duration-200">
+            <button
+              onClick={() => toast.info('Sem notificações novas')}
+              className="relative text-muted-foreground hover:text-foreground p-1.5 transition-colors duration-200"
+            >
               <Bell className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive ring-2 ring-background" />
             </button>
@@ -129,7 +132,10 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
       </div>
 
       <div className="flex items-center gap-1.5">
-        <button className="relative text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg p-2 transition-all duration-200">
+        <button
+          onClick={() => toast.info('Sem notificações novas')}
+          className="relative text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg p-2 transition-all duration-200"
+        >
           <Bell className="w-[18px] h-[18px]" />
           <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive ring-2 ring-background" />
         </button>

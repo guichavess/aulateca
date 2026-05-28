@@ -5,8 +5,9 @@ const AVATAR_COLORS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#F9CA24', '#
 
 function getColor(id: string): string {
   let hash = 0;
-  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) & 0xffffffff;
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  // | 0 mantém em int32 a cada passo; >>> 0 no fim força unsigned para o módulo.
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  return AVATAR_COLORS[(hash >>> 0) % AVATAR_COLORS.length];
 }
 
 function getInitials(name: string): string {
@@ -25,7 +26,17 @@ function toTimeAgo(date: string): string {
   return new Date(date).toLocaleDateString('pt-BR');
 }
 
-function toPost(row: any, likedIds: string[]): CommunityPost {
+type PostRow = {
+  id: string;
+  content: string;
+  author_id: string;
+  created_at: string;
+  profiles?: { name?: string } | null;
+  post_likes?: { count: number }[];
+  post_comments?: { count: number }[];
+};
+
+function toPost(row: PostRow, likedIds: string[]): CommunityPost {
   return {
     id: row.id,
     content: row.content,
@@ -55,23 +66,31 @@ export const communityService = {
         post_comments(count)
       `, { count: 'exact' })
       .range(from, from + limit - 1)
-      .order('created_at', { ascending: sort !== 'recent' ? false : false });
+      .order('created_at', { ascending: false });
 
     if (error) throw new Error(error.message);
 
+    // TODO: para "popular" global, materializar likes_count em community_posts
+    // via trigger e ordenar no banco. Por ora, reordena a página atual em
+    // memória — funciona, mas não atravessa páginas.
+    const rows = (data ?? []) as PostRow[];
+    const ordered = sort === 'popular'
+      ? [...rows].sort((a, b) => (b.post_likes?.[0]?.count ?? 0) - (a.post_likes?.[0]?.count ?? 0))
+      : rows;
+
     let likedIds: string[] = [];
-    if (user && data?.length) {
-      const postIds = data.map((p: any) => p.id);
+    if (user && rows.length) {
+      const postIds = rows.map((p) => p.id);
       const { data: likes } = await supabase
         .from('post_likes')
         .select('post_id')
         .eq('user_id', user.id)
         .in('post_id', postIds);
-      likedIds = (likes ?? []).map((l: any) => l.post_id);
+      likedIds = (likes ?? []).map((l: { post_id: string }) => l.post_id);
     }
 
     return {
-      data: (data ?? []).map((p: any) => toPost(p, likedIds)),
+      data: ordered.map((p) => toPost(p, likedIds)),
       total: count ?? 0,
     };
   },
@@ -87,7 +106,7 @@ export const communityService = {
       .single();
 
     if (error) throw new Error(error.message);
-    return toPost({ ...data, post_likes: [{ count: 0 }], post_comments: [{ count: 0 }] }, []);
+    return toPost({ ...(data as unknown as PostRow), post_likes: [{ count: 0 }], post_comments: [{ count: 0 }] }, []);
   },
 
   async toggleLike(postId: string): Promise<{ liked: boolean }> {
@@ -121,12 +140,13 @@ export const communityService = {
       .single();
 
     if (error) throw new Error(error.message);
+    const row = data as { id: string; content: string; created_at: string; profiles?: { name?: string } | null };
     return {
-      id: data.id,
-      content: data.content,
-      timeAgo: toTimeAgo(data.created_at),
-      authorName: (data as any).profiles?.name ?? 'Usuário',
-      authorInitials: getInitials((data as any).profiles?.name ?? 'U'),
+      id: row.id,
+      content: row.content,
+      timeAgo: toTimeAgo(row.created_at),
+      authorName: row.profiles?.name ?? 'Usuário',
+      authorInitials: getInitials(row.profiles?.name ?? 'U'),
       authorColor: getColor(user.id),
     };
   },

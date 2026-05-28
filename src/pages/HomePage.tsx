@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { resources, categories } from '@/lib/data';
+import { useQuery } from '@tanstack/react-query';
+import { categories, resources as mockResources } from '@/lib/data';
 import { CategoryId, AgeRange, Resource } from '@/lib/types';
 import { useApp } from '@/lib/context';
+import { resourcesService } from '@/services/resources.service';
 import ResourceCard from '@/components/ResourceCard';
 import ResourceModal from '@/components/ResourceModal';
 
@@ -18,10 +20,27 @@ const HomePage: React.FC = () => {
     { id: '12-14', label: '6° ao 9° ano' },
   ];
 
-  const filtered = resources.filter(r =>
-    (selectedCategory === 'all' || r.category === selectedCategory) &&
-    (selectedAge === 'all' || r.ageRange === selectedAge)
-  );
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['resources', selectedCategory, selectedAge],
+    queryFn: () =>
+      resourcesService.fetchAll({
+        category: selectedCategory,
+        ageRange: selectedAge,
+      }),
+  });
+
+  // FALLBACK MOCK: se o Supabase voltar vazio (banco sem seed na demo),
+  // mostramos os recursos mockados de src/lib/data.ts para a tela não ficar nua.
+  // Quando houver dados reais, eles vencem.
+  const remoteResources = data?.data ?? [];
+  const usingMock = !isLoading && !isError && remoteResources.length === 0;
+  const resources: Resource[] = usingMock
+    ? mockResources.filter(
+        (r) =>
+          (selectedCategory === 'all' || r.category === selectedCategory) &&
+          (selectedAge === 'all' || r.ageRange === selectedAge),
+      )
+    : remoteResources;
 
   const stats = [
     { icon: '📚', value: '2.400+', label: 'Recursos', bg: 'hsla(249, 76%, 64%, 0.07)', borderColor: 'hsl(262, 83%, 58%)' },
@@ -82,16 +101,27 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Resource Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map((r, i) => (
-          <ResourceCard key={r.id} resource={r} index={i} onClick={() => setModalResource(r)} />
-        ))}
-      </div>
-
-      {filtered.length === 0 && (
+      {isLoading ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <p className="text-4xl mb-3">⏳</p>
+          <p className="font-fredoka text-base">Carregando recursos…</p>
+        </div>
+      ) : isError ? (
+        <div className="text-center py-16 text-muted-foreground">
+          <p className="text-4xl mb-3">⚠️</p>
+          <p className="font-fredoka text-base">Não foi possível carregar os recursos</p>
+          <p className="text-xs mt-2">{error instanceof Error ? error.message : 'Tente novamente em instantes.'}</p>
+        </div>
+      ) : resources.length === 0 ? (
         <div className="text-center py-16 text-muted-foreground">
           <p className="text-4xl mb-3">🔍</p>
-          <p className="font-fredoka text-base">Nenhum recurso encontrado</p>
+          <p className="font-fredoka text-base">Nenhum recurso encontrado para esses filtros</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {resources.map((r, i) => (
+            <ResourceCard key={r.id} resource={r} index={i} onClick={() => setModalResource(r)} />
+          ))}
         </div>
       )}
 

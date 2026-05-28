@@ -22,6 +22,7 @@ export interface Resource {
   rating: number;
   isNew?: boolean;
   author: string;
+  fileUrl?: string | null;
 }
 
 export interface CommunityPost {

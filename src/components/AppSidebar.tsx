@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Compass, Heart, Sparkles, MessageCircle, Gamepad2, FileEdit, BookOpen } from 'lucide-react';
+import { Home, Compass, Heart, MessageCircle, Gamepad2, FileEdit, BookOpen } from 'lucide-react';
+import { toast } from 'sonner';
 import { categories } from '@/lib/data';
 import { useApp } from '@/lib/context';
 import mascot from '@/assets/mascot.png';
@@ -17,7 +18,6 @@ const navItems = [
   { path: '/ludic-activities', label: 'Atividades Lúdicas', icon: Gamepad2 },
   { path: '/other-activities', label: 'Outras Atividades', icon: FileEdit },
   { path: '/catalog', label: 'Catálogo', icon: BookOpen },
-  { path: '/ai-plan', label: 'Teca', icon: Sparkles },
   { path: '/community', label: 'Comunidade', icon: MessageCircle },
 ];
 
@@ -84,7 +84,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed }) => {
         <div className="mx-3 mb-3 p-4 rounded-2xl" style={{ background: 'linear-gradient(135deg, hsla(249, 76%, 64%, 0.1), hsla(249, 92%, 74%, 0.05))', border: '1px solid hsla(249, 76%, 64%, 0.12)' }}>
           <div className="font-fredoka font-bold text-sm text-foreground mb-0.5">✨ Aulateca PRO</div>
           <p className="text-[11px] text-muted-foreground mb-3 leading-relaxed">Recursos ilimitados e IA avançada</p>
-          <button className="w-full py-2 rounded-xl text-xs font-bold btn-primary-glow text-primary-foreground">
+          <button
+            onClick={() => toast.info('Plano PRO em breve', { description: 'Recursos ilimitados e IA avançada.' })}
+            className="w-full py-2 rounded-xl text-xs font-bold btn-primary-glow text-primary-foreground"
+          >
             Upgrade
           </button>
         </div>

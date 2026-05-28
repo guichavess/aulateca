@@ -18,6 +18,7 @@ class ChatRequest(BaseModel):
     grade: Optional[str] = None
     duration: Optional[str] = None
     bncc_aligned: bool = True
+    use_aulateca: bool = False
 
 
 class IntentType(str, Enum):

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { useApp } from '@/lib/context';
 import { authService } from '@/services/auth.service';
 import FloatingOrbs from '@/components/FloatingOrbs';
@@ -15,19 +16,30 @@ const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfo('');
     setLoading(true);
     try {
-      const result = view === 'register'
-        ? await authService.register(name, email, password, role)
-        : await authService.login(email, password);
-      login(result.token, result.user);
-    } catch (err: any) {
-      setError(err.message || 'Erro ao autenticar. Verifique seus dados.');
+      if (view === 'register') {
+        const result = await authService.register(name, email, password, role);
+        if (result.status === 'needs-confirmation') {
+          setInfo(`Cadastro feito! Enviamos um e-mail para ${result.email}. Confirme para entrar.`);
+          setPassword('');
+          setView('login');
+          return;
+        }
+        login(result.token, result.user);
+      } else {
+        const result = await authService.login(email, password);
+        login(result.token, result.user);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erro ao autenticar. Verifique seus dados.');
     } finally {
       setLoading(false);
     }
@@ -90,7 +102,10 @@ const LoginPage: React.FC = () => {
               <button onClick={() => setView('login')} className="w-full py-3.5 rounded-xl font-semibold text-primary-foreground btn-primary-glow">
                 Entrar com e-mail
               </button>
-              <button className="w-full py-3.5 rounded-xl font-semibold text-foreground border border-border/50 hover:bg-secondary/50 transition-colors">
+              <button
+                onClick={() => toast.info('Login com Google em breve', { description: 'Use seu e-mail por enquanto.' })}
+                className="w-full py-3.5 rounded-xl font-semibold text-foreground border border-border/50 hover:bg-secondary/50 transition-colors"
+              >
                 Entrar com Google
               </button>
               <p className="text-center text-muted-foreground text-sm">
@@ -108,6 +123,7 @@ const LoginPage: React.FC = () => {
                 ← Voltar
               </button>
               <h2 className="font-fredoka text-2xl font-bold text-foreground">Entrar na sua conta</h2>
+              {info && <p className="text-sm text-sky-300 bg-sky-400/10 rounded-lg px-3 py-2">{info}</p>}
               {error && <p className="text-sm text-red-400 bg-red-400/10 rounded-lg px-3 py-2">{error}</p>}
               <div className="space-y-4">
                 <div>
@@ -123,7 +139,13 @@ const LoginPage: React.FC = () => {
                 {loading ? 'Entrando...' : 'Entrar →'}
               </button>
               <p className="text-center text-sm text-muted-foreground">
-                <button type="button" className="text-primary hover:underline">Esqueceu a senha?</button>
+                <button
+                  type="button"
+                  onClick={() => toast.info('Recuperação de senha em breve', { description: 'Contate o suporte se precisar acessar agora.' })}
+                  className="text-primary hover:underline"
+                >
+                  Esqueceu a senha?
+                </button>
               </p>
             </form>
           )}
@@ -134,6 +156,7 @@ const LoginPage: React.FC = () => {
                 ← Voltar
               </button>
               <h2 className="font-fredoka text-2xl font-bold text-foreground">Criar sua conta</h2>
+              {info && <p className="text-sm text-sky-300 bg-sky-400/10 rounded-lg px-3 py-2">{info}</p>}
               {error && <p className="text-sm text-red-400 bg-red-400/10 rounded-lg px-3 py-2">{error}</p>}
               <div className="space-y-4">
                 <div>

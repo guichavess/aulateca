@@ -1,12 +1,17 @@
+import { supabase } from '@/integrations/supabase/client';
+
 const NESTJS_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 const FASTAPI_URL = import.meta.env.VITE_AI_URL || 'http://localhost:8000';
 
-function getToken(): string | null {
-  return localStorage.getItem('token');
+// Lê o access_token da sessão corrente do Supabase — sempre fresco,
+// inclusive após refresh automático.
+async function getToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token ?? null;
 }
 
-function authHeaders(): HeadersInit {
-  const token = getToken();
+async function authHeaders(): Promise<HeadersInit> {
+  const token = await getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -15,10 +20,17 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
     ...options,
     headers: {
       'Content-Type': 'application/json',
-      ...authHeaders(),
+      ...(await authHeaders()),
       ...options.headers,
     },
   });
+
+  // 401: sessão inválida — derruba a sessão; o listener do AppProvider
+  // reage a SIGNED_OUT e limpa estado/localStorage.
+  if (res.status === 401) {
+    await supabase.auth.signOut();
+    throw new Error('Sessão expirada. Faça login novamente.');
+  }
 
   if (!res.ok) {
     const error = await res.json().catch(() => ({ message: 'Erro inesperado' }));

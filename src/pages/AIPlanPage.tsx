@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { toast } from 'sonner';
 import { aiSuggestions, mockPlanHistory, categories } from '@/lib/data';
 import { AIPlanMessage, PlanHistory } from '@/lib/types';
 import { streamTecaChat } from '@/services/ai.service';
@@ -53,6 +54,62 @@ const AIPlanPage: React.FC = () => {
 
   const hasAssistantMessage = messages.some(m => m.role === 'assistant');
 
+  const getLatestPlan = () => {
+    const lastAssistant = [...messages].reverse().find(m => m.role === 'assistant');
+    return lastAssistant?.content ?? '';
+  };
+
+  const handleExportPDF = () => {
+    const content = getLatestPlan();
+    if (!content) {
+      toast.info('Gere um plano primeiro para exportar.');
+      return;
+    }
+    window.print();
+  };
+
+  const handleExportWord = () => {
+    const content = getLatestPlan();
+    if (!content) {
+      toast.info('Gere um plano primeiro para exportar.');
+      return;
+    }
+    const html = `<!DOCTYPE html><html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'><head><meta charset='utf-8'><title>Plano de Aula - Aulateca</title></head><body style="font-family: Calibri, Arial, sans-serif; line-height: 1.6;"><pre style="white-space: pre-wrap; font-family: inherit; font-size: 11pt;">${content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')}</pre></body></html>`;
+    const blob = new Blob([html], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `plano-aula-aulateca-${new Date().toISOString().slice(0, 10)}.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Documento Word baixado');
+  };
+
+  const handleShare = async () => {
+    const content = getLatestPlan();
+    if (!content) {
+      toast.info('Gere um plano primeiro para compartilhar.');
+      return;
+    }
+    const url = window.location.href;
+    const snippet = content.slice(0, 200);
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Plano de Aula — Aulateca', text: snippet, url });
+      } else {
+        await navigator.clipboard.writeText(`${snippet}\n\n${url}`);
+        toast.success('Link copiado!');
+      }
+    } catch {
+      // usuário cancelou
+    }
+  };
+
   const sendMessage = (text: string) => {
     if (!text.trim() || loading) return;
     const userMsg: AIPlanMessage = { id: Date.now().toString(), role: 'user', content: text, timestamp: new Date() };
@@ -63,15 +120,19 @@ const AIPlanPage: React.FC = () => {
     // Build message history for context
     const chatHistory = [...messages, userMsg].map(m => ({ role: m.role, content: m.content }));
 
+    // Id único desta chamada — fechado nas closures abaixo para que streams
+    // concorrentes não se atropelem reescrevendo a mensagem errada.
+    const streamingId = `streaming-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
     let assistantSoFar = "";
     const upsertAssistant = (chunk: string) => {
       assistantSoFar += chunk;
       setMessages(prev => {
-        const last = prev[prev.length - 1];
-        if (last?.role === 'assistant' && last.id === 'streaming') {
-          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
+        const idx = prev.findIndex(m => m.id === streamingId);
+        if (idx !== -1) {
+          return prev.map((m, i) => (i === idx ? { ...m, content: assistantSoFar } : m));
         }
-        return [...prev, { id: 'streaming', role: 'assistant' as const, content: assistantSoFar, timestamp: new Date() }];
+        return [...prev, { id: streamingId, role: 'assistant' as const, content: assistantSoFar, timestamp: new Date() }];
       });
     };
 
@@ -80,16 +141,17 @@ const AIPlanPage: React.FC = () => {
       grade,
       duration,
       bnccAligned: useBNCC,
+      useAulateca,
       onDelta: (chunk) => upsertAssistant(chunk),
       onDone: () => {
-        // Finalize message with real ID
-        setMessages(prev => prev.map(m => m.id === 'streaming' ? { ...m, id: (Date.now() + 1).toString() } : m));
+        const finalId = `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+        setMessages(prev => prev.map(m => m.id === streamingId ? { ...m, id: finalId } : m));
         setHistory(prev => [{ id: Date.now().toString(), title: text.slice(0, 40), date: new Date().toLocaleDateString('pt-BR') }, ...prev]);
         setLoading(false);
         setShowPanel(true);
       },
       onError: (errorMsg) => {
-        setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), role: 'assistant', content: errorMsg, timestamp: new Date() }]);
+        setMessages(prev => [...prev, { id: `err-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, role: 'assistant', content: errorMsg, timestamp: new Date() }]);
         setLoading(false);
       },
     });
@@ -372,14 +434,23 @@ const AIPlanPage: React.FC = () => {
 
           {/* Export buttons */}
           <div className="border-t border-border/30 p-4 space-y-2">
-            <button className="w-full btn-primary-glow text-primary-foreground rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2">
+            <button
+              onClick={handleExportPDF}
+              className="w-full btn-primary-glow text-primary-foreground rounded-xl py-2.5 text-xs font-bold flex items-center justify-center gap-2"
+            >
               <FileDown className="w-3.5 h-3.5" /> Exportar PDF
             </button>
             <div className="flex gap-2">
-              <button className="flex-1 glass-card py-2 text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center justify-center gap-1.5 rounded-xl">
+              <button
+                onClick={handleExportWord}
+                className="flex-1 glass-card py-2 text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center justify-center gap-1.5 rounded-xl"
+              >
                 <FileText className="w-3.5 h-3.5" /> Word
               </button>
-              <button className="flex-1 glass-card py-2 text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center justify-center gap-1.5 rounded-xl">
+              <button
+                onClick={handleShare}
+                className="flex-1 glass-card py-2 text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-all duration-200 flex items-center justify-center gap-1.5 rounded-xl"
+              >
                 <Share2 className="w-3.5 h-3.5" /> Compartilhar
               </button>
             </div>
