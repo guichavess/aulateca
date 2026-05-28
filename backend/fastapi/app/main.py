@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -11,9 +12,16 @@ app = FastAPI(
     version="1.0.0",
 )
 
+_default_origins = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
+allowed_origins = [
+    o.strip()
+    for o in os.getenv("FRONTEND_URL", _default_origins).split(",")
+    if o.strip()
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

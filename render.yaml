@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: aulateca-nestjs
+    runtime: node
+    plan: free
+    rootDir: backend/nestjs
+    buildCommand: npm ci && npx prisma generate && npm run build
+    startCommand: node dist/main
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://aulateca.com.br,https://www.aulateca.com.br
+
+  - type: web
+    name: aulateca-fastapi
+    runtime: python
+    plan: free
+    rootDir: backend/fastapi
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: FRONTEND_URL
+        value: https://aulateca.com.br,https://www.aulateca.com.br
