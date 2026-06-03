@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { aiSuggestions, mockPlanHistory, categories } from '@/lib/data';
 import { AIPlanMessage, PlanHistory } from '@/lib/types';
 import { streamTecaChat } from '@/services/ai.service';
+import { mockConversations, type MockConversationKey, type MockMessage } from '@/lib/mockConversations';
 import ReactMarkdown from 'react-markdown';
 import {
   Send, Copy, FileDown, Pencil, Plus, Clock, Calendar, ChevronDown,
@@ -15,22 +16,29 @@ import tecaMascot from '@/assets/teca-mascot.png';
 const gradeOptions = ['1º ano', '2º ano', '3º ano', '4º ano', '5º ano', '6º ano', '7º ano', '8º ano', '9º ano'];
 const durationOptions = ['30 min', '45 min', '50 min', '60 min', '90 min'];
 
-const suggestionCards = [
-  { icon: Target, title: 'Plano por Objetivo', desc: 'Defina o objetivo de produção textual e a Teca monta o plano', color: 'from-[hsl(var(--brand-purple))] to-[hsl(var(--brand-lilac))]', prompt: aiSuggestions[0] },
-  { icon: BookOpen, title: 'Plano por Gênero', desc: 'Escolha um gênero textual e receba um plano completo', color: 'from-[hsl(var(--brand-teal))] to-[hsl(var(--brand-blue))]', prompt: aiSuggestions[1] },
-  { icon: Layers, title: 'Sequência Didática', desc: 'Sequências de produção de texto por etapas', color: 'from-[hsl(var(--brand-red))] to-[hsl(var(--brand-pink))]', prompt: aiSuggestions[2] },
-  { icon: Lightbulb, title: 'Projeto de Escrita', desc: 'Projetos de escrita criativa para sua turma', color: 'from-[hsl(var(--brand-yellow))] to-[hsl(var(--brand-red))]', prompt: aiSuggestions[3] },
+const suggestionCards: Array<{
+  icon: typeof Target;
+  title: string;
+  desc: string;
+  color: string;
+  prompt: string;
+  mockKey: MockConversationKey;
+}> = [
+  { icon: Target, title: 'Plano por Objetivo', desc: 'Defina o objetivo de produção textual e a Teca monta o plano', color: 'from-[hsl(var(--brand-purple))] to-[hsl(var(--brand-lilac))]', prompt: aiSuggestions[0], mockKey: 'objetivo' },
+  { icon: BookOpen, title: 'Plano por Gênero', desc: 'Escolha um gênero textual e receba um plano completo', color: 'from-[hsl(var(--brand-teal))] to-[hsl(var(--brand-blue))]', prompt: aiSuggestions[1], mockKey: 'genero' },
+  { icon: Layers, title: 'Sequência Didática', desc: 'Sequências de produção de texto por etapas', color: 'from-[hsl(var(--brand-red))] to-[hsl(var(--brand-pink))]', prompt: aiSuggestions[2], mockKey: 'sequencia' },
+  { icon: Lightbulb, title: 'Projeto de Escrita', desc: 'Projetos de escrita criativa para sua turma', color: 'from-[hsl(var(--brand-yellow))] to-[hsl(var(--brand-red))]', prompt: aiSuggestions[3], mockKey: 'projeto' },
 ];
 
 const planTabs = ['Visão Geral', 'Objetivos', 'Atividades', 'Recursos', 'Avaliação'];
 
 const getCategoryBadge = (title: string) => {
-  if (title.toLowerCase().includes('narrativa') || title.toLowerCase().includes('história') || title.toLowerCase().includes('conto')) return { label: 'Narrativa', color: '#FF6B6B' };
-  if (title.toLowerCase().includes('descritiv')) return { label: 'Descrição', color: '#4ECDC4' };
-  if (title.toLowerCase().includes('opinião') || title.toLowerCase().includes('argument')) return { label: 'Opinião', color: '#45B7D1' };
-  if (title.toLowerCase().includes('poema') || title.toLowerCase().includes('poesia')) return { label: 'Poesia', color: '#F9CA24' };
-  if (title.toLowerCase().includes('jornal') || title.toLowerCase().includes('informativ')) return { label: 'Informativo', color: '#A29BFE' };
-  return { label: 'Produção Textual', color: '#6C5CE7' };
+  const t = title.toLowerCase();
+  if (t.includes('interpretação') || t.includes('interpretacao') || t.includes('leitura')) return { label: 'Interpretação de Texto', color: '#4ECDC4' };
+  if (t.includes('lúdic') || t.includes('ludic') || t.includes('jogo') || t.includes('brincadeira')) return { label: 'Atividades Lúdicas', color: '#FD79A8' };
+  if (t.includes('sondagem') || t.includes('diagnóstic') || t.includes('diagnostic') || t.includes('avaliação')) return { label: 'Atividades de Sondagem', color: '#45B7D1' };
+  if (t.includes('comemorativ') || t.includes('festa') || t.includes('páscoa') || t.includes('natal') || t.includes('carnaval') || t.includes('junina')) return { label: 'Datas Comemorativas', color: '#F9CA24' };
+  return { label: 'Produção de Texto', color: '#6C5CE7' };
 };
 
 const AIPlanPage: React.FC = () => {
@@ -47,10 +55,83 @@ const AIPlanPage: React.FC = () => {
   const [showPanel, setShowPanel] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({ overview: true });
   const bottomRef = useRef<HTMLDivElement>(null);
+  const mockTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  const clearMockTimeouts = () => {
+    mockTimeoutsRef.current.forEach(clearTimeout);
+    mockTimeoutsRef.current = [];
+  };
+
+  useEffect(() => () => clearMockTimeouts(), []);
+
+  // Reproduz uma conversa pré-gravada (usada pelos suggestion cards no demo).
+  // Insere o "user" instantaneamente, mostra loading dots por ~1s e revela a
+  // resposta da Teca; repete o ciclo para cada par user→assistant.
+  const playMockConversation = (msgs: MockMessage[], titleForHistory: string) => {
+    clearMockTimeouts();
+    setMessages([]);
+    setShowPanel(false);
+    setLoading(false);
+
+    let cursor = 0;
+    msgs.forEach((msg, i) => {
+      if (msg.role === 'user') {
+        // pequena pausa antes do follow-up do usuário (depois da 1ª mensagem)
+        if (i > 0) cursor += 700;
+        const at = cursor;
+        mockTimeoutsRef.current.push(
+          setTimeout(() => {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `mock-${Date.now()}-${i}`,
+                role: 'user',
+                content: msg.content,
+                timestamp: new Date(),
+              },
+            ]);
+            setLoading(true);
+          }, at),
+        );
+        cursor += 250;
+      } else {
+        // tempo de "digitação" da Teca antes de aparecer a mensagem
+        cursor += 1200;
+        const at = cursor;
+        const isLast = i === msgs.length - 1;
+        mockTimeoutsRef.current.push(
+          setTimeout(() => {
+            setLoading(false);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `mock-${Date.now()}-${i}`,
+                role: 'assistant',
+                content: msg.content,
+                timestamp: new Date(),
+              },
+            ]);
+            if (isLast) {
+              setShowPanel(true);
+              setHistory((prev) => [
+                {
+                  id: Date.now().toString(),
+                  title: titleForHistory.slice(0, 40),
+                  date: new Date().toLocaleDateString('pt-BR'),
+                },
+                ...prev,
+              ]);
+            }
+          }, at),
+        );
+        cursor += 350;
+      }
+    });
+  };
 
   const hasAssistantMessage = messages.some(m => m.role === 'assistant');
 
@@ -168,7 +249,7 @@ const AIPlanPage: React.FC = () => {
         {/* New plan button */}
         <div className="p-4">
           <button
-            onClick={() => { setMessages([]); setShowPanel(false); }}
+            onClick={() => { clearMockTimeouts(); setMessages([]); setShowPanel(false); setLoading(false); }}
             className="w-full btn-primary-glow text-primary-foreground rounded-xl py-3 px-4 font-nunito font-bold text-sm flex items-center justify-center gap-2"
           >
             <Plus className="w-5 h-5" /> Novo Plano
@@ -279,7 +360,7 @@ const AIPlanPage: React.FC = () => {
                 {suggestionCards.map((card, i) => (
                   <button
                     key={i}
-                    onClick={() => sendMessage(card.prompt)}
+                    onClick={() => playMockConversation(mockConversations[card.mockKey], card.prompt)}
                     className="glass-card p-4 text-left group hover:shadow-lg transition-all duration-200"
                     style={{ animationDelay: `${i * 0.08}s`, borderTop: `3px solid ${['hsl(var(--brand-purple))', 'hsl(var(--brand-blue))', 'hsl(43, 96%, 52%)', 'hsl(var(--brand-pink))'][i]}` }}
                   >

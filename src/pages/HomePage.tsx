@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { Sparkles } from 'lucide-react';
 import { categories, resources as mockResources } from '@/lib/data';
 import { CategoryId, AgeRange, Resource } from '@/lib/types';
 import { useApp } from '@/lib/context';
 import { resourcesService } from '@/services/resources.service';
 import ResourceCard from '@/components/ResourceCard';
 import ResourceModal from '@/components/ResourceModal';
+import tecaIcon from '@/assets/teca-icon.png';
 
 const HomePage: React.FC = () => {
   const { userName } = useApp();
+  const navigate = useNavigate();
   const [selectedAge, setSelectedAge] = useState<AgeRange>('all');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId>('all');
   const [modalResource, setModalResource] = useState<Resource | null>(null);
@@ -42,32 +46,35 @@ const HomePage: React.FC = () => {
       )
     : remoteResources;
 
-  const stats = [
-    { icon: '📚', value: '2.400+', label: 'Recursos', bg: 'hsla(249, 76%, 64%, 0.07)', borderColor: 'hsl(262, 83%, 58%)' },
-    { icon: '👩‍🏫', value: '18.5k', label: 'Professores', bg: 'hsla(173, 58%, 44%, 0.07)', borderColor: 'hsl(217, 91%, 60%)' },
-    { icon: '⬇️', value: '145k', label: 'Downloads', bg: 'hsla(199, 65%, 48%, 0.07)', borderColor: 'hsl(160, 84%, 39%)' },
-    { icon: '⭐', value: '4.8★', label: 'Avaliação', bg: 'hsla(43, 96%, 52%, 0.07)', borderColor: 'hsl(38, 92%, 50%)' },
-  ];
+  const goToAI = () => navigate('/ai-plan');
 
   return (
     <div className="px-5 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       {/* Greeting */}
       <div className="animate-slide-up">
         <h1 className="font-fredoka text-2xl sm:text-3xl font-bold tracking-tight gradient-text mb-1">Olá, {userName || 'Professor(a)'}! 👋</h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">Encontre o recurso perfeito de produção de texto para sua aula de hoje.</p>
+        <p className="text-sm text-muted-foreground leading-relaxed">Comece pela IA ou explore os recursos selecionados abaixo.</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-        {stats.map((s) => (
-          <div key={s.label} className="stat-card" style={{ borderLeft: `4px solid ${s.borderColor}` }}>
-            <div className="stat-icon" style={{ background: s.bg }}>{s.icon}</div>
-            <div>
-              <div className="stat-value">{s.value}</div>
-              <div className="stat-label">{s.label}</div>
-            </div>
-          </div>
-        ))}
+      {/* CTA da IA */}
+      <div
+        className="flex flex-col items-center justify-center text-center py-10 animate-slide-up"
+        style={{ animationDelay: '0.05s' }}
+      >
+        <button
+          onClick={goToAI}
+          aria-label="Abrir Aulateca IA"
+          className="group w-40 h-40 sm:w-48 sm:h-48 bg-transparent hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center relative"
+        >
+          <img src={tecaIcon} alt="" className="w-36 h-36 sm:w-44 sm:h-44 object-contain drop-shadow-xl" />
+          <span className="absolute -bottom-1 right-1 w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+          </span>
+        </button>
+        <p className="mt-4 text-[11px] font-semibold uppercase tracking-wider text-primary/80 flex items-center gap-1.5">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          Clique para conversar com a IA Aulateca
+        </p>
       </div>
 
       {/* Filters */}

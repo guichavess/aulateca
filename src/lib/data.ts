@@ -1,38 +1,49 @@
 import { Category, Resource, CommunityPost, PlanHistory } from './types';
 
 export const categories: Category[] = [
-  { id: 'all', label: 'Todos', icon: '✦', color: 'brand-purple', count: 12 },
-  { id: 'narrative', label: 'Narrativa', icon: '📖', color: 'brand-red', count: 3 },
-  { id: 'descriptive', label: 'Descrição', icon: '🔍', color: 'brand-teal', count: 2 },
-  { id: 'opinion', label: 'Opinião', icon: '💬', color: 'brand-blue', count: 2 },
-  { id: 'poetry', label: 'Poesia', icon: '🎭', color: 'brand-yellow', count: 2 },
-  { id: 'informative', label: 'Informativo', icon: '📰', color: 'brand-lilac', count: 1 },
-  { id: 'games', label: 'Jogos', icon: '🎲', color: 'brand-pink', count: 2 },
+  { id: 'all', label: 'Todos', icon: '✦', color: 'brand-purple', count: 12, path: '/' },
+  { id: 'producao-texto', label: 'Produção de Texto', icon: '✍️', color: 'brand-purple', count: 5, path: '/categoria/producao-texto' },
+  { id: 'interpretacao-texto', label: 'Interpretação de Texto', icon: '📖', color: 'brand-teal', count: 3, path: '/categoria/interpretacao-texto' },
+  { id: 'ludica', label: 'Atividades Lúdicas', icon: '🎲', color: 'brand-pink', count: 3, path: '/categoria/ludica' },
+  { id: 'sondagem', label: 'Atividades de Sondagem', icon: '🔍', color: 'brand-blue', count: 1, path: '/categoria/sondagem' },
+  { id: 'datas-comemorativas', label: 'Datas Comemorativas', icon: '🎉', color: 'brand-yellow', count: 0, path: '/categoria/datas-comemorativas' },
 ];
 
 export const categoryColorMap: Record<string, string> = {
-  narrative: '#FF6B6B',
-  descriptive: '#4ECDC4',
-  opinion: '#45B7D1',
-  poetry: '#F9CA24',
-  informative: '#A29BFE',
-  games: '#FD79A8',
-  all: '#6C5CE7',
+  'producao-texto': '#6C5CE7',
+  'interpretacao-texto': '#4ECDC4',
+  'ludica': '#FD79A8',
+  'sondagem': '#45B7D1',
+  'datas-comemorativas': '#F9CA24',
+  'all': '#6C5CE7',
 };
 
+import fabricaTextos from '@/assets/catalog/fabrica-textos.png';
+import kitProducaoTexto from '@/assets/catalog/kit-producao-texto.png';
+import explorandoClasses from '@/assets/catalog/explorando-classes-gramaticais.png';
+import palavrasMagicas from '@/assets/catalog/palavras-magicas.png';
+import producaoDissertativa from '@/assets/catalog/producao-dissertativa.png';
+import oficinaOrtografica from '@/assets/catalog/oficina-ortografica.png';
+import roleReconte from '@/assets/catalog/role-reconte.png';
+import banquinhaLeitura from '@/assets/catalog/banquinha-leitura.png';
+import cineroteirista from '@/assets/catalog/cineroteirista.png';
+import festivalTextual from '@/assets/catalog/festival-textual.png';
+import stopOrtografia from '@/assets/catalog/stop-ortografia.png';
+import diarioAventuras from '@/assets/catalog/diario-aventuras.png';
+
 export const resources: Resource[] = [
-  { id: '1', title: 'Contando Histórias', description: 'Aprenda a criar narrativas criativas com começo, meio e fim usando elementos visuais e prompts de escrita.', category: 'narrative', type: 'video', ageRange: '6-8', duration: '15min', downloads: 2340, rating: 4.9, isNew: true, author: 'Profa. Ana Lima' },
-  { id: '2', title: 'Meu Primeiro Texto', description: 'Material completo para introdução à produção textual com atividades de escrita guiada para os anos iniciais.', category: 'narrative', type: 'pdf', ageRange: '6-8', duration: '20min', downloads: 5120, rating: 4.8, author: 'Profa. Maria Santos' },
-  { id: '3', title: 'Descrevendo o Mundo', description: 'Atividades para desenvolver textos descritivos usando os cinco sentidos e observação do ambiente.', category: 'descriptive', type: 'video', ageRange: '9-11', duration: '30min', downloads: 1890, rating: 4.7, isNew: true, author: 'Prof. Carlos Mendes' },
-  { id: '4', title: 'Poesia na Sala de Aula', description: 'Oficina de criação poética com rimas, versos e estrofes para despertar a sensibilidade literária.', category: 'poetry', type: 'pdf', ageRange: '9-11', duration: '25min', downloads: 3200, rating: 4.9, author: 'Profa. Julia Costa' },
-  { id: '5', title: 'Carta do Leitor', description: 'Material sobre produção de textos de opinião com foco em argumentação e posicionamento crítico.', category: 'opinion', type: 'pdf', ageRange: '12-14', duration: '35min', downloads: 1450, rating: 4.6, author: 'Prof. Roberto Silva' },
-  { id: '6', title: 'Caça-Palavras Textual', description: 'Jogos de caça-palavras temáticos para desenvolver vocabulário e ortografia aplicados à produção de texto.', category: 'games', type: 'pdf', ageRange: '6-8', duration: '10min', downloads: 4500, rating: 4.8, isNew: true, author: 'Profa. Fernanda Oliveira' },
-  { id: '7', title: 'Fábulas e Recontos', description: 'Videoaulas sobre reconto de fábulas clássicas e criação de versões autorais pelos alunos.', category: 'narrative', type: 'video', ageRange: '6-8', duration: '18min', downloads: 2100, rating: 4.7, author: 'Profa. Ana Lima' },
-  { id: '8', title: 'Roda de Escrita', description: 'Guia completo para organizar rodas de escrita colaborativa e revisão de textos entre pares.', category: 'descriptive', type: 'pdf', ageRange: '9-11', duration: '40min', downloads: 3800, rating: 4.9, isNew: true, author: 'Profa. Maria Santos' },
-  { id: '9', title: 'Reportagem Escolar', description: 'Projeto de criação de jornal escolar com textos informativos e jornalísticos produzidos pelos alunos.', category: 'informative', type: 'video', ageRange: '12-14', duration: '25min', downloads: 2750, rating: 4.8, author: 'Prof. Carlos Mendes' },
-  { id: '10', title: 'Teatro de Palavras', description: 'Atividade de criação de roteiros teatrais e diálogos para estimular a escrita criativa e a oralidade.', category: 'poetry', type: 'video', ageRange: '9-11', duration: '20min', downloads: 1980, rating: 4.6, isNew: true, author: 'Profa. Julia Costa' },
-  { id: '11', title: 'Quiz Ortográfico', description: 'Jogo interativo de ortografia e gramática aplicada à produção textual.', category: 'games', type: 'pdf', ageRange: '12-14', duration: '15min', downloads: 3100, rating: 4.7, author: 'Prof. Roberto Silva' },
-  { id: '12', title: 'Diário de Bordo', description: 'Aprenda a escrever diários e relatos pessoais com técnicas de narrativa em primeira pessoa.', category: 'narrative', type: 'video', ageRange: '9-11', duration: '22min', downloads: 4200, rating: 4.9, isNew: true, author: 'Profa. Ana Lima' },
+  { id: '1', title: 'Contando Histórias', description: 'Aprenda a criar narrativas criativas com começo, meio e fim usando elementos visuais e prompts de escrita.', category: 'producao-texto', type: 'video', ageRange: '6-8', duration: '15min', downloads: 2340, rating: 4.9, isNew: true, author: 'Profa. Ana Lima', imageUrl: fabricaTextos },
+  { id: '2', title: 'Meu Primeiro Texto', description: 'Material completo para introdução à produção textual com atividades de escrita guiada para os anos iniciais.', category: 'producao-texto', type: 'pdf', ageRange: '6-8', duration: '20min', downloads: 5120, rating: 4.8, author: 'Profa. Maria Santos', imageUrl: kitProducaoTexto },
+  { id: '3', title: 'Descrevendo o Mundo', description: 'Atividades para desenvolver textos descritivos usando os cinco sentidos e observação do ambiente.', category: 'interpretacao-texto', type: 'video', ageRange: '9-11', duration: '30min', downloads: 1890, rating: 4.7, isNew: true, author: 'Prof. Carlos Mendes', imageUrl: explorandoClasses },
+  { id: '4', title: 'Poesia na Sala de Aula', description: 'Oficina de criação poética com rimas, versos e estrofes para despertar a sensibilidade literária.', category: 'sondagem', type: 'pdf', ageRange: '9-11', duration: '25min', downloads: 3200, rating: 4.9, author: 'Profa. Julia Costa', imageUrl: palavrasMagicas },
+  { id: '5', title: 'Carta do Leitor', description: 'Material sobre produção de textos de opinião com foco em argumentação e posicionamento crítico.', category: 'producao-texto', type: 'pdf', ageRange: '12-14', duration: '35min', downloads: 1450, rating: 4.6, author: 'Prof. Roberto Silva', imageUrl: producaoDissertativa },
+  { id: '6', title: 'Caça-Palavras Textual', description: 'Jogos de caça-palavras temáticos para desenvolver vocabulário e ortografia aplicados à produção de texto.', category: 'ludica', type: 'pdf', ageRange: '6-8', duration: '10min', downloads: 4500, rating: 4.8, isNew: true, author: 'Profa. Fernanda Oliveira', imageUrl: oficinaOrtografica },
+  { id: '7', title: 'Fábulas e Recontos', description: 'Videoaulas sobre reconto de fábulas clássicas e criação de versões autorais pelos alunos.', category: 'producao-texto', type: 'video', ageRange: '6-8', duration: '18min', downloads: 2100, rating: 4.7, author: 'Profa. Ana Lima', imageUrl: roleReconte },
+  { id: '8', title: 'Roda de Escrita', description: 'Guia completo para organizar rodas de escrita colaborativa e revisão de textos entre pares.', category: 'interpretacao-texto', type: 'pdf', ageRange: '9-11', duration: '40min', downloads: 3800, rating: 4.9, isNew: true, author: 'Profa. Maria Santos', imageUrl: banquinhaLeitura },
+  { id: '9', title: 'Reportagem Escolar', description: 'Projeto de criação de jornal escolar com textos informativos e jornalísticos produzidos pelos alunos.', category: 'interpretacao-texto', type: 'video', ageRange: '12-14', duration: '25min', downloads: 2750, rating: 4.8, author: 'Prof. Carlos Mendes', imageUrl: cineroteirista },
+  { id: '10', title: 'Teatro de Palavras', description: 'Atividade de criação de roteiros teatrais e diálogos para estimular a escrita criativa e a oralidade.', category: 'ludica', type: 'video', ageRange: '9-11', duration: '20min', downloads: 1980, rating: 4.6, isNew: true, author: 'Profa. Julia Costa', imageUrl: festivalTextual },
+  { id: '11', title: 'Quiz Ortográfico', description: 'Jogo interativo de ortografia e gramática aplicada à produção textual.', category: 'ludica', type: 'pdf', ageRange: '12-14', duration: '15min', downloads: 3100, rating: 4.7, author: 'Prof. Roberto Silva', imageUrl: stopOrtografia },
+  { id: '12', title: 'Diário de Bordo', description: 'Aprenda a escrever diários e relatos pessoais com técnicas de narrativa em primeira pessoa.', category: 'producao-texto', type: 'video', ageRange: '9-11', duration: '22min', downloads: 4200, rating: 4.9, isNew: true, author: 'Profa. Ana Lima', imageUrl: diarioAventuras },
 ];
 
 export const communityPosts: CommunityPost[] = [

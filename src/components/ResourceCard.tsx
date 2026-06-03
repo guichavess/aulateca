@@ -27,10 +27,14 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, index, onClick })
     >
       {/* Color top */}
       <div
-        className="h-[88px] relative flex items-center justify-center"
-        style={{ background: `linear-gradient(150deg, ${color}22, ${color}0A)` }}
+        className="h-[140px] relative flex items-center justify-center overflow-hidden"
+        style={{ background: resource.imageUrl ? 'transparent' : `linear-gradient(150deg, ${color}22, ${color}0A)` }}
       >
-        <span className="text-[36px] group-hover:scale-110 transition-transform duration-300 ease-out">{categoryIcon[resource.category]}</span>
+        {resource.imageUrl ? (
+          <img src={resource.imageUrl} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out" />
+        ) : (
+          <span className="text-[36px] group-hover:scale-110 transition-transform duration-300 ease-out">{categoryIcon[resource.category]}</span>
+        )}
         {resource.isNew && (
           <span className="absolute top-2.5 left-2.5 type-badge shadow-sm bg-emerald-500 text-white">
             Novo

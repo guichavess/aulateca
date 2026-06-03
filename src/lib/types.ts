@@ -1,4 +1,10 @@
-export type CategoryId = 'all' | 'narrative' | 'descriptive' | 'opinion' | 'poetry' | 'informative' | 'games';
+export type CategoryId =
+  | 'all'
+  | 'producao-texto'
+  | 'interpretacao-texto'
+  | 'ludica'
+  | 'sondagem'
+  | 'datas-comemorativas';
 export type AgeRange = 'all' | '6-8' | '9-11' | '12-14';
 export type ResourceType = 'video' | 'pdf';
 
@@ -8,6 +14,7 @@ export interface Category {
   icon: string;
   color: string;
   count: number;
+  path?: string;
 }
 
 export interface Resource {
@@ -23,6 +30,7 @@ export interface Resource {
   isNew?: boolean;
   author: string;
   fileUrl?: string | null;
+  imageUrl?: string;
 }
 
 export interface CommunityPost {

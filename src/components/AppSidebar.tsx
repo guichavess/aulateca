@@ -1,8 +1,9 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Compass, Heart, MessageCircle, Gamepad2, FileEdit, BookOpen } from 'lucide-react';
+import { Home, Compass, Heart, MessageCircle, BookOpen, PenLine, BookOpenCheck, Gamepad2, Search, CalendarHeart } from 'lucide-react';
 import { toast } from 'sonner';
 import { categories } from '@/lib/data';
+import { CategoryId } from '@/lib/types';
 import { useApp } from '@/lib/context';
 import mascot from '@/assets/mascot.png';
 
@@ -15,16 +16,23 @@ const navItems = [
   { path: '/', label: 'Início', icon: Home },
   { path: '/explore', label: 'Explorar', icon: Compass },
   { path: '/favorites', label: 'Favoritos', icon: Heart, badge: true },
-  { path: '/ludic-activities', label: 'Atividades Lúdicas', icon: Gamepad2 },
-  { path: '/other-activities', label: 'Outras Atividades', icon: FileEdit },
   { path: '/catalog', label: 'Catálogo', icon: BookOpen },
   { path: '/community', label: 'Comunidade', icon: MessageCircle },
 ];
 
+const categoryIconMap: Record<Exclude<CategoryId, 'all'>, React.ComponentType<{ className?: string }>> = {
+  'producao-texto': PenLine,
+  'interpretacao-texto': BookOpenCheck,
+  'ludica': Gamepad2,
+  'sondagem': Search,
+  'datas-comemorativas': CalendarHeart,
+};
+
 const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed }) => {
   const location = useLocation();
   const { favorites } = useApp();
-  const showCategories = ['/', '/explore', '/favorites'].includes(location.pathname);
+
+  const categoryNavItems = categories.filter((c) => c.id !== 'all' && c.path);
 
   return (
     <aside
@@ -64,19 +72,28 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed }) => {
           );
         })}
 
-        {/* Categories */}
-        {showCategories && !collapsed && (
-          <div className="mt-5 pt-4 border-t border-border/30">
-            <p className="section-label px-3 mb-2">Categorias</p>
-            {categories.map((cat) => (
-              <div key={cat.id} className="flex items-center gap-2.5 px-3 py-1.5 text-[13px] text-muted-foreground rounded-lg hover:bg-secondary/60 hover:text-foreground transition-all duration-200 cursor-pointer">
-                <span className="text-sm">{cat.icon}</span>
-                <span className="flex-1 truncate">{cat.label}</span>
-                <span className="text-[10px] text-muted-foreground/50 tabular-nums">{cat.count}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Categorias */}
+        <div className="mt-5 pt-4 border-t border-border/30 space-y-0.5">
+          {!collapsed && <p className="section-label px-3 mb-2">Categorias</p>}
+          {categoryNavItems.map((cat) => {
+            const Icon = categoryIconMap[cat.id as Exclude<CategoryId, 'all'>];
+            const active = location.pathname === cat.path;
+            return (
+              <NavLink
+                key={cat.id}
+                to={cat.path!}
+                className={`flex items-center gap-3 px-3 py-2 text-[13px] font-medium transition-all duration-200 ${
+                  active
+                    ? 'border-l-4 border-primary bg-primary/8 text-primary font-semibold rounded-none rounded-r-lg'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/70 rounded-xl'
+                } ${collapsed ? 'justify-center px-2' : ''}`}
+              >
+                {Icon && <Icon className="w-[18px] h-[18px] shrink-0" />}
+                {!collapsed && <span className="flex-1 truncate">{cat.label}</span>}
+              </NavLink>
+            );
+          })}
+        </div>
       </nav>
 
       {/* PRO Card */}

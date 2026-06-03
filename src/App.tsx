@@ -10,8 +10,7 @@ import ExplorePage from "./pages/ExplorePage";
 import FavoritesPage from "./pages/FavoritesPage";
 import AIPlanPage from "./pages/AIPlanPage";
 import CommunityPage from "./pages/CommunityPage";
-import LudicActivitiesPage from "./pages/LudicActivitiesPage";
-import OtherActivitiesPage from "./pages/OtherActivitiesPage";
+import CategoryPage from "./pages/CategoryPage";
 import CatalogPage from "./pages/CatalogPage";
 import CreatePage from "./pages/CreatePage";
 import ProfilePage from "./pages/ProfilePage";
@@ -38,8 +37,7 @@ const AppRoutes = () => {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/ai-plan" element={<AIPlanPage />} />
             <Route path="/community" element={<CommunityPage />} />
-            <Route path="/ludic-activities" element={<LudicActivitiesPage />} />
-            <Route path="/other-activities" element={<OtherActivitiesPage />} />
+            <Route path="/categoria/:slug" element={<CategoryPage />} />
             <Route path="/catalog" element={<CatalogPage />} />
             <Route path="/create" element={<CreatePage />} />
             <Route path="/profile" element={<ProfilePage />} />
