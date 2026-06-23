@@ -31,7 +31,7 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, index, onClick })
         style={{ background: resource.imageUrl ? 'transparent' : `linear-gradient(150deg, ${color}22, ${color}0A)` }}
       >
         {resource.imageUrl ? (
-          <img src={resource.imageUrl} alt={resource.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out" />
+          <img src={resource.imageUrl} alt={resource.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out" />
         ) : (
           <span className="text-[36px] group-hover:scale-110 transition-transform duration-300 ease-out">{categoryIcon[resource.category]}</span>
         )}

@@ -1,53 +1,13 @@
 // ══════════════════════════════════════════════════════════════════════════════
 // Catalog Data — Structured by Tabs > Subcategories > Items
 // ══════════════════════════════════════════════════════════════════════════════
+//
+// PERF: As imagens NÃO são importadas como módulos. Ficam em /public/catalog/
+// e são servidas como arquivos estáticos com loading="lazy" no <img>.
+// Isso evita que ~86MB de PNG entrem no bundle JS principal.
+// ══════════════════════════════════════════════════════════════════════════════
 
-import imgAventurasOrtograficas from '@/assets/catalog/aventuras-ortograficas.png';
-import imgDesafioSilabasTonicas from '@/assets/catalog/desafio-silabas-tonicas.png';
-import imgMissaoPortugues from '@/assets/catalog/missao-portugues-espaco.png';
-import imgLeiturometro from '@/assets/catalog/leiturometro.png';
-import imgDiarioAventuras from '@/assets/catalog/diario-aventuras.png';
-import imgAeroportoLeitura from '@/assets/catalog/aeroporto-leitura.png';
-import imgBanquinhaLeitura from '@/assets/catalog/banquinha-leitura.png';
-import imgFabricaTextos from '@/assets/catalog/fabrica-textos.png';
-import imgFestivalTextual from '@/assets/catalog/festival-textual.png';
-import imgCineroteirista from '@/assets/catalog/cineroteirista.png';
-import imgConectivos from '@/assets/catalog/conectivos-producao-texto.png';
-import imgDobraduraInterpretacao from '@/assets/catalog/dobradura-interpretacao-producao.png';
-import imgSoletrandoOrtografia from '@/assets/catalog/soletrando-ortografia.png';
-import imgOficinaOrtografica from '@/assets/catalog/oficina-ortografica.png';
-import imgTrilhaVerbos from '@/assets/catalog/trilha-verbos.png';
-import imgClassificacaoPalavras from '@/assets/catalog/classificacao-palavras.png';
-import imgExplorandoSilabas from '@/assets/catalog/explorando-silabas.png';
-import imgSujeitoPredicado from '@/assets/catalog/sujeito-predicado.png';
-import imgPronomes from '@/assets/catalog/pronomes.png';
-import imgPorques from '@/assets/catalog/porques-lingua-portuguesa.png';
-import imgSinaisPontuacao from '@/assets/catalog/sinais-pontuacao.png';
-import imgSinaisPontuacao2 from '@/assets/catalog/sinais-pontuacao-2.png';
-import imgDitadoDivertido from '@/assets/catalog/ditado-divertido.png';
-import imgGenerosTextuais from '@/assets/catalog/generos-textuais.png';
-import imgSoletrandoCoelho from '@/assets/catalog/soletrando-coelho.png';
-import imgBloquinhoCarnaval from '@/assets/catalog/bloquinho-interpretacao-carnaval.png';
-import imgStopInterpretacao from '@/assets/catalog/stop-interpretacao.png';
-import imgTermineiEAgora from '@/assets/catalog/terminei-e-agora.png';
-import imgKitJogosPortugues from '@/assets/catalog/kit-jogos-portugues.png';
-import imgJogoCombinacoes from '@/assets/catalog/jogo-combinacoes.png';
-import imgPalavrasMagicas from '@/assets/catalog/palavras-magicas.png';
-import imgBingoNome from '@/assets/catalog/bingo-nome.png';
-import imgBingoAssinaturas from '@/assets/catalog/bingo-assinaturas.png';
-import imgAtividadesDinamicas from '@/assets/catalog/atividades-dinamicas.png';
-import imgCertificadoExplorador from '@/assets/catalog/certificado-explorador.png';
-import imgMaletaLiteraria from '@/assets/catalog/maleta-literaria.png';
-import imgRoleReconte from '@/assets/catalog/role-reconte.png';
-import imgBilheteAgenda from '@/assets/catalog/bilhete-agenda.png';
-import imgGuiaJornada from '@/assets/catalog/guia-jornada.png';
-import imgMelhorLivro from '@/assets/catalog/melhor-livro.png';
-import imgRelatorioLeitura from '@/assets/catalog/relatorio-leitura.png';
-import imgPassaportePremium from '@/assets/catalog/passaporte-premium.png';
-import imgProducaoDissertativa from '@/assets/catalog/producao-dissertativa.png';
-import imgMarcadorParagrafo from '@/assets/catalog/marcador-paragrafo.png';
-import imgKitProducaoTexto from '@/assets/catalog/kit-producao-texto.png';
-import imgKitLapisProducao from '@/assets/catalog/kit-lapis-producao.png';
+const img = (name: string) => `/catalog/${name}.png`;
 
 export interface CatalogItem {
   id: string;
@@ -92,15 +52,15 @@ const ludicTab: CatalogTab = {
       icon: '🎲',
       color: 'hsl(340, 82%, 65%)',
       items: [
-        { id: uid(), title: 'Kit Jogos Português', image: imgKitJogosPortugues },
-        { id: uid(), title: 'Jogo das Combinações', image: imgJogoCombinacoes },
-        { id: uid(), title: 'Jogo Aventuras Ortográficas', image: imgAventurasOrtograficas },
-        { id: uid(), title: 'Desafio das Sílabas Tônicas', image: imgDesafioSilabasTonicas },
-        { id: uid(), title: 'Missão Português no Espaço', image: imgMissaoPortugues },
-        { id: uid(), title: 'Palavras Mágicas', image: imgPalavrasMagicas },
-        { id: uid(), title: 'Bingo do Nome', image: imgBingoNome },
-        { id: uid(), title: 'Bingo das Assinaturas', image: imgBingoAssinaturas },
-        { id: uid(), title: '19 Atividades Dinâmicas (Gincana da Música e Continue o Desenho)', image: imgAtividadesDinamicas },
+        { id: uid(), title: 'Kit Jogos Português', image: img('kit-jogos-portugues') },
+        { id: uid(), title: 'Jogo das Combinações', image: img('jogo-combinacoes') },
+        { id: uid(), title: 'Jogo Aventuras Ortográficas', image: img('aventuras-ortograficas') },
+        { id: uid(), title: 'Desafio das Sílabas Tônicas', image: img('desafio-silabas-tonicas') },
+        { id: uid(), title: 'Missão Português no Espaço', image: img('missao-portugues-espaco') },
+        { id: uid(), title: 'Palavras Mágicas', image: img('palavras-magicas') },
+        { id: uid(), title: 'Bingo do Nome', image: img('bingo-nome') },
+        { id: uid(), title: 'Bingo das Assinaturas', image: img('bingo-assinaturas') },
+        { id: uid(), title: '19 Atividades Dinâmicas (Gincana da Música e Continue o Desenho)', image: img('atividades-dinamicas') },
       ],
     },
     {
@@ -109,18 +69,18 @@ const ludicTab: CatalogTab = {
       icon: '📖',
       color: 'hsl(199, 65%, 48%)',
       items: [
-        { id: uid(), title: 'Passaporte da Leitura', image: imgLeiturometro },
-        { id: uid(), title: 'Certificado do Explorador Literário', image: imgCertificadoExplorador },
-        { id: uid(), title: 'Maleta Literária', image: imgMaletaLiteraria },
-        { id: uid(), title: 'Role e Reconte', image: imgRoleReconte },
-        { id: uid(), title: 'Atividade de Leitura e Visualização', image: imgAeroportoLeitura },
-        { id: uid(), title: 'Hora da História', image: imgBanquinhaLeitura },
-        { id: uid(), title: 'Diário de Aventuras', image: imgDiarioAventuras },
-        { id: uid(), title: 'Bilhete para Agenda sobre Leitura do Livro', image: imgBilheteAgenda },
-        { id: uid(), title: 'Guia da Jornada Textual e Literária', image: imgGuiaJornada },
-        { id: uid(), title: 'O Melhor Livro (Painel + Atividades Google)', image: imgMelhorLivro },
-        { id: uid(), title: 'Kit Relatório de Leitura', image: imgRelatorioLeitura },
-        { id: uid(), title: 'Kit Passaporte da Leitura (Versão Premium)', image: imgPassaportePremium },
+        { id: uid(), title: 'Passaporte da Leitura', image: img('leiturometro') },
+        { id: uid(), title: 'Certificado do Explorador Literário', image: img('certificado-explorador') },
+        { id: uid(), title: 'Maleta Literária', image: img('maleta-literaria') },
+        { id: uid(), title: 'Role e Reconte', image: img('role-reconte') },
+        { id: uid(), title: 'Atividade de Leitura e Visualização', image: img('aeroporto-leitura') },
+        { id: uid(), title: 'Hora da História', image: img('banquinha-leitura') },
+        { id: uid(), title: 'Diário de Aventuras', image: img('diario-aventuras') },
+        { id: uid(), title: 'Bilhete para Agenda sobre Leitura do Livro', image: img('bilhete-agenda') },
+        { id: uid(), title: 'Guia da Jornada Textual e Literária', image: img('guia-jornada') },
+        { id: uid(), title: 'O Melhor Livro (Painel + Atividades Google)', image: img('melhor-livro') },
+        { id: uid(), title: 'Kit Relatório de Leitura', image: img('relatorio-leitura') },
+        { id: uid(), title: 'Kit Passaporte da Leitura (Versão Premium)', image: img('passaporte-premium') },
       ],
     },
   ],
@@ -143,15 +103,15 @@ const portugueseTab: CatalogTab = {
       icon: '📝',
       color: 'hsl(249, 76%, 64%)',
       items: [
-        { id: uid(), title: 'Fábrica de Textos', image: imgFabricaTextos },
-        { id: uid(), title: 'Festival Textual', image: imgFestivalTextual },
-        { id: uid(), title: 'Cineroteirista – Produção Textual', image: imgCineroteirista },
-        { id: uid(), title: 'Conectivos para Melhorar a Produção de Texto', image: imgConectivos },
-        { id: uid(), title: 'Dobradura da Interpretação e Produção Textual', image: imgDobraduraInterpretacao },
-        { id: uid(), title: 'Produção Textual Dissertativa', image: imgProducaoDissertativa },
-        { id: uid(), title: 'Marcador de Parágrafo e Dicas de Produção', image: imgMarcadorParagrafo },
-        { id: uid(), title: 'Kit Produção de Texto (Recursos Completos)', image: imgKitProducaoTexto },
-        { id: uid(), title: 'Kit Lápis da Produção Textual', image: imgKitLapisProducao },
+        { id: uid(), title: 'Fábrica de Textos', image: img('fabrica-textos') },
+        { id: uid(), title: 'Festival Textual', image: img('festival-textual') },
+        { id: uid(), title: 'Cineroteirista – Produção Textual', image: img('cineroteirista') },
+        { id: uid(), title: 'Conectivos para Melhorar a Produção de Texto', image: img('conectivos-producao-texto') },
+        { id: uid(), title: 'Dobradura da Interpretação e Produção Textual', image: img('dobradura-interpretacao-producao') },
+        { id: uid(), title: 'Produção Textual Dissertativa', image: img('producao-dissertativa') },
+        { id: uid(), title: 'Marcador de Parágrafo e Dicas de Produção', image: img('marcador-paragrafo') },
+        { id: uid(), title: 'Kit Produção de Texto (Recursos Completos)', image: img('kit-producao-texto') },
+        { id: uid(), title: 'Kit Lápis da Produção Textual', image: img('kit-lapis-producao') },
         { id: uid(), title: 'Literatura de Cordel' },
       ],
     },
@@ -161,18 +121,18 @@ const portugueseTab: CatalogTab = {
       icon: '🔤',
       color: 'hsl(173, 58%, 44%)',
       items: [
-        { id: uid(), title: 'Soletrando – Ortografia (1º ao 5º ano)', image: imgSoletrandoOrtografia },
-        { id: uid(), title: 'Oficina Ortográfica', image: imgOficinaOrtografica },
-        { id: uid(), title: 'Trilha dos Verbos', image: imgTrilhaVerbos },
-        { id: uid(), title: 'Classificação das Palavras (Gramática EF)', image: imgClassificacaoPalavras },
-        { id: uid(), title: 'Explorando as Sílabas (Classificação e Separação)', image: imgExplorandoSilabas },
-        { id: uid(), title: 'Atividade Sujeito e Predicado', image: imgSujeitoPredicado },
+        { id: uid(), title: 'Soletrando – Ortografia (1º ao 5º ano)', image: img('soletrando-ortografia') },
+        { id: uid(), title: 'Oficina Ortográfica', image: img('oficina-ortografica') },
+        { id: uid(), title: 'Trilha dos Verbos', image: img('trilha-verbos') },
+        { id: uid(), title: 'Classificação das Palavras (Gramática EF)', image: img('classificacao-palavras') },
+        { id: uid(), title: 'Explorando as Sílabas (Classificação e Separação)', image: img('explorando-silabas') },
+        { id: uid(), title: 'Atividade Sujeito e Predicado', image: img('sujeito-predicado') },
         { id: uid(), title: 'Uso da Vírgula' },
-        { id: uid(), title: 'Pronomes', image: imgPronomes },
-        { id: uid(), title: 'Painel + Atividade dos Porquês', image: imgPorques },
-        { id: uid(), title: 'Sinais de Pontuação (Exclamação, Interrogação, Ponto-final e Vírgula)', image: imgSinaisPontuacao },
-        { id: uid(), title: 'Sinais de Pontuação (Ponto e vírgula, Reticências, Travessão e Dois-pontos)', image: imgSinaisPontuacao2 },
-        { id: uid(), title: 'Ditado dos Sinônimos e Antônimos', image: imgDitadoDivertido },
+        { id: uid(), title: 'Pronomes', image: img('pronomes') },
+        { id: uid(), title: 'Painel + Atividade dos Porquês', image: img('porques-lingua-portuguesa') },
+        { id: uid(), title: 'Sinais de Pontuação (Exclamação, Interrogação, Ponto-final e Vírgula)', image: img('sinais-pontuacao') },
+        { id: uid(), title: 'Sinais de Pontuação (Ponto e vírgula, Reticências, Travessão e Dois-pontos)', image: img('sinais-pontuacao-2') },
+        { id: uid(), title: 'Ditado dos Sinônimos e Antônimos', image: img('ditado-divertido') },
         { id: uid(), title: 'Kit Ortografia' },
         { id: uid(), title: 'Kit Gramática Interativa' },
         { id: uid(), title: 'Kit Gramática – Sílabas Tônicas e Outros' },
@@ -186,11 +146,11 @@ const portugueseTab: CatalogTab = {
       icon: '📚',
       color: 'hsl(43, 96%, 52%)',
       items: [
-        { id: uid(), title: 'Gêneros Textuais - 1º Ano', image: imgGenerosTextuais },
-        { id: uid(), title: 'Gêneros Textuais - 2º Ano', image: imgGenerosTextuais },
-        { id: uid(), title: 'Gêneros Textuais - 3º Ano', image: imgGenerosTextuais },
-        { id: uid(), title: 'Gêneros Textuais - 4º Ano', image: imgGenerosTextuais },
-        { id: uid(), title: 'Gêneros Textuais - 5º Ano', image: imgGenerosTextuais },
+        { id: uid(), title: 'Gêneros Textuais - 1º Ano', image: img('generos-textuais') },
+        { id: uid(), title: 'Gêneros Textuais - 2º Ano', image: img('generos-textuais') },
+        { id: uid(), title: 'Gêneros Textuais - 3º Ano', image: img('generos-textuais') },
+        { id: uid(), title: 'Gêneros Textuais - 4º Ano', image: img('generos-textuais') },
+        { id: uid(), title: 'Gêneros Textuais - 5º Ano', image: img('generos-textuais') },
       ],
     },
   ],
@@ -261,7 +221,7 @@ const rotinaTab: CatalogTab = {
         { id: uid(), title: 'Saudações Boas-Vindas' },
         { id: uid(), title: 'Relógio de Parede Educativo' },
         { id: uid(), title: 'Kit Bilhetes Úteis da Rotina Escolar' },
-        { id: uid(), title: 'Terminei e Agora? – Fichas de Missões', image: imgTermineiEAgora },
+        { id: uid(), title: 'Terminei e Agora? – Fichas de Missões', image: img('terminei-e-agora') },
         { id: uid(), title: 'Incentive o Uso da Borracha – Borracha, pra quê?' },
         { id: uid(), title: 'Aviso de Porta' },
         { id: uid(), title: 'Pauta Reunião Escolar' },
@@ -288,9 +248,9 @@ const rotinaTab: CatalogTab = {
       icon: '🎉',
       color: 'hsl(340, 82%, 65%)',
       items: [
-        { id: uid(), title: 'Páscoa: Kit Páscoa, Soletrando com o Coelho, Dobradura Caleidoscópio, Lembrancinha Cenoura', image: imgSoletrandoCoelho },
-        { id: uid(), title: 'Carnaval: Kit Carnaval, Festa da Interpretação (Bloquinho de Carnaval)', image: imgBloquinhoCarnaval },
-        { id: uid(), title: 'Festas Juninas: Painel Colorido, Painel Cordel (P&B), Stop da Interpretação Festa Junina', image: imgStopInterpretacao },
+        { id: uid(), title: 'Páscoa: Kit Páscoa, Soletrando com o Coelho, Dobradura Caleidoscópio, Lembrancinha Cenoura', image: img('soletrando-coelho') },
+        { id: uid(), title: 'Carnaval: Kit Carnaval, Festa da Interpretação (Bloquinho de Carnaval)', image: img('bloquinho-interpretacao-carnaval') },
+        { id: uid(), title: 'Festas Juninas: Painel Colorido, Painel Cordel (P&B), Stop da Interpretação Festa Junina', image: img('stop-interpretacao') },
         { id: uid(), title: 'Folclore: Stop do Folclore, Adivinhe as Lendas, Sequência Didática Saci Pererê' },
         { id: uid(), title: 'Datas Cívicas: Dia da Consciência Negra, Acróstico da Bandeira, Livreto Independência do Brasil, Kit Proclamação da República e Dia da Bandeira' },
         { id: uid(), title: 'Família e Datas Especiais: Dia das Mães (Lembrancinha Flor, Mãe Maravilhosa e Minilivro), Dia dos Pais (Decoração de Porta e Carteira), Dia da Mulher (Retrato e Kit), Dia dos Povos Indígenas (Autorretrato com Cocar)' },

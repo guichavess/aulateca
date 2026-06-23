@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Bell, Menu, Search, X, Compass, BookOpen, MessageCircle, Heart, PenLine, BookOpenCheck, Gamepad2, CalendarHeart } from 'lucide-react';
+import { Bell, Menu, Search, X, Compass, BookOpen, MessageCircle, Heart, PenLine, BookOpenCheck, Gamepad2, CalendarHeart, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import { useApp } from '@/lib/context';
 import mascot from '@/assets/mascot.png';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 interface AppHeaderProps {
   onToggleSidebar: () => void;
@@ -24,8 +24,10 @@ const mobileMenuItems = [
 ];
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
-  const { logout, userName } = useApp();
+  const { logout, userName, user } = useApp();
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isAdmin = user?.role === 'ADMIN';
 
   const initials = userName
     ? userName.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase()
@@ -135,6 +137,16 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
       </div>
 
       <div className="flex items-center gap-1.5">
+        {isAdmin && (
+          <button
+            onClick={() => navigate('/admin')}
+            title="Painel administrativo"
+            className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:bg-primary/10 rounded-lg px-2.5 py-1.5 transition-all duration-200"
+          >
+            <Shield className="w-[14px] h-[14px]" />
+            Admin
+          </button>
+        )}
         <button
           onClick={() => toast.info('Sem notificações novas')}
           className="relative text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg p-2 transition-all duration-200"
