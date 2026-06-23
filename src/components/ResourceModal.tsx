@@ -72,7 +72,7 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ resource, onClose }) => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold text-foreground truncate">{resource.author}</div>
-              <div className="text-[11px] text-muted-foreground">⭐ {resource.rating} • {resource.downloads.toLocaleString()} downloads</div>
+              <div className="text-[11px] text-muted-foreground"><span className="text-amber-500">⭐ {resource.rating}</span> • {resource.downloads.toLocaleString()} downloads</div>
             </div>
           </div>
 

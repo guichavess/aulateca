@@ -52,23 +52,33 @@ const LoginPage: React.FC = () => {
       </div>
       <FloatingOrbs />
 
-      {/* Left Branding Panel */}
+      {/* Left Branding Panel — fundo escuro, tipografia clara explícita
+          (os tokens de tema são pensados para fundo claro e ficariam ilegíveis aqui). */}
       <div className="hidden lg:flex flex-col justify-center flex-[3] px-16 xl:px-24 relative z-10">
         <div className="animate-slide-up" style={{ animationDelay: '0s' }}>
           <div className="flex items-center gap-3 mb-10">
             <img src={mascot} alt="Aulateca mascot" className="w-12 h-12 rounded-xl object-cover" />
             <div>
-              <span className="font-fredoka text-[28px] font-bold text-foreground">Aulateca</span>
-              <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground font-semibold">Hub Educacional</p>
+              <span className="font-fredoka text-[28px] font-bold text-white drop-shadow-sm">Aulateca</span>
+              <p className="text-[11px] tracking-[0.3em] uppercase text-white/70 font-semibold">Hub Educacional</p>
             </div>
           </div>
         </div>
 
-        <h1 className="font-fredoka text-[44px] leading-tight font-bold gradient-text mb-6 animate-slide-up" style={{ animationDelay: '0.06s' }}>
+        <h1
+          className="font-fredoka text-[44px] leading-tight font-bold mb-6 animate-slide-up"
+          style={{
+            animationDelay: '0.06s',
+            backgroundImage: 'linear-gradient(135deg, #ffffff 0%, #f5f3ff 40%, hsl(var(--brand-purple)) 100%)',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            color: 'transparent',
+          }}
+        >
           Transforme suas aulas de produção de texto
         </h1>
 
-        <p className="text-muted-foreground text-lg mb-12 max-w-md animate-slide-up" style={{ animationDelay: '0.12s' }}>
+        <p className="text-white/80 text-lg mb-12 max-w-md leading-relaxed animate-slide-up" style={{ animationDelay: '0.12s' }}>
           Acesse recursos pedagógicos de produção textual para Ensino Fundamental, gere planos com a Teca e conecte-se com outros educadores.
         </p>
 
@@ -76,11 +86,13 @@ const LoginPage: React.FC = () => {
           {[
             { value: '2.400+', label: 'Recursos' },
             { value: '18.5k', label: 'Professores' },
-            { value: '4.8★', label: 'Avaliação' },
+            { value: '4.8', star: true, label: 'Avaliação' },
           ].map((stat) => (
             <div key={stat.label}>
-              <div className="font-fredoka text-2xl font-bold text-foreground">{stat.value}</div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
+              <div className="font-fredoka text-2xl font-bold text-white">
+                {stat.value}{'star' in stat && <span className="text-amber-400">★</span>}
+              </div>
+              <div className="text-sm text-white/60">{stat.label}</div>
             </div>
           ))}
         </div>
