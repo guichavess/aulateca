@@ -1,21 +1,6 @@
 services:
-  - type: web
-    name: aulateca-nestjs
-    runtime: node
-    plan: free
-    rootDir: backend/nestjs
-    buildCommand: npm ci && npx prisma generate && npm run build
-    startCommand: node dist/main
-    envVars:
-      - key: NODE_VERSION
-        value: "20"
-      - key: DATABASE_URL
-        sync: false
-      - key: JWT_SECRET
-        generateValue: true
-      - key: FRONTEND_URL
-        value: https://aulateca.com.br,https://www.aulateca.com.br
-
+  # Microsserviço de IA da Teca. Dados/auth ficam no Supabase; este serviço só
+  # gera texto com Gemini/OpenAI e exige JWT do Supabase para ser usado.
   - type: web
     name: aulateca-fastapi
     runtime: python
@@ -30,6 +15,10 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: OPENAI_API_KEY
+        sync: false
+      # JWT Secret do projeto Supabase (Dashboard → Settings → API → JWT Secret).
+      # Usado para validar o token do usuário logado antes de gastar IA.
+      - key: SUPABASE_JWT_SECRET
         sync: false
       - key: FRONTEND_URL
         value: https://aulateca.com.br,https://www.aulateca.com.br

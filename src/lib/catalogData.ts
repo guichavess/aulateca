@@ -182,6 +182,28 @@ const avaliacaoTab: CatalogTab = {
       ],
     },
     {
+      id: 'sondagem-fluencia',
+      title: 'Sondagem de Fluência Leitora',
+      icon: '📖',
+      color: 'hsl(262, 60%, 55%)',
+      items: [
+        { id: uid(), title: 'Sondagem de Fluência Leitora – 3º ao 5º Ano' },
+      ],
+    },
+    {
+      id: 'avaliacoes-diagnosticas-lp',
+      title: 'Avaliações Diagnósticas – Língua Portuguesa',
+      icon: '📝',
+      color: 'hsl(150, 50%, 42%)',
+      items: [
+        { id: uid(), title: 'Avaliação Diagnóstica LP – 3º Ano (Versão A)' },
+        { id: uid(), title: 'Avaliação Diagnóstica LP – 3º Ano (Versão B)' },
+        { id: uid(), title: 'Avaliação Diagnóstica LP – 4º Ano' },
+        { id: uid(), title: 'Avaliação Diagnóstica LP – 5º Ano (Versão A)' },
+        { id: uid(), title: 'Avaliação Diagnóstica LP – 5º Ano (Versão B)' },
+      ],
+    },
+    {
       id: 'relatorios-diagnosticos',
       title: 'Relatórios e Diagnósticos',
       icon: '📊',

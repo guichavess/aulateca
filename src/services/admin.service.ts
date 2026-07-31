@@ -1,4 +1,38 @@
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
+import {
+  activityInputSchema,
+  activityPatchSchema,
+  type ActivityInput,
+} from '@/services/admin.schemas';
+
+type ActivityUpdate = Database['public']['Tables']['public_activities']['Update'];
+
+// Bucket público de imagens das atividades (ver migration 004).
+const ACTIVITY_IMAGES_BUCKET = 'activity-images';
+
+// Mapeia o patch de domínio → colunas do banco, incluindo APENAS as chaves
+// definidas. undefined é descartado (não toca a coluna); null é preservado
+// (limpa a coluna). Evita sobrescrever campos com null sem querer.
+export const toRowPatch = (input: Partial<ActivityInput>): ActivityUpdate => {
+  const columns: Array<[keyof ActivityInput, keyof ActivityUpdate]> = [
+    ['title', 'title'],
+    ['description', 'description'],
+    ['category', 'category'],
+    ['imageUrl', 'image_url'],
+    ['capacity', 'capacity'],
+    ['startsAt', 'starts_at'],
+    ['endsAt', 'ends_at'],
+    ['isActive', 'is_active'],
+  ];
+  const patch: ActivityUpdate = {};
+  for (const [key, column] of columns) {
+    if (input[key] !== undefined) {
+      (patch as Record<string, unknown>)[column] = input[key];
+    }
+  }
+  return patch;
+};
 
 // ════════════════════════════════════════════════════════════════════════════
 // Tipos do domínio admin (atividades públicas + adesões)
@@ -72,17 +106,19 @@ export const publicActivitiesService = {
   },
 
   async create(input: Omit<PublicActivity, 'id' | 'createdAt'>): Promise<PublicActivity> {
+    // Guarda na borda: valida e normaliza antes de tocar o banco.
+    const parsed = activityInputSchema.parse(input);
     const { data, error } = await supabase
       .from('public_activities')
       .insert({
-        title: input.title,
-        description: input.description,
-        category: input.category,
-        image_url: input.imageUrl,
-        capacity: input.capacity,
-        starts_at: input.startsAt,
-        ends_at: input.endsAt,
-        is_active: input.isActive,
+        title: parsed.title,
+        description: parsed.description,
+        category: parsed.category,
+        image_url: parsed.imageUrl,
+        capacity: parsed.capacity,
+        starts_at: parsed.startsAt,
+        ends_at: parsed.endsAt,
+        is_active: parsed.isActive,
       })
       .select()
       .single();
@@ -91,18 +127,11 @@ export const publicActivitiesService = {
   },
 
   async update(id: string, input: Partial<Omit<PublicActivity, 'id' | 'createdAt'>>): Promise<PublicActivity> {
+    const parsed = activityPatchSchema.parse(input);
+    const patch = toRowPatch(parsed);
     const { data, error } = await supabase
       .from('public_activities')
-      .update({
-        title: input.title,
-        description: input.description,
-        category: input.category,
-        image_url: input.imageUrl,
-        capacity: input.capacity,
-        starts_at: input.startsAt,
-        ends_at: input.endsAt,
-        is_active: input.isActive,
-      })
+      .update(patch)
       .eq('id', id)
       .select()
       .single();
@@ -121,6 +150,19 @@ export const publicActivitiesService = {
       .update({ is_active: isActive })
       .eq('id', id);
     if (error) throw new Error(error.message);
+  },
+
+  // Sobe a imagem para o Storage e devolve a URL pública. Nome aleatório para
+  // evitar colisão; escrita autorizada por RLS (só admin — ver migration 004).
+  async uploadImage(file: File): Promise<string> {
+    const ext = file.name.includes('.') ? file.name.split('.').pop() : 'bin';
+    const path = `${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage
+      .from(ACTIVITY_IMAGES_BUCKET)
+      .upload(path, file, { cacheControl: '3600', upsert: false });
+    if (error) throw new Error(error.message);
+    const { data } = supabase.storage.from(ACTIVITY_IMAGES_BUCKET).getPublicUrl(path);
+    return data.publicUrl;
   },
 };
 
@@ -149,25 +191,7 @@ export const enrollmentsService = {
     if (filter?.activityId) q = q.eq('activity_id', filter.activityId);
 
     const { data, error } = await q;
-    if (error) {
-      // Fallback simples se o relacionamento não existir como FK nomeado: tenta join sem alias.
-      const retry = await supabase
-        .from('activity_enrollments')
-        .select('*, public_activities(title), profiles(name)')
-        .order('created_at', { ascending: false });
-      if (retry.error) throw new Error(retry.error.message);
-      return (retry.data as EnrollmentRow[]).map((r) => ({
-        id: r.id,
-        activityId: r.activity_id,
-        activityTitle: r.public_activities?.title ?? '—',
-        userId: r.user_id,
-        userName: r.profiles?.name ?? '—',
-        userEmail: '',
-        status: r.status,
-        notes: r.notes,
-        createdAt: r.created_at,
-      }));
-    }
+    if (error) throw new Error(error.message);
     return (data as EnrollmentRow[]).map((r) => ({
       id: r.id,
       activityId: r.activity_id,
@@ -197,16 +221,50 @@ export const enrollmentsService = {
     if (error) throw new Error(error.message);
   },
 
+  // Agregação no banco (group by), não varre a tabela no cliente.
   async counts(): Promise<Record<EnrollmentStatus, number>> {
-    const { data, error } = await supabase
-      .from('activity_enrollments')
-      .select('status');
+    const { data, error } = await supabase.rpc('enrollment_counts');
     if (error) throw new Error(error.message);
     const acc: Record<EnrollmentStatus, number> = {
       PENDING: 0, CONFIRMED: 0, CANCELLED: 0, WAITLIST: 0,
     };
-    for (const row of data ?? []) acc[(row as { status: EnrollmentStatus }).status] += 1;
+    for (const row of data ?? []) {
+      acc[row.status as EnrollmentStatus] = Number(row.count);
+    }
     return acc;
+  },
+
+  // Lugares ocupados (PENDING + CONFIRMED) por atividade — para vagas na UI.
+  async takenByActivity(): Promise<Record<string, number>> {
+    const { data, error } = await supabase.rpc('activity_enrollment_counts');
+    if (error) throw new Error(error.message);
+    const acc: Record<string, number> = {};
+    for (const row of data ?? []) acc[row.activity_id] = Number(row.taken);
+    return acc;
+  },
+
+  // Inscrição transacional: aplica capacidade e cai em WAITLIST se lotado.
+  async enroll(activityId: string, notes?: string): Promise<ActivityEnrollment> {
+    const { data, error } = await supabase.rpc('enroll_in_activity', {
+      p_activity_id: activityId,
+      p_notes: notes ?? null,
+    });
+    if (error) throw new Error(error.message);
+    const row = data as {
+      id: string; activity_id: string; user_id: string;
+      status: EnrollmentStatus; notes: string | null; created_at: string;
+    };
+    return {
+      id: row.id,
+      activityId: row.activity_id,
+      activityTitle: '—',
+      userId: row.user_id,
+      userName: '—',
+      userEmail: '',
+      status: row.status,
+      notes: row.notes,
+      createdAt: row.created_at,
+    };
   },
 };
 

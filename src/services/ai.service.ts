@@ -1,4 +1,4 @@
-import { FASTAPI_URL } from './api';
+import { FASTAPI_URL, getToken } from './api';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -24,9 +24,19 @@ export async function streamTecaChat({
   onError,
 }: StreamChatOptions) {
   try {
+    // A Teca consome as chaves pagas de IA — o endpoint exige usuário autenticado.
+    const token = await getToken();
+    if (!token) {
+      onError('Faça login para conversar com a Teca 🐙');
+      return;
+    }
+
     const resp = await fetch(`${FASTAPI_URL}/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
         messages,
         grade: grade ?? null,

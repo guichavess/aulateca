@@ -1,8 +1,10 @@
 import json
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from app.models.schemas import ChatRequest
+from app.security.auth import get_current_user
+from app.security.rate_limit import limiter
 from app.services.ai_service import stream_ai_response
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -13,11 +15,16 @@ router = APIRouter(prefix="/chat", tags=["chat"])
     summary="Conversar com a Teca (streaming SSE)",
     description="Recebe histórico de mensagens e retorna a resposta da IA em streaming.",
 )
-async def chat(request: ChatRequest):
+@limiter.limit("20/minute")
+async def chat(
+    request: Request,
+    body: ChatRequest,
+    user_id: str = Depends(get_current_user),
+):
     async def event_generator():
         # Cada chunk é serializado como JSON para preservar quebras de linha,
         # espaços de borda e qualquer outro caractere que quebraria o frame SSE.
-        async for chunk in stream_ai_response(request):
+        async for chunk in stream_ai_response(body):
             yield f"data: {json.dumps(chunk, ensure_ascii=False)}\n\n"
         yield "data: [DONE]\n\n"
 

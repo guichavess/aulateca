@@ -4,22 +4,24 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useApp } from "@/lib/context";
 import { Toaster } from "@/components/ui/sonner";
-import LoginPage from "./pages/LoginPage";
-import MainLayout from "./components/MainLayout";
+import LoginPage from "./pages/auth/LoginPage";
+import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
+import MainLayout from "./components/layout/MainLayout";
 
 // Code-splitting: cada rota vira um chunk próprio, baixado sob demanda.
 // Login e MainLayout ficam eager porque são o caminho crítico.
-const HomePage = lazy(() => import("./pages/HomePage"));
-const ExplorePage = lazy(() => import("./pages/ExplorePage"));
-const FavoritesPage = lazy(() => import("./pages/FavoritesPage"));
-const AIPlanPage = lazy(() => import("./pages/AIPlanPage"));
-const CommunityPage = lazy(() => import("./pages/CommunityPage"));
-const CategoryPage = lazy(() => import("./pages/CategoryPage"));
-const CatalogPage = lazy(() => import("./pages/CatalogPage"));
-const CreatePage = lazy(() => import("./pages/CreatePage"));
-const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const HomePage = lazy(() => import("./pages/home/HomePage"));
+const ExplorePage = lazy(() => import("./pages/home/ExplorePage"));
+const FavoritesPage = lazy(() => import("./pages/profile/FavoritesPage"));
+const AIPlanPage = lazy(() => import("./pages/create/AIPlanPage"));
+const CommunityPage = lazy(() => import("./pages/community/CommunityPage"));
+const CategoryPage = lazy(() => import("./pages/catalog/CategoryPage"));
+const CatalogPage = lazy(() => import("./pages/catalog/CatalogPage"));
+const CreatePage = lazy(() => import("./pages/create/CreatePage"));
+const ProfilePage = lazy(() => import("./pages/profile/ProfilePage"));
+const PrintTemplate = lazy(() => import("./pages/PrintTemplate"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const LandingPage = lazy(() => import("./pages/LandingPage"));
+const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminResourcesPage = lazy(() => import("./pages/admin/AdminResourcesPage"));
@@ -65,6 +67,7 @@ const AppRoutes = () => {
           path="/landing"
           element={isLoggedIn ? <Navigate to="/" replace /> : <LandingPage />}
         />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
         {isLoggedIn ? (
           <>
@@ -79,6 +82,7 @@ const AppRoutes = () => {
               <Route path="/create" element={<CreatePage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>
+            <Route path="/template-preview" element={<PrintTemplate />} />
             <Route
               path="/admin"
               element={

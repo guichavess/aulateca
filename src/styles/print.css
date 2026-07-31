@@ -1,0 +1,68 @@
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+  
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background-color: white !important;
+  }
+
+  /* Hide navigation or UI elements when printing */
+  .no-print {
+    display: none !important;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+}
+
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+
+@media screen {
+  .a4-page {
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+  }
+}
+
+.exercise-box {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 2px solid #e2e8f0;
+  padding: 1.5rem;
+  position: relative;
+}
+
+/* For assets positioning */
+.corner-ornament {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  z-index: 0;
+  opacity: 0.8;
+}
+
+.corner-top-left {
+  top: 0;
+  left: 0;
+  background-image: url('/assets/template/corner-top-left.jpg');
+}
+
+/* Mix-blend-mode multiply helps if background is not perfectly transparent, as it removes white backgrounds */
+.blend-multiply {
+  mix-blend-mode: multiply;
+}

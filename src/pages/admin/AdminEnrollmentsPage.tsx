@@ -41,6 +41,7 @@ const AdminEnrollmentsPage: React.FC = () => {
       toast.success('Status atualizado');
       qc.invalidateQueries({ queryKey: ['admin', 'enrollments'] });
       qc.invalidateQueries({ queryKey: ['admin', 'enrollment-counts'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'activity-taken'] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -51,6 +52,7 @@ const AdminEnrollmentsPage: React.FC = () => {
       toast.success('Adesão removida');
       qc.invalidateQueries({ queryKey: ['admin', 'enrollments'] });
       qc.invalidateQueries({ queryKey: ['admin', 'enrollment-counts'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'activity-taken'] });
     },
     onError: (e: Error) => toast.error(e.message),
   });

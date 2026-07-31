@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { authService, type AuthUser } from '@/services/auth.service';
 import { favoritesService } from '@/services/favorites.service';
@@ -22,6 +22,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [user, setUser] = useState<AuthUser | null>(() => authService.loadUser());
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // login() já resolve o perfil e seta o user de forma síncrona antes do evento
+  // SIGNED_IN correspondente chegar; esta flag evita refetch duplicado nesse caso.
+  // O fluxo OAuth (redirect do Google) não passa por login(), então precisa que
+  // o listener abaixo busque o perfil sozinho.
+  const suppressNextSignInFetch = useRef(false);
 
   // Confirma a sessão com o Supabase e mantém o token local em sync com refreshes.
   useEffect(() => {
@@ -57,6 +63,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       if (session && (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
         localStorage.setItem('token', session.access_token);
         setIsLoggedIn(true);
+
+        if (event === 'SIGNED_IN') {
+          if (suppressNextSignInFetch.current) {
+            suppressNextSignInFetch.current = false;
+          } else {
+            // Chegou aqui via OAuth (ex.: Google) — login() não foi chamado,
+            // então o perfil ainda não está carregado no estado.
+            authService
+              .fetchProfile(session.user.id, session.user.email ?? undefined)
+              .then((profile) => {
+                authService.saveSession(session.access_token, profile);
+                setUser(profile);
+              })
+              .catch(() => {/* trigger do banco pode não ter criado o profile ainda */});
+          }
+        }
       }
     });
 
@@ -75,6 +97,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [isLoggedIn]);
 
   const login = useCallback((token: string, userData: AuthUser) => {
+    suppressNextSignInFetch.current = true;
     authService.saveSession(token, userData);
     setUser(userData);
     setIsLoggedIn(true);

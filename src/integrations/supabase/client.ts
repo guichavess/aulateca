@@ -13,5 +13,9 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // PKCE em vez do fluxo implícito: o code_verifier nunca sai do navegador e o
+    // authorization code trocado na volta do OAuth não fica exposto na URL.
+    flowType: 'pkce',
+    detectSessionInUrl: true,
   }
 });

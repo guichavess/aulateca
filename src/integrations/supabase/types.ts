@@ -14,13 +14,357 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          id: string
+          name: string
+          role: string
+          avatar_url: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id: string
+          name: string
+          role?: string
+          avatar_url?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          role?: string
+          avatar_url?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      resources: {
+        Row: {
+          id: string
+          title: string
+          description: string
+          category: string
+          type: string
+          age_range: string
+          duration: string
+          file_url: string | null
+          is_new: boolean | null
+          downloads: number | null
+          rating: number | null
+          author_id: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          description: string
+          category: string
+          type: string
+          age_range: string
+          duration: string
+          file_url?: string | null
+          is_new?: boolean | null
+          downloads?: number | null
+          rating?: number | null
+          author_id?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string
+          category?: string
+          type?: string
+          age_range?: string
+          duration?: string
+          file_url?: string | null
+          is_new?: boolean | null
+          downloads?: number | null
+          rating?: number | null
+          author_id?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resources_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          id: string
+          user_id: string
+          resource_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          resource_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          resource_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts: {
+        Row: {
+          id: string
+          author_id: string
+          content: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          author_id: string
+          content: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          author_id?: string
+          content?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          id: string
+          user_id: string
+          post_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          post_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          post_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_comments: {
+        Row: {
+          id: string
+          author_id: string
+          post_id: string
+          content: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          author_id: string
+          post_id: string
+          content: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          author_id?: string
+          post_id?: string
+          content?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_activities: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          category: string | null
+          image_url: string | null
+          capacity: number | null
+          starts_at: string | null
+          ends_at: string | null
+          is_active: boolean
+          created_by: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          category?: string | null
+          image_url?: string | null
+          capacity?: number | null
+          starts_at?: string | null
+          ends_at?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          category?: string | null
+          image_url?: string | null
+          capacity?: number | null
+          starts_at?: string | null
+          ends_at?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      activity_enrollments: {
+        Row: {
+          id: string
+          activity_id: string
+          user_id: string
+          status: string
+          notes: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          activity_id: string
+          user_id: string
+          status?: string
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          activity_id?: string
+          user_id?: string
+          status?: string
+          notes?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_enrollments_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "public_activities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "activity_enrollments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      increment_downloads: {
+        Args: { resource_id: string }
+        Returns: undefined
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      enrollment_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: { status: string; count: number }[]
+      }
+      activity_enrollment_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: { activity_id: string; taken: number }[]
+      }
+      enroll_in_activity: {
+        Args: { p_activity_id: string; p_notes?: string | null }
+        Returns: Database["public"]["Tables"]["activity_enrollments"]["Row"]
+      }
     }
     Enums: {
       [_ in never]: never

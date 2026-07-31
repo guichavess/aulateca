@@ -77,18 +77,16 @@ const HowItWorksSection = () => {
           <p className="text-white/70 font-nunito text-sm mb-8">▼</p>
 
           {/* Placeholder para embed de vídeo */}
-          <div className="max-w-3xl mx-auto">
-            <div className="relative aspect-video rounded-xl overflow-hidden bg-[#4F46E5] shadow-2xl shadow-black/20">
-              <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3">
-                  <div className="w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-12 border-l-white ml-1"
-                    style={{ borderLeftWidth: 14 }}
-                  />
-                </div>
-                <p className="text-white/60 text-sm font-nunito">
-                  Vídeo em breve
-                </p>
-              </div>
+          <div className="max-w-sm mx-auto">
+            <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-black">
+              <video
+                className="w-full h-auto"
+                controls
+                preload="metadata"
+                playsInline
+              >
+                <source src="/landing/tutorial.mp4" type="video/mp4" />
+              </video>
             </div>
           </div>
         </div>

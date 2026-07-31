@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import HeroPhone from "@/components/landing/HeroPhone";
 
 const HeroSection = () => {
   return (
@@ -111,37 +112,7 @@ const HeroSection = () => {
 
             {/* Coluna direita — Mockup iPhone */}
             <div className="flex justify-center lg:justify-end">
-              <div className="relative w-[280px] sm:w-[320px]">
-                {/* Phone frame */}
-                <div className="relative bg-black rounded-[3rem] p-3 shadow-2xl shadow-black/30">
-                  {/* Notch */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120px] h-[30px] bg-black rounded-b-2xl z-10" />
-                  {/* Screen */}
-                  <div className="rounded-[2.4rem] overflow-hidden bg-[#FAFBFD] aspect-[9/19.5]">
-                    <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center">
-                      <span className="text-6xl mb-4">🐙</span>
-                      <p className="font-fredoka font-bold text-[#6366F1] text-xl mb-2">
-                        AulaTeca
-                      </p>
-                      <p className="font-nunito text-[#6B7186] text-sm">
-                        226+ atividades prontas
-                      </p>
-                      <div className="mt-6 grid grid-cols-2 gap-2 w-full">
-                        {["Fábula", "Crônica", "Notícia", "Cordel"].map((g) => (
-                          <div
-                            key={g}
-                            className="rounded-xl bg-[#EEF2FF] p-3 text-xs font-nunito font-semibold text-[#6366F1]"
-                          >
-                            {g}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                {/* Glow behind phone */}
-                <div className="absolute inset-0 -z-10 rounded-[3rem] bg-[#FFB830]/20 blur-3xl scale-110" />
-              </div>
+              <HeroPhone />
             </div>
           </div>
         </div>

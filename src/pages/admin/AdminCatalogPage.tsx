@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Pencil, Trash2, Power, Calendar, Users as UsersIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { publicActivitiesService, type PublicActivity } from '@/services/admin.service';
+import { publicActivitiesService, enrollmentsService, type PublicActivity } from '@/services/admin.service';
 import ActivityFormDialog from '@/components/admin/ActivityFormDialog';
 
 const formatDate = (iso: string | null) => {
@@ -23,6 +23,12 @@ const AdminCatalogPage: React.FC = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['admin', 'activities'],
     queryFn: () => publicActivitiesService.list(),
+  });
+
+  // Lugares ocupados por atividade, para calcular vagas restantes.
+  const { data: taken } = useQuery({
+    queryKey: ['admin', 'activity-taken'],
+    queryFn: () => enrollmentsService.takenByActivity(),
   });
 
   const removeMutation = useMutation({
@@ -106,7 +112,13 @@ const AdminCatalogPage: React.FC = () => {
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground tabular-nums text-xs">
                     <div className="flex items-center gap-1.5">
                       <UsersIcon className="w-3 h-3" />
-                      {a.capacity ?? '∞'}
+                      {a.capacity == null ? (
+                        '∞'
+                      ) : (
+                        <span title="vagas restantes / capacidade">
+                          {Math.max(0, a.capacity - (taken?.[a.id] ?? 0))} / {a.capacity}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3">
