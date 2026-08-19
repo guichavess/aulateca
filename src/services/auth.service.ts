@@ -28,17 +28,6 @@ export const authService = {
     };
   },
 
-  // Inicia o fluxo OAuth (PKCE) e redireciona para o Google. O retorno da sessão
-  // é tratado pelo listener onAuthStateChange em AppProvider — não há Promise a
-  // resolver aqui porque a página navega para fora antes de qualquer resposta.
-  async loginWithGoogle(): Promise<void> {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
-    });
-    if (error) throw new Error(error.message);
-  },
-
   async register(name: string, email: string, password: string, roleKey: string): Promise<
     | { status: 'signed-in'; token: string; user: AuthUser }
     | { status: 'needs-confirmation'; email: string }

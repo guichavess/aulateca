@@ -321,8 +321,18 @@ export const adminUsersService = {
     }));
   },
 
+  // O .select() não é cosmético: um UPDATE barrado por RLS casa 0 linhas e o
+  // PostgREST devolve sucesso sem erro. Sem conferir a linha afetada, a tela
+  // mostrava "papel alterado" enquanto nada mudava no banco.
   async setRole(id: string, role: AdminUserRow['role']): Promise<void> {
-    const { error } = await supabase.from('profiles').update({ role }).eq('id', id);
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({ role })
+      .eq('id', id)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data?.length) {
+      throw new Error('Sem permissão para alterar o papel deste usuário.');
+    }
   },
 };

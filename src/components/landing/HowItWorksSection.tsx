@@ -5,7 +5,7 @@ const steps = [
     emoji: "🐙",
     title: "Crie sua conta grátis em 30 segundos",
     description:
-      "Baixe o app ou acesse pelo navegador. Login com e-mail ou Google — sem complicação.",
+      "Baixe o app ou acesse pelo navegador. Entre com o e-mail da sua compra — sem complicação.",
   },
   {
     emoji: "📚",

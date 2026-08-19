@@ -25,8 +25,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // login() já resolve o perfil e seta o user de forma síncrona antes do evento
   // SIGNED_IN correspondente chegar; esta flag evita refetch duplicado nesse caso.
-  // O fluxo OAuth (redirect do Google) não passa por login(), então precisa que
-  // o listener abaixo busque o perfil sozinho.
+  // Sessões que nascem fora do formulário (link de confirmação de e-mail, link
+  // mágico de recuperação) não passam por login(), então precisam que o
+  // listener abaixo busque o perfil sozinho.
   const suppressNextSignInFetch = useRef(false);
 
   // Confirma a sessão com o Supabase e mantém o token local em sync com refreshes.
@@ -68,8 +69,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
           if (suppressNextSignInFetch.current) {
             suppressNextSignInFetch.current = false;
           } else {
-            // Chegou aqui via OAuth (ex.: Google) — login() não foi chamado,
-            // então o perfil ainda não está carregado no estado.
+            // Sessão criada por link (confirmação de e-mail, recuperação) —
+            // login() não foi chamado, então o perfil ainda não está no estado.
             authService
               .fetchProfile(session.user.id, session.user.email ?? undefined)
               .then((profile) => {

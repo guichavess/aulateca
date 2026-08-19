@@ -5,7 +5,7 @@ import { Settings, Info, LogOut, ChevronRight, User, Moon, Sun, BookOpen, Heart,
 const ProfilePage: React.FC = () => {
   const { user, userName, logout, favorites } = useApp();
   const [darkMode, setDarkMode] = useState(false);
-  // Foto do provedor OAuth (Google) pode falhar em carregar / expirar: cai nas iniciais.
+  // A foto é uma URL externa que pode falhar em carregar: cai nas iniciais.
   const [avatarFailed, setAvatarFailed] = useState(false);
   const avatarUrl = avatarFailed ? undefined : user?.avatarUrl;
 

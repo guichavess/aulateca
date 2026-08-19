@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider, useApp } from "@/lib/context";
 import { Toaster } from "@/components/ui/sonner";
 import LoginPage from "./pages/auth/LoginPage";
-import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 import MainLayout from "./components/layout/MainLayout";
 
 // Code-splitting: cada rota vira um chunk próprio, baixado sob demanda.
@@ -67,8 +66,6 @@ const AppRoutes = () => {
           path="/landing"
           element={isLoggedIn ? <Navigate to="/" replace /> : <LandingPage />}
         />
-        <Route path="/auth/callback" element={<AuthCallbackPage />} />
-
         {isLoggedIn ? (
           <>
             <Route element={<MainLayout />}>
