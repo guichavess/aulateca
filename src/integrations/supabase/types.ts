@@ -56,6 +56,8 @@ export type Database = {
           age_range: string
           duration: string
           file_url: string | null
+          image_url: string | null
+          author_name: string | null
           is_new: boolean | null
           downloads: number | null
           rating: number | null
@@ -71,6 +73,8 @@ export type Database = {
           age_range: string
           duration: string
           file_url?: string | null
+          image_url?: string | null
+          author_name?: string | null
           is_new?: boolean | null
           downloads?: number | null
           rating?: number | null
@@ -86,6 +90,8 @@ export type Database = {
           age_range?: string
           duration?: string
           file_url?: string | null
+          image_url?: string | null
+          author_name?: string | null
           is_new?: boolean | null
           downloads?: number | null
           rating?: number | null
@@ -340,9 +346,166 @@ export type Database = {
           },
         ]
       }
+      cakto_events: {
+        Row: {
+          id: string
+          event: string
+          order_id: string | null
+          ref_id: string | null
+          subscription_id: string | null
+          customer_email: string | null
+          customer_name: string | null
+          product_id: string | null
+          offer_id: string | null
+          status: string | null
+          amount: number | null
+          payment_method: string | null
+          dedupe_key: string | null
+          payload: Json
+          received_at: string
+          processed_at: string | null
+          process_error: string | null
+        }
+        Insert: {
+          id?: string
+          event: string
+          order_id?: string | null
+          ref_id?: string | null
+          subscription_id?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          product_id?: string | null
+          offer_id?: string | null
+          status?: string | null
+          amount?: number | null
+          payment_method?: string | null
+          dedupe_key?: string | null
+          payload: Json
+          received_at?: string
+          processed_at?: string | null
+          process_error?: string | null
+        }
+        Update: {
+          id?: string
+          event?: string
+          order_id?: string | null
+          ref_id?: string | null
+          subscription_id?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          product_id?: string | null
+          offer_id?: string | null
+          status?: string | null
+          amount?: number | null
+          payment_method?: string | null
+          dedupe_key?: string | null
+          payload?: Json
+          received_at?: string
+          processed_at?: string | null
+          process_error?: string | null
+        }
+        Relationships: []
+      }
+      cakto_entitlements: {
+        Row: {
+          id: string
+          email: string
+          user_id: string | null
+          kind: string
+          status: string
+          product_id: string | null
+          product_name: string | null
+          offer_id: string | null
+          order_id: string | null
+          ref_id: string | null
+          subscription_id: string | null
+          source_key: string
+          granted_at: string
+          expires_at: string | null
+          revoked_at: string | null
+          revoke_reason: string | null
+          last_event: string | null
+          last_event_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          email: string
+          user_id?: string | null
+          kind?: string
+          status?: string
+          product_id?: string | null
+          product_name?: string | null
+          offer_id?: string | null
+          order_id?: string | null
+          ref_id?: string | null
+          subscription_id?: string | null
+          source_key: string
+          granted_at?: string
+          expires_at?: string | null
+          revoked_at?: string | null
+          revoke_reason?: string | null
+          last_event?: string | null
+          last_event_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          user_id?: string | null
+          kind?: string
+          status?: string
+          product_id?: string | null
+          product_name?: string | null
+          offer_id?: string | null
+          order_id?: string | null
+          ref_id?: string | null
+          subscription_id?: string | null
+          source_key?: string
+          granted_at?: string
+          expires_at?: string | null
+          revoked_at?: string | null
+          revoke_reason?: string | null
+          last_event?: string | null
+          last_event_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cakto_entitlements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      cakto_access_overview: {
+        Row: {
+          id: string
+          email: string
+          user_id: string | null
+          user_name: string | null
+          kind: string
+          status: string
+          product_name: string | null
+          order_id: string | null
+          ref_id: string | null
+          granted_at: string
+          expires_at: string | null
+          revoked_at: string | null
+          revoke_reason: string | null
+          last_event: string | null
+          last_event_at: string | null
+          is_active: boolean
+        }
+        Relationships: []
+      }
     }
     Functions: {
       increment_downloads: {
@@ -364,6 +527,14 @@ export type Database = {
       enroll_in_activity: {
         Args: { p_activity_id: string; p_notes?: string | null }
         Returns: Database["public"]["Tables"]["activity_enrollments"]["Row"]
+      }
+      has_active_access: {
+        Args: { p_user?: string }
+        Returns: boolean
+      }
+      claim_cakto_entitlements: {
+        Args: Record<PropertyKey, never>
+        Returns: number
       }
     }
     Enums: {
