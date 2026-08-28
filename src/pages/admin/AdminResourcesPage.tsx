@@ -104,7 +104,7 @@ const AdminResourcesPage: React.FC = () => {
   return (
     <div className="space-y-5 max-w-6xl">
       <div>
-        <h1 className="font-fredoka text-2xl font-bold tracking-tight">Recursos pedagógicos</h1>
+        <h1 className="font-fredoka text-h1 font-bold">Recursos pedagógicos</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Editar metadados e remover materiais publicados.
         </p>
@@ -129,7 +129,6 @@ const AdminResourcesPage: React.FC = () => {
               <tr>
                 <th className="text-left px-4 py-3 font-semibold">Título</th>
                 <th className="text-left px-4 py-3 font-semibold hidden md:table-cell">Categoria</th>
-                <th className="text-left px-4 py-3 font-semibold hidden md:table-cell">Tipo</th>
                 <th className="text-left px-4 py-3 font-semibold hidden lg:table-cell">Faixa</th>
                 <th className="text-left px-4 py-3 font-semibold hidden lg:table-cell">Autor</th>
                 <th className="text-right px-4 py-3 font-semibold">Ações</th>
@@ -143,7 +142,6 @@ const AdminResourcesPage: React.FC = () => {
                     <p className="text-xs text-muted-foreground line-clamp-1">{r.description}</p>
                   </td>
                   <td className="px-4 py-3 hidden md:table-cell text-muted-foreground text-xs">{r.category}</td>
-                  <td className="px-4 py-3 hidden md:table-cell text-muted-foreground text-xs">{r.type}</td>
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">{r.ageRange}</td>
                   <td className="px-4 py-3 hidden lg:table-cell text-muted-foreground text-xs">{r.author}</td>
                   <td className="px-4 py-3 text-right">
@@ -159,7 +157,7 @@ const AdminResourcesPage: React.FC = () => {
                         onClick={() => {
                           if (confirm(`Excluir "${r.title}"?`)) remove.mutate(r.id);
                         }}
-                        className="p-1.5 rounded hover:bg-rose-500/10 hover:text-rose-500"
+                        className="p-1.5 rounded hover:bg-danger/10 hover:text-danger"
                         title="Excluir"
                       >
                         <Trash2 className="w-3.5 h-3.5" />

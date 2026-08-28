@@ -139,17 +139,26 @@ export const publicActivitiesService = {
     return toActivity(data);
   },
 
+  // O .select('id') não é cosmético — ver comentário em setRole: sem ele, uma
+  // remoção barrada por RLS casa 0 linhas e a tela comemora sucesso à toa.
   async remove(id: string): Promise<void> {
-    const { error } = await supabase.from('public_activities').delete().eq('id', id);
+    const { data, error } = await supabase
+      .from('public_activities')
+      .delete()
+      .eq('id', id)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data?.length) throw new Error('Sem permissão para remover esta atividade.');
   },
 
   async toggleActive(id: string, isActive: boolean): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('public_activities')
       .update({ is_active: isActive })
-      .eq('id', id);
+      .eq('id', id)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data?.length) throw new Error('Sem permissão para alterar esta atividade.');
   },
 
   // Sobe a imagem para o Storage e devolve a URL pública. Nome aleatório para
@@ -206,19 +215,23 @@ export const enrollmentsService = {
   },
 
   async updateStatus(id: string, status: EnrollmentStatus): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('activity_enrollments')
       .update({ status })
-      .eq('id', id);
+      .eq('id', id)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data?.length) throw new Error('Sem permissão para alterar esta adesão.');
   },
 
   async remove(id: string): Promise<void> {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('activity_enrollments')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .select('id');
     if (error) throw new Error(error.message);
+    if (!data?.length) throw new Error('Sem permissão para remover esta adesão.');
   },
 
   // Agregação no banco (group by), não varre a tabela no cliente.
@@ -277,7 +290,6 @@ export const adminResourcesService = {
     title?: string;
     description?: string;
     category?: string;
-    type?: string;
     age_range?: string;
     duration?: string;
     file_url?: string | null;

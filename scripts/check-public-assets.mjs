@@ -22,6 +22,11 @@ const scanDirs = [join(root, "src")];
 const scanFiles = [join(root, "index.html")];
 const scanExt = /\.(tsx?|jsx?|css|html)$/;
 
+// Testes não vão para o deploy, então um caminho dentro deles nunca é um asset
+// de produção — é fixture. Sem esta exclusão, `image_url: '/catalog/x.png'` num
+// mock de resources.service.test.ts reprova o build inteiro.
+const testFile = /\.(test|spec)\.[jt]sx?$/;
+
 // "/algo/arquivo.ext" dentro de quotes ou template string
 const assetRef = /["'`](\/[A-Za-z0-9_\-./%]+\.[A-Za-z0-9]{2,5})["'`]/g;
 
@@ -32,7 +37,7 @@ async function collectFiles(dir) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
       out.push(...(await collectFiles(full)));
-    } else if (scanExt.test(entry.name)) {
+    } else if (scanExt.test(entry.name) && !testFile.test(entry.name)) {
       out.push(full);
     }
   }
@@ -162,7 +167,18 @@ if (partialDirs.length > 0) {
   );
 }
 
-const erros = missing.length + untracked.length + orphanDirs.length;
+// ── Trava do paywall ────────────────────────────────────────────
+// Conteúdo pago não pode voltar para public/. Tudo em public/ vira URL pública
+// no deploy: um PDF aqui é baixável por quem tem o link, sem sessão e sem compra
+// — que foi exatamente a situação corrigida na Fase 5, quando os 60 PDFs saíram
+// daqui para o bucket privado `atividades`. As capas .webp continuam aqui de
+// propósito: capa é vitrine.
+const pdfsEmPublic = (await collectAll(publicDir))
+  .map((f) => posix.join("public", relative(publicDir, f).replace(/\\/g, "/")))
+  .filter((f) => f.toLowerCase().endsWith(".pdf"));
+
+const erros =
+  missing.length + untracked.length + orphanDirs.length + pdfsEmPublic.length;
 
 if (erros === 0) {
   console.log(
@@ -171,7 +187,21 @@ if (erros === 0) {
   process.exit(0);
 }
 
-console.error("\n✗ Assets de public/ com problema:\n");
+if (pdfsEmPublic.length > 0) {
+  console.error("\n✗ Conteúdo pago em public/ (vai para o deploy como URL aberta):\n");
+  pdfsEmPublic.forEach((f) => console.error(`  ${f}`));
+  console.error(
+    "\nPDF em public/ é baixável sem login e sem compra. O lugar dele é o bucket\n" +
+      "privado `atividades`:\n" +
+      "  1. mova o arquivo para build/atividades/\n" +
+      "  2. node scripts/upload-atividades.mjs\n" +
+      "  3. grave em resources.file_url o caminho dentro do bucket (sem barra inicial)\n",
+  );
+}
+
+if (missing.length + untracked.length + orphanDirs.length > 0) {
+  console.error("\n✗ Assets de public/ com problema:\n");
+}
 
 for (const { url, where } of missing) {
   console.error(`  AUSENTE EM DISCO  ${url}`);
@@ -189,10 +219,12 @@ for (const { dir, total } of orphanDirs) {
   console.error(`                    → git add public/${dir}`);
 }
 
-console.error(
-  "\nArquivo fora do git existe na sua máquina mas NÃO no deploy: o rewrite\n" +
-    "catch-all do vercel.json devolve index.html no lugar dele e a página quebra\n" +
-    "sem erro visível. Commite o arquivo ou remova a referência.\n",
-);
+if (missing.length + untracked.length + orphanDirs.length > 0) {
+  console.error(
+    "\nArquivo fora do git existe na sua máquina mas NÃO no deploy: o rewrite\n" +
+      "catch-all do vercel.json devolve index.html no lugar dele e a página quebra\n" +
+      "sem erro visível. Commite o arquivo ou remova a referência.\n",
+  );
+}
 
 process.exit(1);

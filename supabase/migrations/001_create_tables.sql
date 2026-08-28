@@ -93,22 +93,33 @@ alter table public.post_likes enable row level security;
 alter table public.post_comments enable row level security;
 
 -- Recursos: qualquer um pode ver, só o dono pode criar/editar
+drop policy if exists "recursos visíveis para todos" on public.resources;
 create policy "recursos visíveis para todos" on public.resources for select using (true);
+drop policy if exists "usuário cria recurso" on public.resources;
 create policy "usuário cria recurso" on public.resources for insert with check (auth.uid() = author_id);
 
 -- Favoritos: cada um vê e gerencia só os seus
+drop policy if exists "favoritos do próprio usuário" on public.favorites;
 create policy "favoritos do próprio usuário" on public.favorites for all using (auth.uid() = user_id);
 
 -- Comunidade: todos veem, autenticados criam
+drop policy if exists "posts visíveis para todos" on public.community_posts;
 create policy "posts visíveis para todos" on public.community_posts for select using (true);
+drop policy if exists "usuário cria post" on public.community_posts;
 create policy "usuário cria post" on public.community_posts for insert with check (auth.uid() = author_id);
 
 -- Likes e comentários
+drop policy if exists "likes visíveis para todos" on public.post_likes;
 create policy "likes visíveis para todos" on public.post_likes for select using (true);
+drop policy if exists "usuário gerencia like" on public.post_likes;
 create policy "usuário gerencia like" on public.post_likes for all using (auth.uid() = user_id);
+drop policy if exists "comentários visíveis para todos" on public.post_comments;
 create policy "comentários visíveis para todos" on public.post_comments for select using (true);
+drop policy if exists "usuário comenta" on public.post_comments;
 create policy "usuário comenta" on public.post_comments for insert with check (auth.uid() = author_id);
 
 -- Perfis: todos veem, cada um edita o seu
+drop policy if exists "perfis visíveis para todos" on public.profiles;
 create policy "perfis visíveis para todos" on public.profiles for select using (true);
+drop policy if exists "usuário edita próprio perfil" on public.profiles;
 create policy "usuário edita próprio perfil" on public.profiles for update using (auth.uid() = id);

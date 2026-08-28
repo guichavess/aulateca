@@ -8,10 +8,22 @@ interface AppState {
   user: AuthUser | null;
   userName: string;
   favorites: Set<string>;
+  /**
+   * Ligada enquanto a sessão veio de um link de recuperação de senha.
+   *
+   * Com `flowType: 'pkce'` e `detectSessionInUrl`, abrir o link do e-mail
+   * LOGA a pessoa antes de ela digitar qualquer coisa. Sem esta flag, ela cairia
+   * no app com a senha antiga e nunca veria o formulário que foi buscar.
+   */
+  isRecoveringPassword: boolean;
+  /** Chamada pela tela de redefinição depois de trocar a senha com sucesso. */
+  finishPasswordRecovery: () => void;
   login: (token: string, user: AuthUser) => void;
   logout: () => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
+  /** Persiste alterações do perfil e sincroniza estado + localStorage. */
+  updateProfile: (changes: { name?: string; avatarUrl?: string | null }) => Promise<void>;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -22,6 +34,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [user, setUser] = useState<AuthUser | null>(() => authService.loadUser());
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [isRecoveringPassword, setIsRecoveringPassword] = useState(false);
 
   // login() já resolve o perfil e seta o user de forma síncrona antes do evento
   // SIGNED_IN correspondente chegar; esta flag evita refetch duplicado nesse caso.
@@ -59,7 +72,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setUser(null);
         setIsLoggedIn(false);
         setFavorites(new Set());
+        setIsRecoveringPassword(false);
         return;
+      }
+
+      // O link de recuperação já criou a sessão. A flag segura a pessoa em
+      // /redefinir-senha até a senha nova ser gravada — quem chegou aqui não
+      // lembra a senha antiga, e jogá-la no app resolveria nada.
+      if (event === 'PASSWORD_RECOVERY') {
+        setIsRecoveringPassword(true);
+        // A sessão do link é a credencial que autoriza o updateUser da tela
+        // seguinte; sem guardar o token aqui, o app dependeria da corrida com o
+        // getSession() do boot para reconhecer que existe sessão.
+        if (session) {
+          localStorage.setItem('token', session.access_token);
+          setIsLoggedIn(true);
+        }
       }
       if (session && (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
         localStorage.setItem('token', session.access_token);
@@ -103,6 +131,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setUser(userData);
     setIsLoggedIn(true);
   }, []);
+
+  const finishPasswordRecovery = useCallback(() => setIsRecoveringPassword(false), []);
 
   const logout = useCallback(() => {
     // clearSession chama supabase.auth.signOut() → listener acima reage com SIGNED_OUT.
@@ -149,10 +179,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const isFavorite = useCallback((id: string) => favorites.has(id), [favorites]);
 
+  const updateProfile = useCallback(async (changes: { name?: string; avatarUrl?: string | null }) => {
+    if (!user) throw new Error('Sem sessão ativa');
+    await authService.updateProfile(user.id, changes);
+    const next: AuthUser = {
+      ...user,
+      ...(changes.name !== undefined ? { name: changes.name } : {}),
+      // null = "remover foto"; o AuthUser usa undefined para ausência.
+      ...(changes.avatarUrl !== undefined ? { avatarUrl: changes.avatarUrl ?? undefined } : {}),
+    };
+    setUser(next);
+    // O user cacheado alimenta o estado otimista no boot; sem isto o nome
+    // antigo voltaria ao recarregar a página.
+    const token = localStorage.getItem('token');
+    if (token) authService.saveSession(token, next);
+  }, [user]);
+
   const userName = user?.name ?? '';
 
   return (
-    <AppContext.Provider value={{ isLoggedIn, user, userName, favorites, login, logout, toggleFavorite, isFavorite }}>
+    <AppContext.Provider value={{ isLoggedIn, user, userName, favorites, isRecoveringPassword, finishPasswordRecovery, login, logout, toggleFavorite, isFavorite, updateProfile }}>
       {children}
     </AppContext.Provider>
   );

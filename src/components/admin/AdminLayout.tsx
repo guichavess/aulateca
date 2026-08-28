@@ -1,16 +1,17 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, BookOpen, ClipboardList, Sparkles, MessageSquare, Users, LogOut, ArrowLeft,
+  LayoutDashboard, BookOpen, ClipboardList, Sparkles, Users, LogOut, ArrowLeft,
+  Receipt,
 } from 'lucide-react';
 import { useApp } from '@/lib/context';
 
 const navItems = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/admin/vendas', label: 'Vendas e acessos', icon: Receipt },
   { to: '/admin/recursos', label: 'Recursos', icon: BookOpen },
   { to: '/admin/adesoes', label: 'Adesões', icon: ClipboardList },
   { to: '/admin/catalogo', label: 'Catálogo público', icon: Sparkles },
-  { to: '/admin/comunidade', label: 'Comunidade', icon: MessageSquare },
   { to: '/admin/usuarios', label: 'Usuários', icon: Users },
 ];
 
@@ -20,24 +21,20 @@ const AdminLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex w-full bg-background">
-      <aside className="w-60 shrink-0 border-r border-border bg-card/40 backdrop-blur-sm flex flex-col">
-        <div className="px-5 py-5 border-b border-border">
+      <aside className="surface-chrome w-60 shrink-0 border-r-2 flex flex-col">
+        <div className="px-5 py-5 border-b-2 border-border">
           <p className="text-[10px] font-semibold tracking-[0.25em] uppercase text-muted-foreground">Admin</p>
-          <h2 className="font-fredoka text-lg font-bold gradient-text">Aulateca</h2>
+          <h2 className="font-fredoka text-h3 font-bold text-ink">Aulateca</h2>
         </div>
 
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto">
+        <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               end={item.end}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
-                }`
+                `nav-item ${isActive ? 'nav-item-active' : ''}`
               }
             >
               <item.icon className="w-4 h-4 shrink-0" />
@@ -46,17 +43,17 @@ const AdminLayout: React.FC = () => {
           ))}
         </nav>
 
-        <div className="px-3 py-3 border-t border-border space-y-1">
+        <div className="px-3 py-3 border-t-2 border-border space-y-1">
           <button
             onClick={() => navigate('/')}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-button text-xs font-semibold text-muted-foreground hover:bg-secondary hover:text-ink transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Voltar ao app
           </button>
           <button
             onClick={logout}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-button text-xs font-semibold text-muted-foreground hover:bg-danger/10 hover:text-danger-deep transition-colors"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sair
@@ -65,7 +62,7 @@ const AdminLayout: React.FC = () => {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border bg-background/80 backdrop-blur-sm flex items-center justify-between px-6 sticky top-0 z-10">
+        <header className="surface-chrome h-16 border-b-2 flex items-center justify-between px-6 sticky top-0 z-10">
           <div>
             <p className="text-xs text-muted-foreground">Painel administrativo</p>
           </div>

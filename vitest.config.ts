@@ -8,7 +8,10 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // As Edge Functions rodam em Deno, mas as regras puras do webhook da Cakto
+    // (supabase/functions/**/cakto.ts) não tocam nenhuma API do runtime — e são
+    // a parte que decide quem tem acesso pago. Ficam cobertas aqui.
+    include: ["src/**/*.{test,spec}.{ts,tsx}", "supabase/functions/**/*.{test,spec}.ts"],
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },

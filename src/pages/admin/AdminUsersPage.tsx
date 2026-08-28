@@ -34,7 +34,7 @@ const AdminUsersPage: React.FC = () => {
   return (
     <div className="space-y-5 max-w-5xl">
       <div>
-        <h1 className="font-fredoka text-2xl font-bold tracking-tight">Usuários</h1>
+        <h1 className="font-fredoka text-h1 font-bold">Usuários</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Promova ou rebaixe papéis. Cuidado: ADMIN tem acesso completo.
         </p>

@@ -1,4 +1,8 @@
-project_id = "egjvtionimijdzhxiwjd"
+project_id = "jcjtkacusvufazuaemst"
 
-[functions.teca-chat]
+# A Cakto chama este endpoint sem token do Supabase — a autenticação dela é o
+# campo `secret` no corpo, conferido dentro da função. Com verify_jwt ligado
+# (padrão) o gateway devolveria 401 antes do nosso código rodar, e a venda não
+# liberaria acesso.
+[functions.cakto-webhook]
 verify_jwt = false

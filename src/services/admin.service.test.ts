@@ -1,7 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Evita instanciar o client real (createClient exige env vars ausentes no teste).
-vi.mock('@/integrations/supabase/client', () => ({ supabase: {} }));
+// Query builder que sempre devolve 0 linhas afetadas (cenário "barrado por RLS").
+const emptyResult = Promise.resolve({ data: [], error: null });
+const builder: Record<string, unknown> = {};
+for (const m of ['update', 'delete', 'eq', 'select']) {
+  builder[m] = () => builder;
+}
+Object.assign(builder, { then: (...a: unknown[]) => (emptyResult as unknown as PromiseLike<unknown>).then(...(a as [never, never])) });
+
+vi.mock('@/integrations/supabase/client', () => ({
+  supabase: { from: () => builder },
+}));
 
 import { toRowPatch } from '@/services/admin.service';
 import {
@@ -82,5 +92,23 @@ describe('toActivityInput', () => {
       capacity: '-3', startsAt: '', endsAt: '', isActive: true,
     });
     expect(r.success).toBe(false);
+  });
+});
+
+// ── Mutações barradas por RLS não podem retornar sucesso silencioso ─────────
+// Um UPDATE/DELETE bloqueado pela RLS casa 0 linhas e o PostgREST devolve
+// sucesso sem erro. Sem conferir as linhas afetadas, a UI diz "removido"
+// enquanto o banco não mudou.
+describe('mutações admin com 0 linhas afetadas', () => {
+  const cases: Array<[string, (m: typeof import('@/services/admin.service')) => Promise<unknown>]> = [
+    ['publicActivitiesService.remove', (m) => m.publicActivitiesService.remove('a1')],
+    ['publicActivitiesService.toggleActive', (m) => m.publicActivitiesService.toggleActive('a1', false)],
+    ['enrollmentsService.updateStatus', (m) => m.enrollmentsService.updateStatus('e1', 'CONFIRMED')],
+    ['enrollmentsService.remove', (m) => m.enrollmentsService.remove('e1')],
+  ];
+
+  it.each(cases)('%s lança quando nada foi afetado', async (_name, call) => {
+    const mod = await import('@/services/admin.service');
+    await expect(call(mod)).rejects.toThrow(/permiss/i);
   });
 });

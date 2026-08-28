@@ -5,6 +5,8 @@ import { CategoryId, AgeRange, Resource } from '@/lib/types';
 import { resourcesService } from '@/services/resources.service';
 import ResourceCard from '@/components/catalog/ResourceCard';
 import ResourceModal from '@/components/catalog/ResourceModal';
+import Chip from '@/components/ui/chip';
+import EmptyState from '@/components/ui/EmptyState';
 
 const ExplorePage: React.FC = () => {
   const [selectedAge, setSelectedAge] = useState<AgeRange>('all');
@@ -42,47 +44,46 @@ const ExplorePage: React.FC = () => {
   return (
     <div className="px-5 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       <div className="animate-slide-up">
-        <h1 className="font-fredoka text-2xl sm:text-3xl font-bold tracking-tight gradient-text mb-1">Explorar Recursos 🧭</h1>
+        <h1 className="font-fredoka text-h1 font-bold text-ink mb-1">Explorar Recursos 🧭</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">Descubra materiais para enriquecer suas aulas de produção textual.</p>
       </div>
 
       <div className="space-y-2.5">
-        <div className="flex flex-wrap gap-1.5 animate-slide-up" style={{ animationDelay: '0.05s' }}>
+        <div className="flex flex-wrap gap-2 animate-slide-up" style={{ animationDelay: '0.05s' }}>
           {categories.map((cat) => (
-            <button key={cat.id} onClick={() => setSelectedCategory(cat.id)} className={`chip ${selectedCategory === cat.id ? 'chip-active' : 'text-muted-foreground'}`}>
-              {cat.icon} {cat.label}
-            </button>
+            <Chip
+              key={cat.id}
+              icon={cat.icon}
+              active={selectedCategory === cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+            >
+              {cat.label}
+            </Chip>
           ))}
         </div>
-        <div className="flex flex-wrap gap-1.5 animate-slide-up" style={{ animationDelay: '0.08s' }}>
+        <div className="flex flex-wrap gap-2 animate-slide-up" style={{ animationDelay: '0.08s' }}>
           {ages.map((a) => (
-            <button key={a.id} onClick={() => setSelectedAge(a.id)} className={`px-3.5 py-1.5 rounded-full text-xs font-medium cursor-pointer select-none border transition-all duration-200 ${
-              selectedAge === a.id
-                ? 'bg-primary/10 text-primary border-primary/30 font-semibold'
-                : 'bg-card text-muted-foreground border-border hover:bg-secondary/60'
-            }`}>
+            <Chip key={a.id} active={selectedAge === a.id} onClick={() => setSelectedAge(a.id)}>
               {a.label}
-            </button>
+            </Chip>
           ))}
         </div>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-4xl mb-3">⏳</p>
-          <p className="font-fredoka text-base">Carregando recursos…</p>
-        </div>
+        <EmptyState tone="loading" title="Carregando recursos…" />
       ) : isError ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-4xl mb-3">⚠️</p>
-          <p className="font-fredoka text-base">Não foi possível carregar os recursos</p>
-          <p className="text-xs mt-2">{error instanceof Error ? error.message : 'Tente novamente em instantes.'}</p>
-        </div>
+        <EmptyState
+          tone="error"
+          mood="neutral"
+          title="Não foi possível carregar os recursos"
+          description={error instanceof Error ? error.message : 'Tente novamente em instantes.'}
+        />
       ) : resources.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-4xl mb-3">🔍</p>
-          <p className="font-fredoka text-base">Nenhum recurso encontrado</p>
-        </div>
+        <EmptyState
+          title="Nada encontrado para esses filtros"
+          description="Tente afrouxar a categoria ou a faixa de ano."
+        />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {resources.map((r, i) => (

@@ -61,7 +61,7 @@ const AdminEnrollmentsPage: React.FC = () => {
     <div className="space-y-5 max-w-6xl">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="font-fredoka text-2xl font-bold tracking-tight">Adesões a atividades</h1>
+          <h1 className="font-fredoka text-h1 font-bold">Adesões a atividades</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Aprove, mova para lista de espera ou cancele inscrições do público.
           </p>
@@ -82,7 +82,7 @@ const AdminEnrollmentsPage: React.FC = () => {
 
       {isLoading && <p className="text-sm text-muted-foreground">Carregando…</p>}
       {isError && (
-        <div className="rounded-xl border border-rose-500/20 bg-rose-500/5 p-4 text-sm text-rose-500">
+        <div className="rounded-xl border border-danger/20 bg-danger/5 p-4 text-sm text-danger">
           Falha ao carregar: {error instanceof Error ? error.message : 'erro desconhecido'}
         </div>
       )}
@@ -138,7 +138,7 @@ const AdminEnrollmentsPage: React.FC = () => {
                         onClick={() => {
                           if (confirm('Remover esta adesão?')) remove.mutate(e.id);
                         }}
-                        className="p-1.5 rounded hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
+                        className="p-1.5 rounded hover:bg-danger/10 hover:text-danger transition-colors"
                         title="Remover"
                       >
                         <Trash2 className="w-3.5 h-3.5" />

@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 // Único backend HTTP próprio: o microsserviço de IA (FastAPI). Todo o resto
-// (auth, recursos, favoritos, comunidade, admin) fala direto com o Supabase.
+// (auth, recursos, favoritos, admin) fala direto com o Supabase.
 const FASTAPI_URL = import.meta.env.VITE_AI_URL || 'http://localhost:8000';
 
 // Lê o access_token da sessão corrente do Supabase — sempre fresco,

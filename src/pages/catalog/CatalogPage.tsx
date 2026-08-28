@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Eye, Search, Gamepad2, PenTool, ClipboardCheck, School, ChevronRight, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import EmptyState from '@/components/ui/EmptyState';
 import { toast } from 'sonner';
 import { catalogTabs, type CatalogTab, type Subcategory } from '@/lib/catalogData';
 
@@ -154,11 +155,11 @@ const TabContent: React.FC<{ tab: CatalogTab; searchQuery: string }> = ({ tab, s
       ))}
 
       {filtered.length === 0 && (
-        <div className="text-center py-16 text-muted-foreground animate-slide-up">
-          <p className="text-4xl mb-3">🔍</p>
-          <p className="font-fredoka text-base">Nenhum recurso encontrado</p>
-          <p className="text-sm mt-1">Tente buscar com outros termos.</p>
-        </div>
+        <EmptyState
+          className="animate-slide-up"
+          title="Nenhum recurso encontrado"
+          description="Tente buscar com outros termos."
+        />
       )}
     </div>
   );
@@ -170,7 +171,7 @@ const CatalogPage: React.FC = () => {
   return (
     <div className="px-5 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-6">
       <div className="animate-slide-up">
-        <h1 className="font-fredoka text-2xl sm:text-3xl font-bold tracking-tight gradient-text mb-1">
+        <h1 className="font-fredoka text-h1 font-bold text-ink mb-1">
           Catálogo de Atividades 📚
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed">

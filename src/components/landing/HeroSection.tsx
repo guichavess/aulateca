@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import CheckoutButton from "@/components/landing/CheckoutButton";
 import HeroPhone from "@/components/landing/HeroPhone";
 
 const HeroSection = () => {
@@ -66,11 +66,10 @@ const HeroSection = () => {
               </div>
 
               {/* Headline */}
-              <h1 className="font-fredoka font-bold text-3xl sm:text-4xl lg:text-5xl text-white leading-tight mb-6">
+              <h1 className="font-fredoka font-bold text-display text-white mb-6">
                 Chega de perder noites montando aula.{" "}
                 <span className="text-[#FFB830]">226+ atividades</span> de
-                Produção de Textos prontas para usar AMANHÃ — com IA que faz o
-                plano por você.
+                Produção de Textos prontas para usar AMANHÃ.
               </h1>
 
               {/* Corpo */}
@@ -84,29 +83,17 @@ const HeroSection = () => {
                 cordel, charge, tirinha, biografia, debate, seminário, texto
                 estilo ENEM e muito mais. Do 1° ao 9° ano.
               </p>
-              <p className="font-nunito text-base sm:text-lg text-white/85 leading-relaxed mb-8">
-                E o melhor: o <strong className="text-white">TECA</strong>,
-                nossa IA pedagógica, gera planos de aula completos em{" "}
-                <strong className="text-white">30 segundos</strong> e ainda
-                corrige as redações dos seus alunos com feedback motivacional.
-                <br />
-                <strong className="text-white">
-                  Nenhuma outra plataforma faz isso.
-                </strong>
-              </p>
 
               {/* CTA */}
-              <Link
-                to="/"
+              <CheckoutButton
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-extrabold text-base sm:text-lg hover:brightness-105 transition-all shadow-[0_4px_20px_rgba(255,184,48,0.5)] hover:shadow-[0_8px_30px_rgba(255,184,48,0.6)] hover:-translate-y-1 active:translate-y-0"
               >
-                🐙 QUERO ACESSAR TODAS AS 226+ ATIVIDADES + IA AGORA!
-              </Link>
+                🐙 QUERO ACESSAR TODAS AS 226+ ATIVIDADES AGORA!
+              </CheckoutButton>
 
               {/* Subtexto CTA */}
               <p className="mt-4 text-white/60 text-sm font-nunito">
-                ✓ 7 dias de garantia &nbsp;·&nbsp; ✓ Cancele quando
-                quiser &nbsp;·&nbsp; ✓ Comece grátis
+                ✓ 7 dias de garantia (direito de arrependimento, CDC art. 49)
               </p>
             </div>
 

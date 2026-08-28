@@ -503,6 +503,10 @@ export type Database = {
           last_event: string | null
           last_event_at: string | null
           is_active: boolean
+          access_email_sent_at: string | null
+          access_email_error: string | null
+          subscription_id: string | null
+          created_at: string
         }
         Relationships: []
       }

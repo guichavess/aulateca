@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Bell, Menu, Search, X, Compass, BookOpen, MessageCircle, Heart, PenLine, BookOpenCheck, Gamepad2, CalendarHeart, Shield } from 'lucide-react';
-import { toast } from 'sonner';
+import { Menu, Search, X, Compass, BookOpen, Heart, PenLine, BookOpenCheck, Gamepad2, CalendarHeart, Shield } from 'lucide-react';
 import { useApp } from '@/lib/context';
-import mascot from '@/assets/mascot.png';
+import NotificationBell from '@/components/layout/NotificationBell';
+import UserMenu from '@/components/layout/UserMenu';
+import TecaMascot from '@/components/brand/TecaMascot';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 interface AppHeaderProps {
@@ -15,7 +16,6 @@ const mobileMenuItems = [
   { path: '/explore', label: 'Explorar', icon: Compass },
   { path: '/catalog', label: 'Catálogo', icon: BookOpen },
   { path: '/favorites', label: 'Favoritos', icon: Heart },
-  { path: '/community', label: 'Comunidade', icon: MessageCircle },
   { path: '/categoria/producao-texto', label: 'Produção de Texto', icon: PenLine },
   { path: '/categoria/interpretacao-texto', label: 'Interpretação de Texto', icon: BookOpenCheck },
   { path: '/categoria/ludica', label: 'Atividades Lúdicas', icon: Gamepad2 },
@@ -24,49 +24,40 @@ const mobileMenuItems = [
 ];
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
-  const { logout, userName, user } = useApp();
+  const { user } = useApp();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isAdmin = user?.role === 'ADMIN';
 
-  const initials = userName
-    ? userName.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase()
-    : 'PT';
 
   if (isMobile) {
     return (
       <>
         <header
-          className="h-12 flex items-center justify-between px-4 sticky top-0 z-30 border-b border-border/30"
-          style={{ background: 'hsla(var(--background), 0.92)', backdropFilter: 'blur(20px)' }}
+          className="surface-chrome h-14 flex items-center justify-between px-4 sticky top-0 z-30 border-b-2"
         >
           {/* Left: hamburger + logo */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-muted-foreground hover:text-foreground p-1 transition-colors duration-200"
+              aria-label="Abrir menu"
+              aria-expanded={mobileMenuOpen}
+              className="flex h-10 w-10 items-center justify-center rounded-button text-muted-foreground transition-colors hover:bg-secondary hover:text-ink"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <img src={mascot} alt="Aulateca" className="w-7 h-7 rounded-lg object-cover" />
+            <TecaMascot size="xs" alt="Aulateca" />
             <span className="font-fredoka text-base font-bold text-foreground tracking-tight">Aulateca</span>
           </div>
 
           {/* Right: bell + avatar */}
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => toast.info('Sem notificações novas')}
-              className="relative text-muted-foreground hover:text-foreground p-1.5 transition-colors duration-200"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-destructive ring-2 ring-background" />
-            </button>
-            <button
-              onClick={logout}
-              className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/15 to-primary/8 flex items-center justify-center text-[11px] font-bold text-primary"
-            >
-              {initials}
-            </button>
+            <NotificationBell
+              className="flex h-10 w-10 items-center justify-center rounded-button text-muted-foreground transition-colors hover:bg-secondary hover:text-ink"
+              iconClassName="w-5 h-5"
+              badgeClassName="top-1 right-1"
+            />
+            <UserMenu />
           </div>
         </header>
 
@@ -75,30 +66,25 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
           <>
             <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setMobileMenuOpen(false)} />
             <div
-              className="fixed top-0 left-0 w-[280px] h-full z-50 border-r border-border/30 animate-slide-up overflow-y-auto"
-              style={{ background: 'hsl(var(--background))' }}
+              className="surface-chrome fixed top-0 left-0 w-[280px] h-full z-50 border-r-2 animate-slide-up overflow-y-auto"
             >
-              <div className="flex items-center justify-between px-4 h-12 border-b border-border/30">
+              <div className="flex items-center justify-between px-4 h-14 border-b-2 border-border">
                 <div className="flex items-center gap-2">
-                  <img src={mascot} alt="Aulateca" className="w-7 h-7 rounded-lg object-cover" />
+                  <TecaMascot size="xs" alt="Aulateca" />
                   <span className="font-fredoka text-base font-bold text-foreground tracking-tight">Aulateca</span>
                 </div>
-                <button onClick={() => setMobileMenuOpen(false)} className="text-muted-foreground hover:text-foreground p-1">
+                <button onClick={() => setMobileMenuOpen(false)} aria-label="Fechar menu" className="flex h-10 w-10 items-center justify-center rounded-button text-muted-foreground transition-colors hover:bg-secondary hover:text-ink">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <nav className="p-3 space-y-1">
+              <nav className="p-3 space-y-1.5">
                 {mobileMenuItems.map((item) => (
                   <NavLink
                     key={item.path}
                     to={item.path}
                     onClick={() => setMobileMenuOpen(false)}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                        isActive
-                          ? 'bg-primary/10 text-primary font-semibold'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
-                      }`
+                      `nav-item ${isActive ? 'nav-item-active' : ''}`
                     }
                   >
                     <item.icon className="w-[18px] h-[18px] shrink-0" />
@@ -115,23 +101,24 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
 
   return (
     <header
-      className="h-14 flex items-center gap-3 px-4 sm:px-6 lg:px-8 border-b border-border/40 sticky top-0 z-30"
-      style={{ background: 'hsla(var(--background), 0.88)', backdropFilter: 'blur(20px)' }}
+      className="surface-chrome h-16 flex items-center gap-3 px-4 sm:px-6 lg:px-8 border-b-2 sticky top-0 z-30"
     >
       <button
         onClick={onToggleSidebar}
-        className="text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg p-1.5 transition-all duration-200"
+        aria-label="Recolher ou expandir o menu lateral"
+        className="flex h-10 w-10 items-center justify-center rounded-button text-muted-foreground transition-colors hover:bg-secondary hover:text-ink"
       >
         <Menu className="w-5 h-5" />
       </button>
 
       <div className="flex-1 max-w-sm">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-secondary/50 border border-border/30 transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/25 focus-within:border-primary/25 focus-within:bg-card">
+        <div className="field-sticker flex items-center gap-2 h-11 px-3.5">
           <Search className="w-4 h-4 text-muted-foreground shrink-0" />
           <input
             type="text"
             placeholder="Buscar recursos..."
             className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground/70 outline-none w-full"
+            aria-label="Buscar recursos"
           />
         </div>
       </div>
@@ -141,25 +128,18 @@ const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {
           <button
             onClick={() => navigate('/admin')}
             title="Painel administrativo"
-            className="flex items-center gap-1.5 text-xs font-semibold text-primary hover:bg-primary/10 rounded-lg px-2.5 py-1.5 transition-all duration-200"
+            className="flex items-center gap-1.5 h-10 px-3 rounded-button border-2 border-transparent font-fredoka text-xs font-bold text-primary transition-colors hover:bg-accent hover:border-primary/35"
           >
             <Shield className="w-[14px] h-[14px]" />
             Admin
           </button>
         )}
-        <button
-          onClick={() => toast.info('Sem notificações novas')}
-          className="relative text-muted-foreground hover:text-foreground hover:bg-secondary/60 rounded-lg p-2 transition-all duration-200"
-        >
-          <Bell className="w-[18px] h-[18px]" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-destructive ring-2 ring-background" />
-        </button>
-        <button
-          onClick={logout}
-          className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/15 to-primary/8 flex items-center justify-center text-[11px] font-bold text-primary hover:from-primary/25 hover:to-primary/12 transition-all duration-200 ml-1"
-        >
-          {initials}
-        </button>
+        <NotificationBell
+          className="flex h-10 w-10 items-center justify-center rounded-button text-muted-foreground transition-colors hover:bg-secondary hover:text-ink"
+          iconClassName="w-[18px] h-[18px]"
+          badgeClassName="top-1.5 right-1.5"
+        />
+        <UserMenu className="ml-1" />
       </div>
     </header>
   );

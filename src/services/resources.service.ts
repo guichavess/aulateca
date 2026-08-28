@@ -10,7 +10,6 @@ interface ResourcesResponse {
 
 interface FetchResourcesParams {
   category?: CategoryId;
-  type?: ResourceType;
   ageRange?: AgeRange;
   search?: string;
   page?: number;
@@ -41,10 +40,12 @@ type ResourceRow = {
   rating: number | null;
   is_new: boolean | null;
   file_url: string | null;
+  image_url: string | null;
+  author_name: string | null;
   profiles: { name: string } | null;
 };
 
-function toResource(row: ResourceRow): Resource {
+export function toResource(row: ResourceRow): Resource {
   return {
     id: row.id,
     title: row.title,
@@ -56,14 +57,45 @@ function toResource(row: ResourceRow): Resource {
     downloads: row.downloads ?? 0,
     rating: row.rating ?? 0,
     isNew: row.is_new ?? false,
-    author: row.profiles?.name ?? 'Aulateca',
+    // author_name cobre o acervo curado, que não tem dono em auth.users (009).
+    author: row.profiles?.name ?? row.author_name ?? 'Aulateca',
     fileUrl: row.file_url ?? null,
+    imageUrl: row.image_url ?? undefined,
   };
+}
+
+// ── Download do conteúdo pago ────────────────────────────────────────────────
+// Desde a Fase 5 os PDFs não moram mais em public/: estão no bucket privado
+// `atividades`. Por isso `file_url` deixou de ser URL e passou a ser o caminho
+// dentro do bucket ("ludica/<slug>/<slug>.pdf"), que só vira link depois de
+// assinado — e a policy de storage (migration 015) só assina para quem tem
+// acesso pago.
+export const ATIVIDADES_BUCKET = 'atividades';
+
+// 60 s: tempo de sobra para o navegador iniciar o download e curto demais para
+// o link virar moeda de troca em grupo de WhatsApp.
+export const SIGNED_URL_TTL_SECONDS = 60;
+
+/**
+ * Distingue caminho de bucket de URL pronta. Continua existindo link absoluto
+ * no acervo — recurso cadastrado pelo /admin apontando para fora — e esse
+ * abre direto, sem assinatura.
+ */
+export function isBucketPath(fileUrl: string): boolean {
+  return !/^[a-z]+:/i.test(fileUrl) && !fileUrl.startsWith('//') && !fileUrl.startsWith('/');
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// A coluna `resources.id` é uuid: mandar um id de mock ('1', '2'…) faz o
+// Postgres devolver erro 22P02 e derruba a tela inteira. Filtramos antes.
+export function isUuid(value: string): boolean {
+  return UUID_RE.test(value);
 }
 
 export const resourcesService = {
   async fetchAll(params: FetchResourcesParams = {}): Promise<ResourcesResponse> {
-    const { category, type, ageRange, search, page = 1, limit = 12 } = params;
+    const { category, ageRange, search, page = 1, limit = 12 } = params;
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
@@ -74,7 +106,6 @@ export const resourcesService = {
       .order('created_at', { ascending: false });
 
     if (category && category !== 'all') query = query.eq('category', category);
-    if (type) query = query.eq('type', type);
     if (ageRange && ageRange !== 'all') query = query.eq('age_range', ageRange);
     if (search) {
       const pattern = quotePostgrestValue(`%${escapeIlikePattern(search)}%`);
@@ -104,11 +135,12 @@ export const resourcesService = {
   },
 
   async fetchByIds(ids: string[]): Promise<Resource[]> {
-    if (ids.length === 0) return [];
+    const validIds = ids.filter(isUuid);
+    if (validIds.length === 0) return [];
     const { data, error } = await supabase
       .from('resources')
       .select('*, profiles(name)')
-      .in('id', ids);
+      .in('id', validIds);
     if (error) throw new Error(error.message);
     return (data ?? []).map(toResource);
   },
@@ -124,6 +156,7 @@ export const resourcesService = {
         age_range: resource.ageRange,
         duration: resource.duration,
         is_new: resource.isNew ?? false,
+        image_url: resource.imageUrl ?? null,
         author_id: authorId,
       })
       .select('*, profiles(name)')
@@ -133,6 +166,23 @@ export const resourcesService = {
   },
 
   async registerDownload(id: string): Promise<void> {
+    if (!isUuid(id)) return;
     await supabase.rpc('increment_downloads', { resource_id: id });
+  },
+
+  // Devolve um link abrível para o arquivo do recurso. Lança quando o storage
+  // recusa: sem acesso pago a policy não deixa assinar, e é isso que faz o
+  // paywall valer no arquivo, não só na tela.
+  async resolveDownloadUrl(fileUrl: string): Promise<string> {
+    if (!isBucketPath(fileUrl)) return fileUrl;
+
+    const { data, error } = await supabase.storage
+      .from(ATIVIDADES_BUCKET)
+      .createSignedUrl(fileUrl, SIGNED_URL_TTL_SECONDS);
+
+    if (error || !data?.signedUrl) {
+      throw new Error(error?.message ?? 'não foi possível gerar o link do arquivo');
+    }
+    return data.signedUrl;
   },
 };

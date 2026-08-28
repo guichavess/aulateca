@@ -80,7 +80,7 @@ const ActivityFormDialog: React.FC<Props> = ({ activity, onClose, onSaved }) => 
   };
 
   const err = (name: keyof ActivityFormValues) =>
-    errors[name] && <p className="text-xs text-rose-500 mt-1">{errors[name]?.message}</p>;
+    errors[name] && <p className="text-xs text-danger mt-1">{errors[name]?.message}</p>;
 
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>

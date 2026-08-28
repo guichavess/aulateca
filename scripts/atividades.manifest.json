@@ -1,0 +1,488 @@
+[
+  {
+    "slug": "1o-ano-gramatica-monte-a-palavra",
+    "source": "1 ano/atividade 1.png",
+    "title": "1º Ano — Gramática: Monte a Palavra",
+    "description": "Três jogos de recortar e colar: montar palavras a partir de sílabas, caçar as vogais que faltam e organizar palavras soltas em frases. Trabalha consciência fonológica e formação de frases.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "1o-ano-redacao-historias-incriveis",
+    "source": "1 ano/atividade 2.png",
+    "title": "1º Ano — Redação: Histórias Incríveis",
+    "description": "Sorteia personagem, lugar e objeto recortados para inventar uma história maluca, ordena as cenas de uma narrativa e monta a própria história em quatro quadros com desenho e escrita.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "1o-ano-interpretacao-detetive-da-historia",
+    "source": "1 ano/atividade 3 .png",
+    "title": "1º Ano — Interpretação: Detetive da História",
+    "description": "Lê um texto curto e cola as respostas de quem, onde e o quê; liga cada personagem à sua ação e recorta três cenas para colocar na ordem certa.",
+    "category": "interpretacao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "2o-ano-gramatica-casa-dos-substantivos",
+    "source": "2 ano/atividade 1 .png",
+    "title": "2º Ano — Gramática: A Casa dos Substantivos",
+    "description": "Classifica doze palavras em pessoas, animais, objetos e lugares, identifica o verbo que indica a ação em cada frase e combina adjetivos com os substantivos certos.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "2o-ano-redacao-fabrica-de-historias",
+    "source": "2 ano/atividade 2.png",
+    "title": "2º Ano — Redação: Fábrica de Histórias",
+    "description": "Combina personagem, lugar e acontecimento recortados, ordena cartas para montar o enredo e reescreve o final de uma história dada. Trabalha estrutura narrativa e criatividade.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "2o-ano-interpretacao-mapa-da-historia",
+    "source": "2 ano/atividade 3.png",
+    "title": "2º Ano — Interpretação: Mapa da História",
+    "description": "Responde a perguntas de quem, onde e quando sobre um texto curto, desembaralha as cenas de uma narrativa e preenche o mapa da história com personagens, lugar, problema e desfecho.",
+    "category": "interpretacao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "3o-ano-gramatica-detetives-da-pontuacao",
+    "source": "3 ano/atividade 1 21.38.48.png",
+    "title": "3º Ano — Gramática: Detetives da Pontuação",
+    "description": "Recorta os sinais de pontuação e cola nos lugares certos de um texto sem pontuação, reescreve o texto pontuado e completa frases com o sinal que falta.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "3o-ano-redacao-meu-primeiro-jornal",
+    "source": "3 ano/atividade 2 21.38.48.png",
+    "title": "3º Ano — Redação: Meu Primeiro Jornal",
+    "description": "Cria um personagem em ficha e desenho, dá continuidade a uma história começada e escreve uma notícia seguindo a estrutura de título, quem, onde, quando, o quê, por quê e como.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "3o-ano-interpretacao-o-cachorro-fiel",
+    "source": "3 ano/atividade 3 21.38.48.png",
+    "title": "3º Ano — Interpretação: O Cachorro Fiel",
+    "description": "Lê o texto sobre o cachorro fiel e responde cinco perguntas, marca verdadeiro ou falso, preenche o mapa da história com problema e lição e separa palavras em sílabas.",
+    "category": "interpretacao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "4o-ano-gramatica-as-palavras-tem-poder",
+    "source": "4 ano/atividade 1 21.46.23.png",
+    "title": "4º Ano — Gramática: As Palavras Têm Poder",
+    "description": "Seis blocos de gramática numa folha só: classes de palavras, substantivos comuns e próprios, tempos verbais, sinais de pontuação, caça ao erro e formação de frases.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "4o-ano-redacao-crie-seu-personagem",
+    "source": "4 ano/atividade 2 21.46.23.png",
+    "title": "4º Ano — Redação: Crie seu Personagem",
+    "description": "Preenche a ficha completa de um personagem, escreve uma história com começo, meio e fim e produz uma página de diário. Inclui tabela de revisão da própria produção.",
+    "category": "producao-texto",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "4o-ano-interpretacao-a-importancia-das-abelhas",
+    "source": "4 ano/atividade 3 21.46.23.png",
+    "title": "4º Ano — Interpretação: A Importância das Abelhas",
+    "description": "Sete blocos sobre um texto informativo: perguntas de compreensão, verdadeiro ou falso, antônimos, inferência, ordem dos fatos, ligação de ideias e produção de opinião.",
+    "category": "interpretacao-texto",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "5o-ano-gramatica-classes-e-concordancia",
+    "source": "5 ano/atividade 1 21.53.00.png",
+    "title": "5º Ano — Gramática: Classes e Concordância",
+    "description": "Classes de palavras, substantivos concretos e abstratos, figuras de linguagem, sujeito e predicado, tempos e modos verbais e correção de erros de concordância.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "5o-ano-redacao-planeje-sua-historia",
+    "source": "5 ano/atividade 2 21.53.00.png",
+    "title": "5º Ano — Redação: Planeje sua História",
+    "description": "Cria o personagem, planeja a história em começo, meio e fim antes de escrever e produz o texto final. Fecha com uma tabela de autoavaliação da produção.",
+    "category": "producao-texto",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "5o-ano-interpretacao-a-importancia-da-leitura",
+    "source": "5 ano/atividade 3 21.53.00.png",
+    "title": "5º Ano — Interpretação: A Importância da Leitura",
+    "description": "Oito blocos sobre um texto argumentativo: compreensão, verdadeiro ou falso, inferências, antônimos, ordem dos fatos, palavras no contexto e produção de opinião.",
+    "category": "interpretacao-texto",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "caca-ao-tesouro-das-palavras",
+    "source": "1 .png",
+    "title": "Caça ao Tesouro das Palavras",
+    "description": "Seis pistas descrevem objetos do dia a dia. A criança recorta as palavras e cola cada tesouro no lugar certo do mapa pirata. Trabalha leitura, vocabulário e associação.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "bingo-das-palavras",
+    "source": "2 .png",
+    "title": "Bingo das Palavras",
+    "description": "Cartela de dezesseis palavras com imagem e dez pistas para o professor ler em voz alta. Inclui fichas recortáveis para marcar e um desafio de criar frases com três palavras sorteadas.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "memoria-de-palavras-e-imagens",
+    "source": "3.png",
+    "title": "Memória de Palavras e Imagens",
+    "description": "Vinte cartas para recortar formam dez pares de palavra e imagem. Depois do jogo da memória, a criança escolhe três pares e escreve uma frase ou história curta.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "domino-de-palavras",
+    "source": "4.png",
+    "title": "Dominó de Palavras",
+    "description": "Peças de imagem, palavra e definição para recortar e encaixar como um dominó, com tabuleiro em branco para montar as combinações. Trabalha leitura e significado.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "roleta-da-imaginacao",
+    "source": "5.png",
+    "title": "Roleta da Imaginação",
+    "description": "Roleta de quatro quadrantes — personagem, lugar, objeto e ação — montada com colchete. A criança gira, registra o sorteio na ficha e escreve a história que saiu.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "quebra-cabeca-da-historia",
+    "source": "6.png",
+    "title": "Quebra-Cabeça da História",
+    "description": "Quatro cenas de uma história para recortar, organizar na ordem que faz sentido e colar. Depois a criança reconta a narrativa com as próprias palavras.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "quem-sou-eu",
+    "source": "7.png",
+    "title": "Quem Sou Eu?",
+    "description": "Quatro conjuntos de pistas descrevem um objeto ou animal. A criança recorta as oito cartas e cola a resposta certa em cada quadro, depois cria uma frase com ela.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "complete-o-desenho-e-conte",
+    "source": "8.png",
+    "title": "Complete o Desenho e Conte",
+    "description": "Quatro cenas incompletas para a criança terminar de desenhar, com um banco de dez ideias ilustradas. Em seguida escreve uma frase, legenda ou história curta sobre o que criou.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "trilha-das-palavras",
+    "source": "9.png",
+    "title": "Trilha das Palavras",
+    "description": "Tabuleiro de dezenove casas com desafios de leitura, fala e criatividade, com peões e dado para recortar e montar. Pode ser jogado em dupla, em grupo ou sozinho.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "desafio-das-rimas",
+    "source": "10.png",
+    "title": "Desafio das Rimas",
+    "description": "Cinco pares que rimam para ligar e dez cartas para recortar e juntar. Fecha com a escrita de uma frase e de um versinho usando o par favorito.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "20 min"
+  },
+  {
+    "slug": "monstro-das-emocoes",
+    "source": "11.png",
+    "title": "Monstro das Emoções",
+    "description": "Monta um monstrinho com cabeça, olhos, boca, braços, pernas e acessórios recortáveis, escolhe entre seis emoções e escreve como ele está se sentindo e por quê.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "monstro-das-emocoes-monte-e-conte",
+    "source": "12.png",
+    "title": "Monstro das Emoções — Monte e Conte",
+    "description": "Versão ampliada: monta o monstro com as peças recortáveis, escolhe a emoção numa escala de seis e responde por que ele se sente assim, o que aconteceu e o que pode melhorar.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "missao-dos-piratas",
+    "source": "13.png",
+    "title": "Missão dos Piratas",
+    "description": "Seis pistas indicam o caminho até o tesouro escondido. A criança recorta navio, caverna, vulcão, ponte e baú, monta o mapa na ordem certa e responde ao desafio extra.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "parque-dos-dinossauros",
+    "source": "14.png",
+    "title": "Parque dos Dinossauros",
+    "description": "Nove dinossauros para recortar e colar no habitat correto — floresta, vulcão, lago, deserto ou caverna — com cards explicativos, três perguntas e o desafio de criar um dino inédito.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "laboratorio-do-cientista",
+    "source": "15.png",
+    "title": "Laboratório do Cientista",
+    "description": "Combina tubos de ensaio, ingredientes e equipamentos recortáveis em três experimentos, preenche a ficha da invenção e desenha o resultado. Inclui cartas-surpresa que mudam tudo.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "fabrica-de-super-herois",
+    "source": "17.png",
+    "title": "Fábrica de Super-Heróis",
+    "description": "Monta o herói com máscara, capa, uniforme, acessórios e símbolo recortáveis, escolhe os superpoderes, preenche a ficha e escreve uma aventura cumprindo as missões do dia.",
+    "category": "producao-texto",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "construa-um-castelo",
+    "source": "18.png",
+    "title": "Construa um Castelo",
+    "description": "Torres, muralhas, portões, bandeiras, decorações e personagens para recortar e montar o castelo. Depois a criança descreve quem mora nele, desenha o interior e cria o brasão.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "safari-dos-animais",
+    "source": "19.png",
+    "title": "Safari dos Animais",
+    "description": "Dez animais para recortar e colar no habitat certo — savana, floresta, oceano, deserto e polo norte —, três perguntas de observação, jogo da memória e um animal inventado.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "mercado-divertido",
+    "source": "20.png",
+    "title": "Mercado Divertido",
+    "description": "Monta a cesta seguindo três listas de compras, recorta produtos por setor — hortifruti, laticínios, padaria, higiene e bebidas — e trabalha etiquetas de preço com cartas-surpresa.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "restaurante-maluco",
+    "source": "21.png",
+    "title": "Restaurante Maluco",
+    "description": "Três clientes fazem pedidos e a criança monta cada prato com ingredientes recortáveis, escreve o menu do dia e encara o desafio do chef com as cartas-surpresa.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "missao-dos-bombeiros",
+    "source": "ChatGPT Image 19 de ago. de 2026, 20_13_20.png",
+    "title": "Missão dos Bombeiros",
+    "description": "Monta a cena de resgate com veículos, equipamentos e personagens recortáveis, numera o plano de resgate na ordem correta e escreve o que aconteceu. Ensina quando ligar 193.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "escola-de-magia",
+    "source": "ChatGPT Image 19 de ago. de 2026, 20_16_54.png",
+    "title": "Escola de Magia",
+    "description": "Cria o próprio mago escolhendo chapéu, varinha, livro e cristal, inventa três poções e um feitiço, joga a memória mágica e escreve a aventura na escola de magia.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "navio-fantasma",
+    "source": "ChatGPT Image 19 de ago. de 2026, 20_29_08.png",
+    "title": "Navio Fantasma",
+    "description": "Mistério de detetive a bordo: monta a cena com as peças recortáveis, resolve o enigma do código e preenche o diário do pirata contando o que descobriu.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "40 min"
+  },
+  {
+    "slug": "acampamento-na-floresta",
+    "source": "ChatGPT Image 19 de ago. de 2026, 20_30_22.png",
+    "title": "Acampamento na Floresta",
+    "description": "Monta o acampamento, escolhe seis itens essenciais para a mochila do explorador e registra a aventura no diário. Inclui cartas-surpresa e jogo da memória.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "resgate-no-fundo-do-mar",
+    "source": "ChatGPT Image 19 de ago. de 2026, 20_30_34.png",
+    "title": "Resgate no Fundo do Mar",
+    "description": "Monta o cenário marinho, separa o que protege do que polui o mar, numera o plano de resgate e resolve o enigma do tesouro. Trabalha consciência ambiental.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "oculos-do-detetive",
+    "source": "ChatGPT Image 20 de ago. de 2026, 17_56_44.png",
+    "title": "Óculos do Detetive",
+    "description": "Recorta os óculos de lentes vermelha e azul, levanta três abas de pistas em camadas e descobre quem pegou o livro mágico da biblioteca. Trabalha inferência e dedução.",
+    "category": "interpretacao-texto",
+    "ageRange": "9-11",
+    "duration": "30 min"
+  },
+  {
+    "slug": "maquina-das-escolhas",
+    "source": "ChatGPT Image 20 de ago. de 2026, 17_58_36.png",
+    "title": "Máquina das Escolhas",
+    "description": "Três roletas presas com clipe sorteiam personagem, lugar e missão. A criança gira, combina os elementos e escreve a aventura que saiu no sorteio.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "cidade-pop-up",
+    "source": "ChatGPT Image 20 de ago. de 2026, 18_04_49.png",
+    "title": "Cidade Pop-Up",
+    "description": "Seis prédios dobráveis, personagens e veículos para recortar e montar uma cidade em três dimensões sobre a base. Depois a criança cria histórias que acontecem nela.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "trilha-da-ilha-do-tesouro",
+    "source": "ChatGPT Image 20 de ago. de 2026, 18_11_35.png",
+    "title": "Trilha da Ilha do Tesouro",
+    "description": "Jogo de tabuleiro completo para montar: dado de dobrar, marcadores em base de barco, cartas de aventura e envelope do tesouro. Trabalha leitura de instruções e jogo em grupo.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "40 min"
+  },
+  {
+    "slug": "hospital-das-frases",
+    "source": "ChatGPT Image 20 de ago. de 2026, 18_32_33.png",
+    "title": "Hospital das Frases",
+    "description": "Cinco frases doentes para diagnosticar: falta de maiúscula, acentuação, pontuação e concordância. A criança encontra o erro e cola a correção recortada.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "30 min"
+  },
+  {
+    "slug": "guarda-roupa-das-palavras",
+    "source": "ChatGPT Image 20 de ago. de 2026, 18_40_11.png",
+    "title": "Guarda-Roupa das Palavras",
+    "description": "Vinte palavras para recortar e guardar na gaveta certa: substantivo, verbo, adjetivo ou pronome. Fecha com a escrita de quatro frases usando as classes trabalhadas.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "30 min"
+  },
+  {
+    "slug": "semaforo-da-pontuacao",
+    "source": "ChatGPT Image 20 de ago. de 2026, 18_41_51.png",
+    "title": "Semáforo da Pontuação",
+    "description": "Cola o sinal certo em cinco frases e depois reescreve duas delas trocando a pontuação para ver como o sentido muda. Trabalha ponto, vírgula, interrogação e exclamação.",
+    "category": "ludica",
+    "ageRange": "9-11",
+    "duration": "30 min"
+  },
+  {
+    "slug": "historia-por-imagens",
+    "source": "ChatGPT Image 20 de ago. de 2026, 18_45_24.png",
+    "title": "História por Imagens",
+    "description": "Quatro cenas para recortar e ordenar em começo, meio e fim. Com a sequência montada, a criança escreve a narrativa completa em quatro parágrafos.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "diario-de-um-personagem",
+    "source": "ChatGPT Image 20 de ago. de 2026, 19_35_13.png",
+    "title": "Diário de um Personagem",
+    "description": "Escolhe um entre quatro personagens, cola a figura e escreve uma página de diário em primeira pessoa. Inclui autoavaliação da produção escrita.",
+    "category": "producao-texto",
+    "ageRange": "9-11",
+    "duration": "30 min"
+  },
+  {
+    "slug": "correio-das-frases",
+    "source": "ChatGPT Image 24 de ago. de 2026, 19_22_17.png",
+    "title": "Correio das Frases",
+    "description": "Oito frases para recortar e entregar no envelope certo: pergunta, ordem, exclamação ou afirmação. Depois a criança escreve uma frase de cada tipo.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "fabrica-de-personagens",
+    "source": "ChatGPT Image 24 de ago. de 2026, 19_42_46 (2).png",
+    "title": "Fábrica de Personagens",
+    "description": "Escolhe aparência, personalidade, sonho, medo e objetivo, monta a ficha do personagem e escreve um texto apresentando-o. Base para qualquer produção narrativa.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "quebra-cabeca-dos-paragrafos",
+    "source": "ChatGPT Image 24 de ago. de 2026, 19_45_56.png",
+    "title": "Quebra-Cabeça dos Parágrafos",
+    "description": "Cinco parágrafos embaralhados para recortar e colar na ordem que forma o texto. A criança cria um título e responde sobre a lição que a história deixa.",
+    "category": "interpretacao-texto",
+    "ageRange": "9-11",
+    "duration": "30 min"
+  },
+  {
+    "slug": "maquina-do-antes-e-depois",
+    "source": "ChatGPT Image 24 de ago. de 2026, 19_46_19.png",
+    "title": "Máquina do Antes e Depois",
+    "description": "Dez frases ilustradas para recortar e colar na coluna do passado, do presente ou do futuro. Fecha reescrevendo duas delas nos três tempos verbais.",
+    "category": "ludica",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  },
+  {
+    "slug": "cartas-das-emocoes",
+    "source": "ChatGPT Image 24 de ago. de 2026, 19_47_53.png",
+    "title": "Cartas das Emoções",
+    "description": "Combina personagem, situação e emoção e escreve o que aconteceu, como se sentiu, por quê e o que ajudaria. Trabalha vocabulário emocional e produção escrita.",
+    "category": "producao-texto",
+    "ageRange": "6-8",
+    "duration": "30 min"
+  }
+]

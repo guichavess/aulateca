@@ -4,14 +4,17 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  // Traço de 2px e caixa alta: o mesmo selo usado em "NOVO"/"PDF" no catálogo.
+  "inline-flex items-center rounded-pill border-2 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.053em] transition-colors",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+        default: "border-primary bg-primary text-primary-foreground",
+        secondary: "border-border bg-secondary text-secondary-foreground",
+        // Vermelho é erro: reservado, não é só "um badge vermelho".
+        destructive: "border-danger bg-danger text-danger-foreground",
+        success: "border-success bg-success text-success-foreground",
+        outline: "border-border bg-card text-muted-foreground",
       },
     },
     defaultVariants: {

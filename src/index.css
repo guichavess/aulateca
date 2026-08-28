@@ -2,55 +2,132 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════
+   Design system Aulateca — "papel e adesivo"
+   Estrutura inspirada no DESIGN.md do Duolingo (superfícies chapadas,
+   traço grosso, raio generoso, botão que afunda), com a cor da Teca.
+   Verde e vermelho NÃO são decoração: significam acerto e erro.
+   ═══════════════════════════════════════════════════════════════ */
+
 @layer base {
   :root {
     --background: 225 14% 97%;
-    --foreground: 228 14% 11%;
+    --foreground: 240 25% 18%;
 
     --card: 0 0% 100%;
-    --card-foreground: 228 14% 11%;
+    --card-foreground: 240 25% 18%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 228 14% 11%;
+    --popover-foreground: 240 25% 18%;
 
-    --primary: 249 76% 64%;
+    /* Teca Violeta — corpo do polvo. CTA, marca, estado ativo. */
+    --primary: 248 72% 58%;
     --primary-foreground: 0 0% 100%;
+    /* Versão escura usada SÓ como sombra sólida do botão-sticker. */
+    --primary-deep: 248 72% 42%;
 
     --secondary: 228 14% 95%;
-    --secondary-foreground: 228 14% 18%;
+    --secondary-foreground: 240 25% 22%;
 
     --muted: 228 10% 92%;
-    --muted-foreground: 228 6% 46%;
+    --muted-foreground: 228 8% 42%;
 
-    --accent: 249 76% 64%;
-    --accent-foreground: 0 0% 100%;
+    /* Antes era idêntico ao --primary, o que fazia hover/ghost/outline do
+       shadcn virarem bloco roxo sólido. Agora é o cinza-lilás de realce. */
+    --accent: 248 40% 95%;
+    --accent-foreground: 248 72% 42%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 228 12% 91%;
-    --input: 228 12% 91%;
-    --ring: 249 76% 64%;
-    --radius: 1rem;
+    --border: 228 14% 88%;
+    --input: 228 14% 88%;
+    --ring: 248 72% 58%;
 
-    /* Brand colors */
-    --brand-purple: 249 76% 64%;
-    --brand-purple-light: 249 95% 80%;
-    --brand-red: 0 84% 62%;
-    --brand-teal: 173 58% 44%;
-    --brand-blue: 199 65% 48%;
-    --brand-yellow: 43 96% 52%;
-    --brand-lilac: 249 92% 74%;
-    --brand-pink: 340 82% 65%;
+    /* ── Semântica de aprendizagem ── */
+    /* O verde vivo com texto branco dá só 2.15:1 — reprova em qualquer
+       tamanho. Em vez de apagar a cor da marca, o texto sobre ele é tinta:
+       7.16:1, e o verde continua vibrante. Mesma lógica no sol. */
+    --success: 89 95% 40%;
+    --success-foreground: 240 25% 18%;
+    --success-deep: 89 95% 28%;
+    /* Vermelho escurecido até passar 4.5:1 com branco (era 3.28:1). */
+    --danger: 0 84% 45%;
+    --danger-foreground: 0 0% 100%;
+    --danger-deep: 0 84% 34%;
+
+    /* Teca Céu — tentáculos. Ação secundária e informação. */
+    --sky: 203 90% 55%;
+    --sky-foreground: 0 0% 100%;
+    --sky-deep: 203 90% 40%;
+
+    /* Sol — o lápis da Teca. Destaque, estrelas, "novo". */
+    --sun: 45 100% 50%;
+    --sun-foreground: 240 25% 18%;
+    --sun-deep: 38 100% 40%;
+
+    /* Tinta — traço dos contornos e texto forte. */
+    --ink: 240 25% 18%;
+
+    /* ── Raio: fonte única de verdade ── */
+    --radius: 1rem; /* mantido: shadcn deriva lg/md/sm daqui */
+    --radius-pill: 999px;
+    --radius-button: 12px;
+    --radius-card: 16px;
+    --radius-panel: 24px;
+
+    /* ── Sombra-adesivo: sólida, não difusa. É o que dá a sensação
+       de sticker colado no papel — e o que permite "afundar". ── */
+    --shadow-sticker: 0 4px 0 0 hsl(var(--primary-deep));
+    --shadow-sticker-pressed: 0 2px 0 0 hsl(var(--primary-deep));
+    --shadow-sticker-neutral: 0 4px 0 0 hsl(var(--border));
+    --shadow-sticker-neutral-pressed: 0 2px 0 0 hsl(var(--border));
+    /* Uma sombra por cor de acao. Sem isto cada tela inventava o seu
+       `shadow-[0_4px_0_0_...]` inline, e os tons divergiam. */
+    --shadow-sticker-sky: 0 4px 0 0 hsl(var(--sky-deep));
+    --shadow-sticker-sky-pressed: 0 2px 0 0 hsl(var(--sky-deep));
+    --shadow-sticker-success: 0 4px 0 0 hsl(var(--success-deep));
+    --shadow-sticker-success-pressed: 0 2px 0 0 hsl(var(--success-deep));
+    --shadow-sticker-danger: 0 4px 0 0 hsl(var(--danger-deep));
+    --shadow-sticker-danger-pressed: 0 2px 0 0 hsl(var(--danger-deep));
+    --shadow-sticker-sun: 0 4px 0 0 hsl(var(--sun-deep));
+    --shadow-sticker-sun-pressed: 0 2px 0 0 hsl(var(--sun-deep));
+
+    /* ── Movimento: fonte única de verdade ──
+       Antes cada componente escolhia sua duração (0.12s, 0.15s, 0.2s, 0.3s)
+       e o app inteiro respondia em ritmos diferentes ao mesmo gesto. */
+    --ease-press: cubic-bezier(0.4, 0, 0.2, 1);
+    /* Back-out com leve ultrapassagem: só para coisa que ENTRA ou destrava.
+       Em botão comum vira balanço gratuito — o DESIGN.md avisa isso. */
+    --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --dur-press: 180ms;
+    --dur-enter: 320ms;
+
+    /* ── Foco ──
+       Azul-céu, como o hint do Duolingo: destaca sem parecer erro (vermelho)
+       nem acerto (verde). Contorno, não sombra: assim convive com a
+       sombra-adesivo do botão em vez de apagá-la. */
+    --focus-ring: hsl(var(--sky));
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 228 14% 11%;
-    --sidebar-primary: 249 76% 64%;
+    --sidebar-foreground: 240 25% 18%;
+    --sidebar-primary: 248 72% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 228 12% 96%;
-    --sidebar-accent-foreground: 228 14% 18%;
-    --sidebar-border: 228 12% 91%;
-    --sidebar-ring: 249 76% 64%;
+    --sidebar-accent: 248 40% 95%;
+    --sidebar-accent-foreground: 248 72% 42%;
+    --sidebar-border: 228 14% 88%;
+    --sidebar-ring: 248 72% 58%;
+
+    /* ── Marca (compat): telas ainda não migradas consomem estes tokens.
+       Realinhados à paleta da Teca para não destoarem enquanto isso. ── */
+    --brand-purple: 248 72% 58%;
+    --brand-purple-light: 248 80% 76%;
+    --brand-red: 0 84% 45%;
+    --brand-teal: 174 60% 42%;
+    --brand-blue: 203 90% 55%;
+    --brand-yellow: 45 100% 50%;
+    --brand-lilac: 248 80% 70%;
+    --brand-pink: 336 80% 62%;
   }
 }
 
@@ -63,99 +140,160 @@
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Fredoka', sans-serif;
+    /* O DESIGN.md pede peso 800 nos títulos. A Fredoka carregada vai só até
+       700 — que É o seu peso mais forte, e é o que o 800 quer dizer aqui:
+       "o mais pesado disponível", nunca o semibold. */
+    font-weight: 700;
+    letter-spacing: -0.005em;
+  }
+
+  /* ═══ Foco visível ═══
+     Antes cada componente shadcn trazia seu próprio `ring-offset` e os
+     elementos escritos à mão (chips, cards clicáveis, ícones do header)
+     não tinham foco nenhum — quem navega por teclado ficava perdido.
+     Contorno global resolve os dois casos de uma vez. */
+  :focus-visible {
+    outline: 3px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  /* O :focus sem `-visible` do shadcn continuaria pintando anel ao clicar
+     com o mouse; aqui ele é desligado para o contorno acima mandar. */
+  :focus:not(:focus-visible) {
+    outline: none;
   }
 }
 
 @layer components {
-  /* ═══ Glass Card System ═══ */
+  /* ═══ Superfície-adesivo ═══
+     Substitui o antigo .glass-card. Sem blur, sem gradiente: fundo chapado
+     e borda de 2px, para o card ler como recorte de papel. */
+  .sticker-surface {
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--border));
+    border-radius: var(--radius-card);
+    transition: transform var(--dur-press) var(--ease-press),
+                box-shadow var(--dur-press) var(--ease-press),
+                border-color var(--dur-press) var(--ease-press);
+  }
+
+  .sticker-card {
+    @apply sticker-surface;
+    box-shadow: var(--shadow-sticker-neutral);
+  }
+  .sticker-card:hover {
+    border-color: hsl(var(--primary));
+  }
+  /* O card inteiro afunda quando clicável — mesma mecânica do botão. */
+  .sticker-card-interactive:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 0 hsl(var(--primary));
+    border-color: hsl(var(--primary));
+  }
+  .sticker-card-interactive:active {
+    transform: translateY(2px);
+    box-shadow: var(--shadow-sticker-neutral-pressed);
+  }
+
+  /* Alias de transição: várias telas fora do piloto ainda usam estes nomes.
+     Apontam para o estilo novo para nada quebrar enquanto migram. */
   .glass-card {
-    background: hsla(0, 0%, 100%, 0.78);
-    border: 1px solid hsla(228, 16%, 92%, 0.65);
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    box-shadow: 0 1px 2px hsla(228, 16%, 16%, 0.05);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    @apply sticker-surface;
+    box-shadow: var(--shadow-sticker-neutral);
   }
-
   .glass-card-hover {
-    @apply glass-card;
-  }
-  .glass-card-hover:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 4px 12px hsla(228, 16%, 16%, 0.08),
-      0 8px 24px hsla(249, 76%, 64%, 0.06);
-    border-color: hsla(249, 76%, 64%, 0.16);
-  }
-  .glass-card-hover:active {
-    transform: translateY(-1px);
+    @apply sticker-card sticker-card-interactive cursor-pointer;
   }
 
-  /* ═══ Gradient Text ═══ */
+  /* ═══ Camada de compatibilidade ═══
+     Classes do tema antigo, ainda usadas pelas telas não migradas. Foram
+     reescritas no estilo novo em vez de removidas: assim as outras telas
+     acompanham a paleta sem precisarem ser tocadas nesta rodada. */
+
+  /* Era texto em gradiente; virou cor chapada. A voz da marca vem do peso
+     e do formato da Fredoka, não do degradê. */
   .gradient-text {
-    background: linear-gradient(135deg, hsl(var(--foreground)) 25%, hsl(var(--brand-purple)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: hsl(var(--ink));
+  }
+
+  /* Era gradiente + glow difuso; virou botão-adesivo que afunda. */
+  .btn-primary-glow {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-radius: var(--radius-button);
+    box-shadow: var(--shadow-sticker);
+    transition: transform var(--dur-press) var(--ease-press),
+                box-shadow var(--dur-press) var(--ease-press);
+  }
+  .btn-primary-glow:active {
+    transform: translateY(2px);
+    box-shadow: var(--shadow-sticker-pressed);
+  }
+
+  /* Os orbs borrados de fundo eram a marca do visual "SaaS genérico".
+     Neutralizados aqui (o componente FloatingOrbs continua montando, mas
+     não pinta nada) para não precisar mexer nas telas ainda não migradas. */
+  .orb {
+    display: none;
+  }
+
+  /* ═══ Chip ═══
+     Alvo de toque de 40px: o anterior tinha ~28px, apertado até para mouse. */
+  .chip {
+    @apply inline-flex items-center gap-1.5 px-4 text-sm font-bold cursor-pointer select-none;
+    min-height: 40px;
+    background: hsl(var(--card));
+    color: hsl(var(--muted-foreground));
+    border: 2px solid hsl(var(--border));
+    border-radius: var(--radius-pill);
+    transition: transform var(--dur-press) var(--ease-press),
+                box-shadow var(--dur-press) var(--ease-press),
+                border-color var(--dur-press) var(--ease-press),
+                color var(--dur-press) var(--ease-press);
+  }
+  .chip:hover {
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary));
+  }
+  .chip:active {
+    transform: translateY(1px);
+  }
+  .chip-active {
+    background: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: var(--shadow-sticker-pressed);
+  }
+  .chip-active:hover {
+    color: hsl(var(--primary-foreground));
   }
 
   /* ═══ Section Labels ═══ */
   .section-label {
-    @apply text-[10px] uppercase font-semibold;
-    letter-spacing: 0.12em;
+    @apply text-[11px] uppercase font-bold;
+    letter-spacing: 0.053em;
     color: hsl(var(--muted-foreground));
-  }
-
-  /* ═══ Button Glow ═══ */
-  .btn-primary-glow {
-    background: linear-gradient(135deg, hsl(var(--brand-purple)), hsl(var(--brand-lilac)));
-    box-shadow: 0 4px 14px hsla(var(--brand-purple), 0.3);
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .btn-primary-glow:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px hsla(var(--brand-purple), 0.4);
-  }
-  .btn-primary-glow:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px hsla(var(--brand-purple), 0.3);
-  }
-
-  /* ═══ Chip System ═══ */
-  .chip {
-    @apply px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer select-none;
-    background: hsla(228, 14%, 93%, 0.8);
-    border: 1px solid hsla(228, 14%, 89%, 0.6);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .chip:hover {
-    background: hsla(228, 14%, 90%, 1);
-    border-color: hsla(228, 14%, 85%, 0.8);
-  }
-  .chip-active {
-    background: linear-gradient(135deg, hsl(var(--brand-purple)), hsl(var(--brand-lilac)));
-    border-color: transparent;
-    box-shadow: 0 2px 10px hsla(var(--brand-purple), 0.28);
-    color: hsl(var(--primary-foreground));
   }
 
   /* ═══ Type Badge (VÍDEO, PDF, etc) ═══ */
   .type-badge {
-    @apply text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full;
+    @apply text-[11px] font-bold uppercase px-2.5 py-1;
+    letter-spacing: 0.053em;
+    border-radius: var(--radius-pill);
   }
 
   /* ═══ Stat Card ═══ */
   .stat-card {
-    @apply glass-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4;
+    @apply sticker-card p-4 sm:p-5 flex items-center gap-3 sm:gap-4;
   }
   .stat-card .stat-icon {
-    @apply w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl flex items-center justify-center text-lg sm:text-xl shrink-0;
+    @apply w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center text-xl shrink-0;
+    border-radius: var(--radius-button);
   }
   .stat-card .stat-value {
-    @apply font-fredoka text-lg sm:text-xl font-bold text-foreground leading-tight;
+    @apply font-fredoka text-xl sm:text-2xl font-bold text-foreground leading-tight;
   }
   .stat-card .stat-label {
-    @apply text-[10px] sm:text-[11px] text-muted-foreground font-medium mt-0.5;
+    @apply text-xs text-muted-foreground font-semibold mt-0.5;
   }
 
   /* ═══ Activity Card ═══ */
@@ -163,18 +301,78 @@
     @apply glass-card-hover p-5 sm:p-6 flex flex-col;
   }
   .activity-card .activity-meta {
-    @apply flex items-center gap-4 text-[11px] text-muted-foreground pt-3 mt-auto;
-    border-top: 1px solid hsla(228, 12%, 91%, 0.5);
+    @apply flex items-center gap-4 text-xs text-muted-foreground pt-3 mt-auto;
+    border-top: 2px solid hsl(var(--border));
   }
 
-  /* ═══ Orb ═══ */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.08;
-    pointer-events: none;
-    z-index: 0;
+  /* ═══ Campo de formulário ═══
+     O input do shadcn vinha com borda de 1px e raio `md`, enquanto todo o
+     resto do app usa 2px e raio de botão. Num formulário de login, com o
+     botão-adesivo logo abaixo, a diferença aparecia lado a lado. */
+  .field-sticker {
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--border));
+    border-radius: var(--radius-button);
+    transition: border-color var(--dur-press) var(--ease-press),
+                background-color var(--dur-press) var(--ease-press);
+  }
+  .field-sticker:hover:not(:disabled):not(:focus) {
+    border-color: hsl(var(--muted-foreground) / 0.5);
+  }
+  .field-sticker:focus,
+  .field-sticker:focus-within {
+    border-color: hsl(var(--sky));
+    outline: none;
+  }
+  /* Campo é a exceção à regra do contorno: o anel interno cabe melhor num
+     retângulo de canto suave do que um outline colado por fora. */
+  .field-sticker:focus-visible,
+  .field-sticker:has(:focus-visible) {
+    outline: none;
+    box-shadow: 0 0 0 3px hsl(var(--sky) / 0.25);
+  }
+  .field-sticker[aria-invalid='true'] {
+    border-color: hsl(var(--danger));
+  }
+  .field-sticker[aria-invalid='true']:focus-visible {
+    box-shadow: 0 0 0 3px hsl(var(--danger) / 0.22);
+  }
+
+  /* ═══ Cromo do app (header, sidebar, barra inferior) ═══
+     Era a última parte fora do design system: filete de 1px translúcido e
+     `backdrop-filter: blur(20px)`. Vidro fosco é justamente o efeito que o
+     resto do app abandonou — o app parecia SaaS genérico em volta de um
+     conteúdo em papel e adesivo. Superfície chapada, traço de 2px. */
+  .surface-chrome {
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+  }
+
+  /* ═══ Item de navegação ═══
+     Ativo = pílula preenchida com traço, igual a um chip selecionado, em vez
+     da barrinha lateral de 4px que só existia na sidebar. Assim sidebar,
+     menu mobile e barra inferior anunciam "você está aqui" do mesmo jeito. */
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2 text-sm font-bold;
+    color: hsl(var(--muted-foreground));
+    border: 2px solid transparent;
+    border-radius: var(--radius-button);
+    transition: color var(--dur-press) var(--ease-press),
+                background-color var(--dur-press) var(--ease-press),
+                border-color var(--dur-press) var(--ease-press);
+  }
+  .nav-item:hover {
+    color: hsl(var(--ink));
+    background: hsl(var(--secondary));
+  }
+  .nav-item-active {
+    color: hsl(var(--primary));
+    background: hsl(var(--accent));
+    border-color: hsl(var(--primary) / 0.35);
+  }
+  .nav-item-active:hover {
+    color: hsl(var(--primary));
+    background: hsl(var(--accent));
   }
 }
 
@@ -191,26 +389,40 @@
     0%, 100% { opacity: 0.25; }
     50% { opacity: 1; }
   }
-  .animate-float {
-    animation: float 7s ease-in-out infinite;
-  }
-  .animate-float-delayed {
-    animation: float 8s ease-in-out 2s infinite;
-  }
-  .animate-float-slow {
-    animation: float 9s ease-in-out 4s infinite;
-  }
-  .animate-slide-up {
-    animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-  .animate-pulse-dot {
-    animation: pulse-dot 1.4s ease-in-out infinite;
-  }
   @keyframes heart-pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.15); }
   }
-  .animate-heart-pulse {
-    animation: heart-pulse 0.3s ease-in-out;
+  /* Entrada com leve ultrapassagem — o "destravou" do Duolingo. Reservado
+     para o que APARECE (modal, card novo, aviso), nunca para hover. */
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* Animação é enfeite: quem pediu menos movimento no SO não recebe nenhum.
+     As classes continuam existindo (sem efeito) para não quebrar o markup. */
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-float {
+      animation: float 7s ease-in-out infinite;
+    }
+    .animate-float-delayed {
+      animation: float 8s ease-in-out 2s infinite;
+    }
+    .animate-float-slow {
+      animation: float 9s ease-in-out 4s infinite;
+    }
+    .animate-slide-up {
+      animation: slide-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .animate-pulse-dot {
+      animation: pulse-dot 1.4s ease-in-out infinite;
+    }
+    .animate-heart-pulse {
+      animation: heart-pulse 0.3s ease-in-out;
+    }
+    .animate-pop-in {
+      animation: pop-in var(--dur-enter) var(--ease-back) both;
+    }
   }
 }

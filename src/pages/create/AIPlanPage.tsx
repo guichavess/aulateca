@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { toast } from 'sonner';
-import { aiSuggestions, mockPlanHistory, categories } from '@/lib/data';
-import { AIPlanMessage, PlanHistory } from '@/lib/types';
+import { categories } from '@/lib/data';
+import { aiSuggestions, mockPlanHistory, AIPlanMessage, PlanHistory } from '@/lib/ai-mocks';
 import { streamTecaChat } from '@/services/ai.service';
 import { mockConversations, type MockConversationKey, type MockMessage } from '@/lib/mockConversations';
 import ReactMarkdown from 'react-markdown';

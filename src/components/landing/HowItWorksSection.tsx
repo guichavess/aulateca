@@ -3,15 +3,17 @@ import { ArrowRight } from "lucide-react";
 const steps = [
   {
     emoji: "🐙",
-    title: "Crie sua conta grátis em 30 segundos",
+    // Não existe conta grátis: a conta nasce depois da compra, com o e-mail do
+    // pagamento. O texto antigo prometia um tier que o produto não tem.
+    title: "Crie sua senha em 30 segundos",
     description:
-      "Baixe o app ou acesse pelo navegador. Entre com o e-mail da sua compra — sem complicação.",
+      "Depois da compra você recebe o link por e-mail. Crie a senha com o mesmo e-mail do pagamento e pronto.",
   },
   {
     emoji: "📚",
     title: "Escolha a atividade perfeita",
     description:
-      "Filtre por ano escolar, gênero textual ou categoria. Ou peça pro Teca escolher por você.",
+      "Filtre por ano escolar, gênero textual ou categoria.",
   },
   {
     emoji: "✨",

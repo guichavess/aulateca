@@ -3,6 +3,7 @@ import { Resource } from '@/lib/types';
 import { categoryColorMap } from '@/lib/data';
 import { useApp } from '@/lib/context';
 import { Heart } from 'lucide-react';
+import ResourceTypeBadge from './ResourceTypeBadge';
 
 interface ResourceCardProps {
   resource: Resource;
@@ -12,7 +13,7 @@ interface ResourceCardProps {
 
 const ResourceCard: React.FC<ResourceCardProps> = ({ resource, index, onClick }) => {
   const { toggleFavorite, isFavorite } = useApp();
-  const color = categoryColorMap[resource.category] || '#6C5CE7';
+  const color = categoryColorMap[resource.category] || categoryColorMap.all;
   const fav = isFavorite(resource.id);
 
   const categoryIcon: Record<string, string> = {
@@ -21,51 +22,51 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, index, onClick })
 
   return (
     <div
-      className="glass-card-hover cursor-pointer overflow-hidden group animate-slide-up"
+      className="sticker-card sticker-card-interactive cursor-pointer overflow-hidden group animate-slide-up"
       style={{ animationDelay: `${index * 0.04}s` }}
       onClick={onClick}
     >
-      {/* Color top */}
+      {/* Faixa da categoria: fundo chapado na cor, sem gradiente. */}
       <div
-        className="h-[140px] relative flex items-center justify-center overflow-hidden"
-        style={{ background: resource.imageUrl ? 'transparent' : `linear-gradient(150deg, ${color}22, ${color}0A)` }}
+        className="h-[150px] relative flex items-center justify-center overflow-hidden"
+        style={{ background: resource.imageUrl ? 'transparent' : `${color}1F` }}
       >
         {resource.imageUrl ? (
           <img src={resource.imageUrl} alt={resource.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out" />
         ) : (
-          <span className="text-[36px] group-hover:scale-110 transition-transform duration-300 ease-out">{categoryIcon[resource.category]}</span>
+          <span className="text-[44px] group-hover:scale-110 transition-transform duration-300 ease-out">{categoryIcon[resource.category]}</span>
         )}
         {resource.isNew && (
-          <span className="absolute top-2.5 left-2.5 type-badge shadow-sm bg-emerald-500 text-white">
+          <span className="absolute top-3 left-3 type-badge bg-success text-white">
             Novo
           </span>
         )}
+        {/* 36px de alvo: o botão anterior tinha 28px, pequeno demais no toque. */}
         <button
           onClick={(e) => { e.stopPropagation(); toggleFavorite(resource.id); }}
-          className={`absolute top-2.5 right-2.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 shadow-sm ${fav ? 'animate-heart-pulse' : ''}`}
-          style={{ background: 'hsla(0, 0%, 100%, 0.85)', backdropFilter: 'blur(8px)' }}
+          aria-label={fav ? `Remover ${resource.title} dos favoritos` : `Salvar ${resource.title} nos favoritos`}
+          aria-pressed={fav}
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full bg-card border-2 border-border flex items-center justify-center transition-transform duration-150 hover:scale-110 active:scale-95 ${fav ? 'animate-heart-pulse' : ''}`}
         >
           <Heart
-            size={13}
-            className={fav ? 'text-rose-500' : 'text-muted-foreground'}
+            size={16}
+            className={fav ? 'text-danger' : 'text-muted-foreground'}
             style={fav ? { fill: 'currentColor' } : {}}
           />
         </button>
       </div>
 
       {/* Body */}
-      <div className="p-4">
+      <div className="p-4 border-t-2 border-border">
         <div className="flex items-center justify-between mb-2.5">
-          <span className="type-badge" style={{ background: `${color}18`, color }}>
-            {resource.type === 'video' ? '▶ VÍDEO' : '📄 PDF'}
-          </span>
-          <span className="text-[11px] text-muted-foreground tabular-nums">{resource.duration}</span>
+          <ResourceTypeBadge style={{ background: `${color}1F`, color }} />
+          <span className="text-xs font-semibold text-muted-foreground tabular-nums">{resource.duration}</span>
         </div>
-        <h3 className="font-fredoka text-sm font-semibold text-foreground mb-1 line-clamp-1 leading-snug tracking-tight">{resource.title}</h3>
-        <p className="text-[13px] text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{resource.description}</p>
-        <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid hsla(228, 12%, 91%, 0.5)' }}>
-          <span className="text-[11px] text-muted-foreground truncate mr-2">{resource.author}</span>
-          <span className="text-[11px] font-semibold text-amber-500 shrink-0">⭐ {resource.rating}</span>
+        <h3 className="font-fredoka text-base font-bold text-ink mb-1 line-clamp-1 leading-snug">{resource.title}</h3>
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{resource.description}</p>
+        <div className="flex items-center justify-between pt-3 border-t-2 border-border">
+          <span className="text-xs text-muted-foreground truncate mr-2">{resource.author}</span>
+          <span className="text-xs font-bold text-ink shrink-0">⭐ {resource.rating}</span>
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Resource } from '@/lib/types';
 import { useApp } from '@/lib/context';
@@ -6,6 +7,8 @@ import { resourcesService } from '@/services/resources.service';
 import { resources as mockResources } from '@/lib/data';
 import ResourceCard from '@/components/catalog/ResourceCard';
 import ResourceModal from '@/components/catalog/ResourceModal';
+import EmptyState from '@/components/ui/EmptyState';
+import { Button } from '@/components/ui/button';
 
 const FavoritesPage: React.FC = () => {
   const { favorites } = useApp();
@@ -21,6 +24,7 @@ const FavoritesPage: React.FC = () => {
   // FALLBACK MOCK — se algum ID favoritado não veio do Supabase (ex: usuário
   // favoritou um recurso mockado da HomePage durante a demo), procura em
   // mockResources para a tela não perder esse item.
+  // Uma falha no Supabase não pode esconder favoritos que temos localmente.
   const remoteIds = new Set(remoteFavs.map((r) => r.id));
   const mockFavs = mockResources.filter((r) => ids.includes(r.id) && !remoteIds.has(r.id));
   const favResources: Resource[] = [...remoteFavs, ...mockFavs];
@@ -28,22 +32,21 @@ const FavoritesPage: React.FC = () => {
   return (
     <div className="px-5 py-6 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
       <div className="animate-slide-up">
-        <h1 className="font-fredoka text-2xl sm:text-3xl font-bold tracking-tight gradient-text mb-1">Seus Favoritos ❤️</h1>
+        <h1 className="font-fredoka text-h1 font-bold text-ink mb-1">Seus Favoritos ❤️</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
           {favResources.length} recurso{favResources.length !== 1 ? 's' : ''} salvo{favResources.length !== 1 ? 's' : ''}
         </p>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-4xl mb-3">⏳</p>
-          <p className="font-fredoka text-base">Carregando favoritos…</p>
-        </div>
-      ) : isError ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-4xl mb-3">⚠️</p>
-          <p className="font-fredoka text-base">Não foi possível carregar os favoritos</p>
-        </div>
+        <EmptyState tone="loading" title="Carregando favoritos…" />
+      ) : isError && favResources.length === 0 ? (
+        <EmptyState
+          tone="error"
+          mood="neutral"
+          title="Não foi possível carregar os favoritos"
+          description="Tente novamente em instantes."
+        />
       ) : favResources.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {favResources.map((r, i) => (
@@ -51,11 +54,16 @@ const FavoritesPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="glass-card text-center py-16 px-6 animate-slide-up" style={{ animationDelay: '0.05s' }}>
-          <p className="text-4xl mb-3">❤️</p>
-          <p className="font-fredoka text-base font-semibold text-foreground mb-1">Nenhum favorito ainda</p>
-          <p className="text-sm text-muted-foreground">Clique no coração dos recursos para salvá-los aqui.</p>
-        </div>
+        <EmptyState
+          className="sticker-card animate-slide-up"
+          title="Nenhum favorito ainda"
+          description="Toque no coração de um recurso para guardá-lo aqui."
+          action={
+            <Button variant="sticker-outline" asChild>
+              <Link to="/explore">Explorar recursos</Link>
+            </Button>
+          }
+        />
       )}
 
       {modalResource && <ResourceModal resource={modalResource} onClose={() => setModalResource(null)} />}

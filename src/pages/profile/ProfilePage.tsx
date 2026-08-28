@@ -1,130 +1,272 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Heart, FileText, LogOut, Check, X, Pencil, Mail, ShieldCheck, KeyRound } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { useApp } from '@/lib/context';
-import { Settings, Info, LogOut, ChevronRight, User, Moon, Sun, BookOpen, Heart, FileText } from 'lucide-react';
+import type { UserRole } from '@/services/auth.service';
+import AvatarUploader from '@/components/profile/AvatarUploader';
+import ChangeEmailDialog from '@/components/profile/ChangeEmailDialog';
+import ChangePasswordDialog from '@/components/profile/ChangePasswordDialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
+const ROLE_LABEL: Record<UserRole, string> = {
+  PROFESSOR: 'Professor(a)',
+  PAI_MAE: 'Pai / Mãe',
+  TERAPEUTA: 'Terapeuta',
+  ADMIN: 'Administrador(a)',
+};
 
 const ProfilePage: React.FC = () => {
-  const { user, userName, logout, favorites } = useApp();
-  const [darkMode, setDarkMode] = useState(false);
-  // A foto é uma URL externa que pode falhar em carregar: cai nas iniciais.
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const avatarUrl = avatarFailed ? undefined : user?.avatarUrl;
+  const { user, userName, favorites, logout, updateProfile } = useApp();
 
-  const initials = userName
-    ? userName.split(' ').filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase()
-    : 'PT';
+  const [editing, setEditing] = useState(false);
+  const [draftName, setDraftName] = useState(userName);
+  const [saving, setSaving] = useState(false);
+
+  // Contagem real de recursos publicados. Antes a tela exibia "8 Recursos
+  // Criados" e "3 Turmas" fixos no código — números que não vinham de lugar
+  // nenhum e eram idênticos para todo usuário. "Turmas" saiu: não existe esse
+  // conceito no banco, então não há o que contar.
+  const { data: createdCount } = useQuery({
+    queryKey: ['profile', 'resources-count', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('resources')
+        .select('id', { count: 'exact', head: true })
+        .eq('author_id', user!.id);
+      if (error) throw new Error(error.message);
+      return count ?? 0;
+    },
+  });
+
+  const startEditing = () => {
+    setDraftName(userName);
+    setEditing(true);
+  };
+
+  const save = async () => {
+    const name = draftName.trim();
+    if (!name) {
+      toast.error('O nome não pode ficar vazio');
+      return;
+    }
+    if (name === userName) {
+      setEditing(false);
+      return;
+    }
+    setSaving(true);
+    try {
+      await updateProfile({ name });
+      toast.success('Perfil atualizado');
+      setEditing(false);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Não foi possível salvar');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const stats = [
-    { value: '8', label: 'Recursos Criados', icon: FileText, color: 'hsl(262, 83%, 58%)' },
-    { value: String(favorites.size), label: 'Favoritos', icon: Heart, color: 'hsl(340, 82%, 65%)' },
-    { value: '3', label: 'Turmas', icon: BookOpen, color: 'hsl(199, 65%, 48%)' },
-  ];
-
-  const menuItems = [
-    { icon: User, label: 'Editar Perfil', color: 'hsl(262, 83%, 58%)' },
-    { icon: Settings, label: 'Configurações', color: 'hsl(228, 6%, 46%)' },
-    { icon: Info, label: 'Sobre o Aulateca', color: 'hsl(199, 65%, 48%)' },
+    {
+      to: '/create',
+      value: createdCount ?? '—',
+      label: createdCount === 1 ? 'Recurso publicado' : 'Recursos publicados',
+      icon: FileText,
+    },
+    {
+      to: '/favorites',
+      value: favorites.size,
+      label: favorites.size === 1 ? 'Favorito' : 'Favoritos',
+      icon: Heart,
+    },
   ];
 
   return (
-    <div className="px-4 py-6 max-w-lg mx-auto space-y-5 animate-slide-up">
-      {/* Avatar + name */}
-      <div className="flex flex-col items-center text-center pt-2">
-        <div
-          className="w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold text-white mb-3 shadow-lg overflow-hidden"
-          style={{
-            background: 'linear-gradient(135deg, hsl(262, 83%, 58%), hsl(249, 76%, 48%))',
-            boxShadow: '0 8px 24px hsla(262, 83%, 58%, 0.3)',
-          }}
-        >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt={userName ? `Foto de ${userName}` : 'Foto do perfil'}
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-              onError={() => setAvatarFailed(true)}
-            />
-          ) : (
-            initials
-          )}
-        </div>
-        <h2 className="font-fredoka text-xl font-bold text-foreground">{userName || 'Professor(a)'}</h2>
-        {user?.email && <p className="text-sm text-muted-foreground mt-0.5">{user.email}</p>}
-      </div>
+    <div className="px-5 py-6 sm:px-6 lg:px-8 max-w-3xl mx-auto space-y-6 animate-slide-up">
+      <h1 className="font-fredoka text-h1 font-bold text-ink">
+        Meu perfil
+      </h1>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-3 gap-3">
-        {stats.map((s) => (
-          <div key={s.label} className="glass-card p-3 flex flex-col items-center text-center">
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center mb-2"
-              style={{ background: s.color + '14' }}
-            >
-              <s.icon className="w-[18px] h-[18px]" style={{ color: s.color }} />
-            </div>
-            <div className="font-fredoka text-lg font-bold text-foreground leading-tight">{s.value}</div>
-            <div className="text-[10px] text-muted-foreground mt-0.5">{s.label}</div>
-          </div>
-        ))}
-      </div>
+      {/* Identidade */}
+      <section
+        className="sticker-surface p-6 sm:p-8"
+        style={{ borderRadius: 'var(--radius-panel)' }}
+      >
+        <div className="flex flex-col sm:flex-row items-center gap-6 text-center sm:text-left">
+          <AvatarUploader />
 
-      {/* Menu */}
-      <div className="glass-card overflow-hidden divide-y divide-border/30">
-        {menuItems.map((item) => (
-          <button
-            key={item.label}
-            className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-secondary/50 active:scale-[0.99] transition-all duration-200"
-          >
-            <div
-              className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-              style={{ background: item.color + '14' }}
-            >
-              <item.icon className="w-[18px] h-[18px]" style={{ color: item.color }} />
-            </div>
-            <span className="flex-1 text-sm font-medium text-foreground">{item.label}</span>
-            <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
-          </button>
-        ))}
-
-        {/* Dark mode toggle row */}
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-secondary/50 active:scale-[0.99] transition-all duration-200"
-        >
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
-            style={{ background: 'hsl(43, 96%, 52%)' + '14' }}
-          >
-            {darkMode ? (
-              <Sun className="w-[18px] h-[18px]" style={{ color: 'hsl(43, 96%, 52%)' }} />
+          <div className="flex-1 min-w-0 w-full">
+            {editing ? (
+              <div className="space-y-3">
+                <label htmlFor="profile-name" className="section-label block">
+                  Nome de exibição
+                </label>
+                <Input
+                  id="profile-name"
+                  value={draftName}
+                  autoFocus
+                  maxLength={80}
+                  disabled={saving}
+                  onChange={(e) => setDraftName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') save();
+                    if (e.key === 'Escape') setEditing(false);
+                  }}
+                />
+                <div className="flex gap-2 justify-center sm:justify-start">
+                  <Button variant="sticker" onClick={save} disabled={saving}>
+                    <Check className="w-4 h-4" aria-hidden="true" />
+                    {saving ? 'Salvando…' : 'Salvar'}
+                  </Button>
+                  <Button variant="ghost" onClick={() => setEditing(false)} disabled={saving}>
+                    <X className="w-4 h-4" aria-hidden="true" />
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
             ) : (
-              <Moon className="w-[18px] h-[18px]" style={{ color: 'hsl(43, 96%, 52%)' }} />
+              <>
+                <h2 className="font-fredoka text-2xl font-bold text-ink truncate">
+                  {userName || 'Professor(a)'}
+                </h2>
+                <dl className="mt-2 space-y-1 text-sm text-muted-foreground">
+                  {user?.email && (
+                    <div className="flex items-center gap-2 justify-center sm:justify-start">
+                      <dt className="sr-only">E-mail</dt>
+                      <Mail className="w-4 h-4 shrink-0" aria-hidden="true" />
+                      <dd className="truncate">{user.email}</dd>
+                    </div>
+                  )}
+                  {user?.role && (
+                    <div className="flex items-center gap-2 justify-center sm:justify-start">
+                      <dt className="sr-only">Perfil de acesso</dt>
+                      <ShieldCheck className="w-4 h-4 shrink-0" aria-hidden="true" />
+                      <dd>{ROLE_LABEL[user.role]}</dd>
+                    </div>
+                  )}
+                </dl>
+                <Button variant="sticker-outline" onClick={startEditing} className="mt-4">
+                  <Pencil className="w-4 h-4" aria-hidden="true" />
+                  Editar nome
+                </Button>
+              </>
             )}
           </div>
-          <span className="flex-1 text-sm font-medium text-foreground">Modo Escuro</span>
-          {/* Toggle switch */}
-          <div
-            className="w-10 h-[22px] rounded-full p-0.5 transition-colors duration-200 cursor-pointer"
-            style={{ background: darkMode ? 'hsl(262, 83%, 58%)' : 'hsl(228, 12%, 85%)' }}
-          >
-            <div
-              className="w-[18px] h-[18px] rounded-full bg-white shadow-sm transition-transform duration-200"
-              style={{ transform: darkMode ? 'translateX(18px)' : 'translateX(0)' }}
-            />
-          </div>
-        </button>
-      </div>
-
-      {/* Logout */}
-      <button
-        onClick={logout}
-        className="w-full glass-card flex items-center gap-3 px-4 py-3.5 hover:bg-destructive/5 active:scale-[0.99] transition-all duration-200"
-      >
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-destructive/10">
-          <LogOut className="w-[18px] h-[18px] text-destructive" />
         </div>
-        <span className="text-sm font-medium text-destructive">Sair</span>
-      </button>
+      </section>
+
+      {/* Números — cada card leva à tela correspondente. */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {stats.map((s) => (
+          <Link
+            key={s.label}
+            to={s.to}
+            className="sticker-card sticker-card-interactive p-5 flex items-center gap-4"
+          >
+            <div className="w-11 h-11 shrink-0 rounded-full bg-accent flex items-center justify-center">
+              <s.icon className="w-5 h-5 text-primary" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <div className="font-fredoka text-2xl font-bold text-ink leading-tight tabular-nums">
+                {s.value}
+              </div>
+              <div className="text-sm text-muted-foreground truncate">{s.label}</div>
+            </div>
+          </Link>
+        ))}
+      </section>
+
+      {/* Conta e segurança.
+          E-mail e senha vivem em auth.users, não em public.profiles — por isso
+          não entram no "Editar nome" acima: cada um tem fluxo próprio, e ambos
+          exigem a senha atual antes de mudar. */}
+      <section className="sticker-surface p-5 sm:p-6" style={{ borderRadius: 'var(--radius-panel)' }}>
+        <p className="section-label mb-1">Conta e segurança</p>
+        <p className="text-sm text-muted-foreground mb-5">
+          Alterações aqui pedem sua senha atual para confirmar que é você.
+        </p>
+
+        <ul className="divide-y divide-border">
+          <li className="flex flex-wrap items-center justify-between gap-3 py-4 first:pt-0">
+            <div className="flex items-start gap-3 min-w-0">
+              <Mail className="w-5 h-5 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
+              <div className="min-w-0">
+                <p className="font-semibold text-ink">E-mail de acesso</p>
+                <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
+              </div>
+            </div>
+            <ChangeEmailDialog />
+          </li>
+
+          <li className="flex flex-wrap items-center justify-between gap-3 py-4 last:pb-0">
+            <div className="flex items-start gap-3 min-w-0">
+              <KeyRound className="w-5 h-5 mt-0.5 shrink-0 text-primary" aria-hidden="true" />
+              <div className="min-w-0">
+                <p className="font-semibold text-ink">Senha</p>
+                <p className="text-sm text-muted-foreground">
+                  Use uma senha só desta conta, com 8 caracteres ou mais.
+                </p>
+              </div>
+            </div>
+            <ChangePasswordDialog />
+          </li>
+        </ul>
+      </section>
+
+      {/* Sessão.
+          O "Modo Escuro" que existia aqui era um useState solto: o botão
+          animava, mas não há bloco `.dark` no index.css, então nada mudava na
+          tela. Saiu junto com "Editar Perfil"/"Configurações"/"Sobre", que
+          eram linhas sem nenhum onClick. Voltam quando tiverem destino. */}
+      <section className="sticker-surface p-5" style={{ borderRadius: 'var(--radius-panel)' }}>
+        <p className="section-label mb-1">Sessão</p>
+        <p className="text-sm text-muted-foreground mb-4">
+          Você será desconectado neste dispositivo.
+        </p>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="border-2 border-danger text-danger hover:bg-danger/10 hover:text-danger"
+            >
+              <LogOut className="w-4 h-4" aria-hidden="true" />
+              Sair da conta
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-fredoka">Sair da conta?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Você precisará entrar de novo com e-mail e senha para voltar.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Continuar conectado</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={logout}
+                className="bg-danger text-danger-foreground hover:bg-danger/90"
+              >
+                Sair
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </section>
     </div>
   );
 };

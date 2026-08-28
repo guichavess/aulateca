@@ -2,7 +2,6 @@ import LandingNavbar from "@/components/landing/LandingNavbar";
 import HeroSection from "@/components/landing/HeroSection";
 import PainSection from "@/components/landing/PainSection";
 import HowItWorksSection from "@/components/landing/HowItWorksSection";
-import TecaDemoSection from "@/components/landing/TecaDemoSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 
 const LandingPage = () => {
@@ -12,7 +11,6 @@ const LandingPage = () => {
       <HeroSection />
       <PainSection />
       <HowItWorksSection />
-      <TecaDemoSection />
       <FinalCTASection />
 
       {/* Footer mínimo */}

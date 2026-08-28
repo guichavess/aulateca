@@ -6,7 +6,7 @@ export type CategoryId =
   | 'sondagem'
   | 'datas-comemorativas';
 export type AgeRange = 'all' | '6-8' | '9-11' | '12-14';
-export type ResourceType = 'video' | 'pdf';
+export type ResourceType = 'pdf';
 
 export interface Category {
   id: CategoryId;
@@ -33,27 +33,3 @@ export interface Resource {
   imageUrl?: string;
 }
 
-export interface CommunityPost {
-  id: string;
-  authorName: string;
-  authorInitials: string;
-  authorColor: string;
-  timeAgo: string;
-  content: string;
-  likes: number;
-  comments: number;
-  liked?: boolean;
-}
-
-export interface AIPlanMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-export interface PlanHistory {
-  id: string;
-  title: string;
-  date: string;
-}

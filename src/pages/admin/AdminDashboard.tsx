@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { BookOpen, ClipboardList, Sparkles, MessageSquare, Users, ArrowRight } from 'lucide-react';
+import { BookOpen, ClipboardList, Sparkles, Users, ArrowRight } from 'lucide-react';
 import { publicActivitiesService, enrollmentsService, adminUsersService } from '@/services/admin.service';
 
 const StatCard: React.FC<{
@@ -55,9 +55,9 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6 max-w-6xl">
       <div>
-        <h1 className="font-fredoka text-2xl font-bold tracking-tight">Visão geral</h1>
+        <h1 className="font-fredoka text-h1 font-bold">Visão geral</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Acompanhe atividades, adesões e a comunidade em um só lugar.
+          Acompanhe atividades, adesões e usuários em um só lugar.
         </p>
       </div>
 
@@ -68,7 +68,7 @@ const AdminDashboard: React.FC = () => {
         <StatCard label="Usuários" value={totalUsers} icon={Users} to="/admin/usuarios" accent="#10b981" />
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid gap-4">
         <Link
           to="/admin/recursos"
           className="rounded-2xl bg-card border border-border p-5 hover:border-primary/30 transition-all group"
@@ -76,14 +76,6 @@ const AdminDashboard: React.FC = () => {
           <BookOpen className="w-5 h-5 text-primary mb-3" />
           <h3 className="font-fredoka font-semibold mb-1">Gerenciar recursos pedagógicos</h3>
           <p className="text-xs text-muted-foreground">Editar e excluir vídeos e PDFs publicados pelos professores.</p>
-        </Link>
-        <Link
-          to="/admin/comunidade"
-          className="rounded-2xl bg-card border border-border p-5 hover:border-primary/30 transition-all group"
-        >
-          <MessageSquare className="w-5 h-5 text-primary mb-3" />
-          <h3 className="font-fredoka font-semibold mb-1">Moderar comunidade</h3>
-          <p className="text-xs text-muted-foreground">Remover posts e comentários impróprios.</p>
         </Link>
       </div>
     </div>

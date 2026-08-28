@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, BookOpen, Heart, Home, Menu, Sparkles, User } from "lucide-react";
+import { Bell, BookOpen, Heart, Home, Menu, User } from "lucide-react";
 // Versão recortada e reduzida (192px) do teca-icon.png: a arte original tem
 // 669x373 com margens largas, então renderizava pequena dentro do celular e
 // custava 209 KB acima da dobra.
@@ -170,39 +170,13 @@ const HeroPhone = () => {
               Olá, professora! 👋
             </p>
             <p className="font-nunito text-[9px] text-[#6B7186] leading-snug">
-              Comece pela IA ou explore os recursos abaixo.
+              Explore os recursos selecionados abaixo.
             </p>
           </div>
 
           {/* Conteúdo que alterna */}
           <div key={screen} className="flex-1 min-h-0 animate-slide-up">
-            {screen === 0 && (
-              <div className="h-full flex flex-col">
-                <div className="flex-1 flex flex-col items-center justify-center px-3">
-                  <div className="relative">
-                    <img
-                      src={tecaIcon}
-                      alt="Teca, o polvo do Aulateca"
-                      width={96}
-                      height={96}
-                      className="w-24 h-24 object-contain drop-shadow-lg"
-                    />
-                    <span className="absolute -bottom-1 right-0 w-5 h-5 rounded-full bg-white shadow-md flex items-center justify-center">
-                      <Sparkles className="w-2.5 h-2.5 text-[#6366F1]" />
-                    </span>
-                  </div>
-                  <p className="mt-3 flex items-center gap-1 font-nunito text-[8px] font-bold uppercase tracking-wider text-[#6366F1]/80 text-center">
-                    <span className="w-1 h-1 rounded-full bg-[#6366F1] animate-pulse-dot" />
-                    Clique para conversar com a IA
-                  </p>
-                </div>
-                <div className="pb-3">
-                  <Chips />
-                </div>
-              </div>
-            )}
-
-            {screen === 1 && (
+            {(screen === 0 || screen === 1) && (
               <div className="h-full flex flex-col">
                 <Chips />
                 <div className="grid grid-cols-2 gap-1.5 px-3 pt-2.5">
