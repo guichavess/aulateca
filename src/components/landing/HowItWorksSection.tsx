@@ -37,10 +37,8 @@ const HowItWorksSection = () => {
 
         {/* Subtexto pertencimento */}
         <p className="text-center font-nunito text-[#6B7186] text-base sm:text-lg max-w-2xl mx-auto mb-14 leading-relaxed">
-          Se você sabe usar o WhatsApp, já sabe usar o AulaTeca. Mais de{" "}
-          <strong className="text-[#1A1D2B]">8.500 professoras</strong> já
-          estão usando — muitas dizem que é mais fácil que escolher filme na
-          Netflix.
+          Se você sabe usar o WhatsApp, já sabe usar o AulaTeca: entra, escolhe a
+          ficha e imprime. Sem instalar nada, sem curso para aprender a usar.
         </p>
 
         {/* 3 passos */}

@@ -1,4 +1,5 @@
 import CheckoutButton from "@/components/landing/CheckoutButton";
+import { totalAtividades } from "@/lib/acervo.stats";
 
 const FinalCTASection = () => {
   return (
@@ -35,14 +36,14 @@ const FinalCTASection = () => {
         </h2>
 
         <p className="font-nunito text-base sm:text-lg text-white/80 mb-10 leading-relaxed">
-          Junte-se a mais de 8.500 professoras que já estão usando o AulaTeca
-          para economizar tempo e engajar seus alunos.
+          São {totalAtividades} fichas prontas para imprimir, do 1° ao 9° ano —
+          baixe hoje e use na aula de amanhã.
         </p>
 
         <CheckoutButton
           className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-extrabold text-base sm:text-lg hover:brightness-105 transition-all shadow-[0_4px_20px_rgba(255,184,48,0.5)] hover:shadow-[0_8px_30px_rgba(255,184,48,0.6)] hover:-translate-y-1 active:translate-y-0"
         >
-          🐙 QUERO ACESSAR TODAS AS 226+ ATIVIDADES AGORA!
+          🐙 QUERO ACESSAR AS {totalAtividades} ATIVIDADES AGORA!
         </CheckoutButton>
 
         <p className="mt-4 text-white/60 text-sm font-nunito">

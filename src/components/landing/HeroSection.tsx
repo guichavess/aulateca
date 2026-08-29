@@ -1,5 +1,10 @@
 import CheckoutButton from "@/components/landing/CheckoutButton";
 import HeroPhone from "@/components/landing/HeroPhone";
+import {
+  totalAtividades,
+  totalJogosLudicos,
+  totalExerciciosTexto,
+} from "@/lib/acervo.stats";
 
 const HeroSection = () => {
   return (
@@ -68,16 +73,18 @@ const HeroSection = () => {
               {/* Headline */}
               <h1 className="font-fredoka font-bold text-display text-white mb-6">
                 Chega de perder noites montando aula.{" "}
-                <span className="text-[#FFB830]">226+ atividades</span> de
+                <span className="text-[#FFB830]">{totalAtividades} atividades</span> de
                 Produção de Textos prontas para usar AMANHÃ.
               </h1>
 
               {/* Corpo */}
               <p className="font-nunito text-base sm:text-lg text-white/85 leading-relaxed mb-4">
                 Acesse agora a plataforma completa com{" "}
-                <strong className="text-white">226+ atividades</strong>,{" "}
-                <strong className="text-white">37 jogos lúdicos</strong> e{" "}
-                <strong className="text-white">47 exercícios complementares</strong>{" "}
+                <strong className="text-white">{totalAtividades} atividades</strong>,{" "}
+                <strong className="text-white">{totalJogosLudicos} jogos lúdicos</strong> e{" "}
+                <strong className="text-white">
+                  {totalExerciciosTexto} exercícios complementares
+                </strong>{" "}
                 de produção textual e interpretação de texto — fábula, crônica,
                 notícia, artigo de opinião, texto dissertativo-argumentativo,
                 cordel, charge, tirinha, biografia, debate, seminário, texto
@@ -88,7 +95,7 @@ const HeroSection = () => {
               <CheckoutButton
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-extrabold text-base sm:text-lg hover:brightness-105 transition-all shadow-[0_4px_20px_rgba(255,184,48,0.5)] hover:shadow-[0_8px_30px_rgba(255,184,48,0.6)] hover:-translate-y-1 active:translate-y-0"
               >
-                🐙 QUERO ACESSAR TODAS AS 226+ ATIVIDADES AGORA!
+                🐙 QUERO ACESSAR AS {totalAtividades} ATIVIDADES AGORA!
               </CheckoutButton>
 
               {/* Subtexto CTA */}

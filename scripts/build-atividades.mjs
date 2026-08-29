@@ -235,6 +235,44 @@ function renderDataTs(items) {
   ].join("\n");
 }
 
+// ── Números do acervo para a landing ──────────────────────────────
+// Arquivo próprio, separado de atividades.data.ts de propósito: a landing é a
+// página de quem ainda NÃO comprou, e importar o catálogo inteiro (32 KB) só
+// para exibir três números jogaria o acervo no chunk da página de vendas.
+function renderStatsTs(items) {
+  const porCategoria = {};
+  for (const item of items) {
+    porCategoria[item.category] = (porCategoria[item.category] ?? 0) + 1;
+  }
+  const linhas = Object.keys(porCategoria)
+    .sort()
+    .map((cat) => `  ${tsString(cat)}: ${porCategoria[cat]},`);
+
+  return [
+    "// ════════════════════════════════════════════════════════════════════════════",
+    "// GERADO por scripts/build-atividades.mjs a partir de",
+    "// scripts/atividades.manifest.json. Não editar à mão: rode",
+    "//   node scripts/build-atividades.mjs",
+    "//",
+    "// Fonte única dos números que a landing anuncia. Se o acervo crescer, o texto",
+    "// da página de vendas acompanha sozinho — e nunca promete o que não existe.",
+    "// ════════════════════════════════════════════════════════════════════════════",
+    "",
+    `export const totalAtividades = ${items.length};`,
+    "",
+    "export const atividadesPorCategoria: Record<string, number> = {",
+    linhas.join("\n"),
+    "};",
+    "",
+    "export const totalJogosLudicos = atividadesPorCategoria[\"ludica\"] ?? 0;",
+    "",
+    "export const totalExerciciosTexto =",
+    "  (atividadesPorCategoria[\"producao-texto\"] ?? 0) +",
+    "  (atividadesPorCategoria[\"interpretacao-texto\"] ?? 0);",
+    "",
+  ].join("\n");
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
 
@@ -260,9 +298,11 @@ for (const entry of manifest) {
 
 const seedPath = join(root, "supabase", "migrations", "012_seed_atividades_ludicas.sql");
 const dataPath = join(root, "src", "lib", "atividades.data.ts");
+const statsPath = join(root, "src", "lib", "acervo.stats.ts");
 await mkdir(dirname(seedPath), { recursive: true });
 await writeFile(seedPath, renderSeedSql(items), "utf8");
 await writeFile(dataPath, renderDataTs(items), "utf8");
+await writeFile(statsPath, renderStatsTs(items), "utf8");
 
 const totalPdf = items.reduce((a, i) => a + i.pdfBytes, 0);
 const totalCapa = items.reduce((a, i) => a + i.capaBytes, 0);
@@ -273,5 +313,6 @@ console.log(
 );
 console.log(`Escrito: ${seedPath.replace(root, ".")}`);
 console.log(`Escrito: ${dataPath.replace(root, ".")}`);
+console.log(`Escrito: ${statsPath.replace(root, ".")}`);
 console.log("\nPróximo passo: node scripts/upload-atividades.mjs — sem isso o");
 console.log("bucket fica vazio e o botão \"Baixar Recurso\" não acha o arquivo.");
