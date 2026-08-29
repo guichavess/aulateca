@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Compass, CircleUser, Heart, BookOpen, PenLine, BookOpenCheck, Gamepad2, Search, CalendarHeart } from 'lucide-react';
+import { Home, Compass, CircleUser, Heart, PenLine, BookOpenCheck, Gamepad2 } from 'lucide-react';
 import { categories } from '@/lib/data';
 import { CategoryId } from '@/lib/types';
 import { useApp } from '@/lib/context';
@@ -15,7 +15,6 @@ const navItems = [
   { path: '/', label: 'Início', icon: Home },
   { path: '/explore', label: 'Explorar', icon: Compass },
   { path: '/favorites', label: 'Favoritos', icon: Heart, badge: true },
-  { path: '/catalog', label: 'Catálogo', icon: BookOpen },
   // No desktop o perfil só era alcançável pelo avatar do header — que até
   // agora deslogava direto. No mobile já existia via BottomTabBar.
   { path: '/profile', label: 'Meu perfil', icon: CircleUser },
@@ -25,8 +24,6 @@ const categoryIconMap: Record<Exclude<CategoryId, 'all'>, React.ComponentType<{ 
   'producao-texto': PenLine,
   'interpretacao-texto': BookOpenCheck,
   'ludica': Gamepad2,
-  'sondagem': Search,
-  'datas-comemorativas': CalendarHeart,
 };
 
 const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed }) => {

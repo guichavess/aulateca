@@ -2,9 +2,7 @@ export type CategoryId =
   | 'all'
   | 'producao-texto'
   | 'interpretacao-texto'
-  | 'ludica'
-  | 'sondagem'
-  | 'datas-comemorativas';
+  | 'ludica';
 export type AgeRange = 'all' | '6-8' | '9-11' | '12-14';
 export type ResourceType = 'pdf';
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Search, X, Compass, BookOpen, Heart, PenLine, BookOpenCheck, Gamepad2, CalendarHeart, Shield } from 'lucide-react';
+import { Menu, Search, X, Compass, Heart, PenLine, BookOpenCheck, Gamepad2, Shield } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import NotificationBell from '@/components/layout/NotificationBell';
 import UserMenu from '@/components/layout/UserMenu';
@@ -14,13 +14,10 @@ interface AppHeaderProps {
 const mobileMenuItems = [
   { path: '/', label: 'Início', icon: Compass },
   { path: '/explore', label: 'Explorar', icon: Compass },
-  { path: '/catalog', label: 'Catálogo', icon: BookOpen },
   { path: '/favorites', label: 'Favoritos', icon: Heart },
   { path: '/categoria/producao-texto', label: 'Produção de Texto', icon: PenLine },
   { path: '/categoria/interpretacao-texto', label: 'Interpretação de Texto', icon: BookOpenCheck },
   { path: '/categoria/ludica', label: 'Atividades Lúdicas', icon: Gamepad2 },
-  { path: '/categoria/sondagem', label: 'Atividades de Sondagem', icon: Search },
-  { path: '/categoria/datas-comemorativas', label: 'Datas Comemorativas', icon: CalendarHeart },
 ];
 
 const AppHeader: React.FC<AppHeaderProps> = ({ onToggleSidebar, isMobile }) => {

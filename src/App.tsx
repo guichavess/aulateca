@@ -15,7 +15,6 @@ const HomePage = lazy(() => import("./pages/home/HomePage"));
 const ExplorePage = lazy(() => import("./pages/home/ExplorePage"));
 const FavoritesPage = lazy(() => import("./pages/profile/FavoritesPage"));
 const CategoryPage = lazy(() => import("./pages/catalog/CategoryPage"));
-const CatalogPage = lazy(() => import("./pages/catalog/CatalogPage"));
 const CreatePage = lazy(() => import("./pages/create/CreatePage"));
 const ProfilePage = lazy(() => import("./pages/profile/ProfilePage"));
 const PrintTemplate = lazy(() => import("./pages/PrintTemplate"));
@@ -108,7 +107,6 @@ const AppRoutes = () => {
               <Route path="/explore" element={<ExplorePage />} />
               <Route path="/favorites" element={<FavoritesPage />} />
               <Route path="/categoria/:slug" element={<CategoryPage />} />
-              <Route path="/catalog" element={<CatalogPage />} />
               <Route path="/create" element={<CreatePage />} />
               <Route path="/profile" element={<ProfilePage />} />
             </Route>

@@ -141,7 +141,7 @@ const ActivityFormDialog: React.FC<Props> = ({ activity, onClose, onSaved }) => 
             <div className="flex gap-2">
               <Input
                 id="imageUrl"
-                placeholder="https://… ou /catalog/arquivo.png"
+                placeholder="https://… ou /atividades/ludica/quem-sou-eu/capa.webp"
                 {...register('imageUrl')}
               />
               <Button

@@ -11,8 +11,10 @@ export const categories: Category[] = [
   { id: 'producao-texto', label: 'Produção de Texto', icon: '✍️', color: 'brand-purple', count: countFor('producao-texto'), path: '/categoria/producao-texto' },
   { id: 'interpretacao-texto', label: 'Interpretação de Texto', icon: '📖', color: 'brand-teal', count: countFor('interpretacao-texto'), path: '/categoria/interpretacao-texto' },
   { id: 'ludica', label: 'Atividades Lúdicas', icon: '🎲', color: 'brand-pink', count: countFor('ludica'), path: '/categoria/ludica' },
-  { id: 'sondagem', label: 'Atividades de Sondagem', icon: '🔍', color: 'brand-blue', count: countFor('sondagem'), path: '/categoria/sondagem' },
-  { id: 'datas-comemorativas', label: 'Datas Comemorativas', icon: '🎉', color: 'brand-yellow', count: countFor('datas-comemorativas'), path: '/categoria/datas-comemorativas' },
+  // "Atividades de Sondagem" e "Datas Comemorativas" saíram daqui: estavam no
+  // menu sem uma ficha sequer, e quem clicava caía numa tela vazia. O banco
+  // continua aceitando as duas (migration 009), então voltam à navegação no
+  // mesmo commit em que a primeira ficha delas existir.
 ];
 
 // Alinhado à paleta da Teca (ver :root em src/index.css). Fica em hex porque
@@ -22,8 +24,6 @@ export const categoryColorMap: Record<string, string> = {
   'producao-texto': '#5B47E0',   // Teca Violeta — --primary
   'interpretacao-texto': '#2BA89E',
   'ludica': '#E63F87',
-  'sondagem': '#22A7F0',         // Teca Céu — --sky
-  'datas-comemorativas': '#FFC800', // Sol — --sun
   'all': '#5B47E0',
 };
 

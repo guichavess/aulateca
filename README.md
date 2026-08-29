@@ -1,73 +1,72 @@
-# Welcome to your Lovable project
+# AulaTeca
 
-## Project info
+Acervo de atividades de produção e interpretação de texto para o Ensino Fundamental,
+vendido como acesso pago. A professora compra, entra, escolhe a ficha e imprime.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+- **Landing** (`/landing`) — a página de vendas, para quem ainda não comprou. Os números que
+  ela anuncia saem de `src/lib/acervo.stats.ts`, gerado a partir do acervo real: a página
+  nunca promete mais fichas do que existem.
+- **Aplicação** — Home, Explorar, Categorias, Favoritos e Perfil, atrás de login e do
+  `PaidGuard`. As fichas em PDF vivem num bucket privado do Supabase; o download é uma URL
+  assinada de curta duração, emitida só para quem tem acesso pago.
+- **Admin** (`/admin`) — cadastro e edição das atividades do catálogo público.
 
-## How can I edit this code?
+## Como rodar
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+O passo a passo completo — pré-requisitos, variáveis de ambiente, Supabase local — está em
+[`docs/COMO_RODAR.md`](docs/COMO_RODAR.md). O caminho curto:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Comandos do dia a dia:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+| Comando | O que faz |
+| --- | --- |
+| `npm run dev` | Sobe o Vite em modo desenvolvimento |
+| `npm test` | Roda a suíte (Vitest) |
+| `npm run typecheck` | Checagem de tipos |
+| `npm run lint` | ESLint |
+| `npm run build` | Build de produção (o `prebuild` valida os assets referenciados) |
+| `npm run admin:criar` | Cria um usuário administrador |
 
-**Use GitHub Codespaces**
+## O acervo
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+As fichas **não** são digitadas à mão. `scripts/atividades.manifest.json` descreve cada uma, e
 
-## What technologies are used for this project?
+```sh
+node scripts/build-atividades.mjs
+```
 
-This project is built with:
+monta os PDFs em `build/atividades/` (fora do git), grava as capas em `public/atividades/` e
+regenera três arquivos versionados: a migration de seed
+`supabase/migrations/012_seed_atividades_ludicas.sql`, o fallback do frontend
+`src/lib/atividades.data.ts` e os números da landing `src/lib/acervo.stats.ts`. Nenhum dos três
+se edita à mão — mexe-se no manifesto e roda o script.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Depois de gerar, os PDFs precisam ir para o bucket privado:
 
-## How can I deploy this project?
+```sh
+node scripts/upload-atividades.mjs --dry-run   # confere as chaves de destino
+node scripts/upload-atividades.mjs             # exige SUPABASE_SERVICE_ROLE_KEY
+```
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Sem esse upload o botão "Baixar Recurso" não acha arquivo nenhum, mesmo para quem pagou.
 
-## Can I connect a custom domain to my Lovable project?
+## Pagamento
 
-Yes, you can!
+A venda é pela Cakto: o webhook cria a conta e libera o acesso. O fluxo, os campos do payload e
+o que fazer quando um pagamento não libera estão em
+[`docs/integracao-cakto.md`](docs/integracao-cakto.md).
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Pendências
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+O que depende de decisão ou credencial do gestor — chaves, senha do banco de produção, domínio,
+plano do Supabase — fica em [`docs/pendencias-gestao.md`](docs/pendencias-gestao.md).
+
+## Stack
+
+Vite · React · TypeScript · Tailwind CSS · shadcn/ui · Supabase (Postgres, Auth, Storage,
+Edge Functions) · Vitest.

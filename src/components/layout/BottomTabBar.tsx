@@ -1,10 +1,9 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Heart, CircleUser } from 'lucide-react';
+import { Home, Heart, CircleUser } from 'lucide-react';
 
 const tabs = [
   { path: '/', label: 'Início', icon: Home },
-  { path: '/catalog', label: 'Catálogo', icon: BookOpen },
   { path: '/favorites', label: 'Favoritos', icon: Heart },
   { path: '/profile', label: 'Perfil', icon: CircleUser },
 ];

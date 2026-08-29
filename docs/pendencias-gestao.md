@@ -5,7 +5,7 @@ Cada item traz o **motivo** em linguagem de negócio, a **evidência** que o sus
 **custo** e a **ação esperada**. Itens sem custo ficam separados no fim, para não se
 misturarem à decisão de orçamento.
 
-_Última atualização: 27/08/2026._
+_Última atualização: 29/08/2026._
 
 ## Resumo das ações
 
@@ -149,16 +149,30 @@ assinado**.
 Pendências técnicas que **não dependem de orçamento**, listadas aqui apenas para
 visibilidade da gestão. A execução é do time técnico.
 
-### Ambiente de produção indefinido
+### ~~Ambiente de produção indefinido~~ — resolvido em 29/08/2026
 
-1. **Qual projeto é o de produção.** O arquivo de configuração do repositório aponta para
-   um projeto (`egjvtionimijdzhxiwjd`) diferente do que a aplicação usa
-   (`jcjtkacusvufazuaemst`), e o primeiro não é acessível pela nossa conta.
-2. **O login com Google aparece como desabilitado** no projeto que a aplicação usa,
-   embora o recurso esteja implementado. Se ele funciona hoje em produção, existe um
-   terceiro ambiente que não mapeamos.
+**Qual projeto é o de produção: `jcjtkacusvufazuaemst`.** Não há ambiguidade: o
+`config.toml`, o `.env.local` da aplicação e o CLI do Supabase (que está linkado a esse
+projeto) apontam todos para ele. O `egjvtionimijdzhxiwjd` citado antes não é um segundo
+ambiente — era um resquício de configuração.
 
-Ambas precisam ser resolvidas antes do lançamento, mas nenhuma tem custo.
+O segundo ponto — **o login com Google desabilitado no painel** — deixou de ser pendência:
+não existe login com Google no produto. Verificado em 29/08/2026, não há botão na tela de
+entrada nem chamada de OAuth no código. A decisão do gestor é que **a conta nasce da
+venda**: quem compra na Cakto recebe o link, cria a senha e entra. Um provedor externo de
+login não tem papel nesse fluxo, e a opção pode continuar desligada no painel.
+
+### Senha do banco de produção
+
+As migrations **012 a 017** ainda não foram aplicadas em produção. São elas que criam o
+acervo (`012`), o bucket privado e as regras de acesso pago (`015`, `016`) e o painel de
+vendas (`017`). Sem elas, mesmo com os PDFs no bucket, **a Home não lista ficha nenhuma**:
+o app cai no catálogo de emergência embutido no código, que mostra os cards mas não tem
+como entregar o arquivo.
+
+Aplicar é um comando (`supabase db push`), mas exige a **senha do banco** do projeto
+(Dashboard → Settings → Database). Mesma decisão da chave de serviço abaixo: quem segura a
+credencial. Sem custo.
 
 ### Acesso ao DNS do domínio e conta de e-mail transacional (Resend)
 
@@ -177,8 +191,12 @@ O que depende da gestão:
    `nao-responda@aulateca.com.br`). É para onde vai escrever quem pagou e não conseguiu
    entrar.
 3. **O link do checkout do produto na Cakto.** É o destino dos botões de compra da landing
-   (`VITE_CAKTO_CHECKOUT_URL`). Enquanto ele não existir, os CTAs caem na tela de login em
-   vez de vender — a página fica no ar sem caminho de compra.
+   (`VITE_CAKTO_CHECKOUT_URL`). Verificado em 29/08/2026: a variável **não está definida em
+   ambiente nenhum** — só existe como exemplo em `.env.frontend.example`. Enquanto o link
+   não chegar, todo botão de compra da landing cai na tela de login em vez de vender: a
+   página fica no ar sem caminho de compra. É o único item que falta do lado do
+   pagamento — o resto do fluxo (webhook, criação de conta, liberação de acesso) já está
+   pronto e testado.
 
 ### Chave de serviço do Supabase para publicar o acervo
 
@@ -196,6 +214,29 @@ O que depende da gestão: decidir **quem executa** — passar a chave por um cof
 de senhas para o time técnico rodar, ou rodar o comando na máquina de quem já
 tem acesso ao painel. Sem custo; é uma decisão de quem segura a credencial.
 
+### As 6 avaliações diagnósticas não aparecem, mesmo depois do upload
+
+Registro para não virar surpresa: subir os PDFs das 6 avaliações diagnósticas para o
+bucket **não as torna visíveis no produto**. Elas não estão em
+`scripts/atividades.manifest.json` e, por isso, não têm linha na tabela de atividades —
+sem essa linha, nenhum card aparece na Home e não há de onde clicar para baixar. O arquivo
+fica no bucket, correto e inacessível.
+
+Para publicá-las é preciso descrevê-las no manifesto (título, categoria, faixa de ano,
+duração) como as outras 54. É trabalho do time técnico, mas depende de a gestão dizer
+**em que categoria** cada uma entra — hoje não existe uma categoria "avaliação".
+
+### ~~Duas categorias na navegação estão vazias~~ — resolvido em 29/08/2026
+
+"Atividades de Sondagem" e "Datas Comemorativas" apareciam no menu e na barra lateral sem
+nenhuma ficha: quem clicava caía numa tela vazia. Por decisão do gestor, **saíram da
+navegação** até existir material.
+
+Nada foi perdido: o banco continua aceitando as duas categorias, e voltar ao menu é
+acrescentar a linha de volta no mesmo commit em que a primeira ficha for publicada. Um
+teste automático agora reprova qualquer categoria anunciada sem conteúdo, então o
+problema não volta sozinho.
+
 ### Decisão pendente: as promessas da landing
 
 **Já resolvido nesta leva:** "Comece grátis" e "Cancele quando quiser" saíram do hero e do
@@ -203,11 +244,16 @@ CTA final (não existe tier gratuito nem assinatura), e o passo "Crie sua conta 
 "como funciona" passou a descrever o fluxo real — comprar, receber o link, criar a senha.
 Ficou só "7 dias de garantia", que é o direito de arrependimento do CDC (art. 49).
 
-**Continua pendente de decisão da gestão:** os números da landing. A página promete
-"226+ atividades / 37 jogos / 47 exercícios" e "8.500 professoras"; o acervo real são as
-54 fichas desta leva. Com a venda no ar, isso deixa de ser inconsistência de texto e passa
-a ser propaganda em página de venda. Ou os números mudam, ou o acervo cresce até eles —
-mas a página não pode continuar prometendo o que o produto não entrega.
+**Também resolvido em 29/08/2026: os números da landing.** A página prometia "226+
+atividades / 37 jogos / 47 exercícios" e "mais de 8.500 professoras". Agora anuncia **54
+atividades, 30 jogos lúdicos e 24 exercícios** — a contagem do acervo real — e a menção às
+8.500 professoras saiu inteira, por não ter cliente nenhum que a sustente. A copy passou a
+se apoiar no material.
+
+Os números não estão mais digitados na página: saem de `src/lib/acervo.stats.ts`, gerado
+pelo mesmo script que monta os PDFs. **Se o acervo crescer, o texto da landing acompanha
+sozinho** — e um teste automático reprova o build se algum número exibido deixar de bater
+com o acervo. A gestão não precisa se lembrar de atualizar a página a cada leva de fichas.
 
 ---
 
@@ -234,9 +280,9 @@ do pedido — ficam registradas para decisão da gestão:
 - **A landing promete garantia e plano grátis que não existem.** "✓ 7 dias de garantia ·
   ✓ Cancele quando quiser · ✓ Comece grátis" aparece no hero e no CTA final, mas o produto
   não tem assinatura, checkout nem tier gratuito implementado.
-- **Os números da landing não batem com o acervo real desta leva.** A página promete
-  "226+ atividades / 37 jogos / 47 exercícios" e "8.500 professoras"; o acervo real
-  entregue agora são as 54 fichas da pasta lúdica.
+- ~~**Os números da landing não batem com o acervo real desta leva.**~~ Corrigido em
+  29/08/2026: a landing passou a ler a contagem do próprio acervo (ver "Decisão pendente:
+  as promessas da landing", acima).
 - **Seis fichas são, na verdade, duas páginas espremidas numa folha só.** Nas artes
   originais de "Monstro das Emoções — Monte e Conte", "Missão dos Piratas", "Parque dos
   Dinossauros", "Laboratório do Cientista", "Fábrica de Super-Heróis" e "Construa um
