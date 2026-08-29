@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import CheckoutButton from "@/components/landing/CheckoutButton";
 
 const LandingNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -26,12 +27,13 @@ const LandingNavbar = () => {
           </span>
         </Link>
 
-        <Link
-          to="/"
-          className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-bold text-sm hover:brightness-105 transition-all shadow-[0_4px_14px_rgba(255,184,48,0.4)] hover:shadow-[0_6px_20px_rgba(255,184,48,0.5)] hover:-translate-y-0.5 active:translate-y-0"
-        >
-          Começar Grátis
-        </Link>
+        {/* Dizia "Começar Grátis" e apontava para "/" — duas promessas falsas
+            num botão só: não existe plano gratuito, e a raiz é protegida, então
+            quem queria comprar caía na tela de login. Agora vai ao checkout
+            pelo mesmo caminho dos outros CTAs. */}
+        <CheckoutButton className="inline-flex items-center px-5 py-2.5 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-bold text-sm hover:brightness-105 transition-all shadow-[0_4px_14px_rgba(255,184,48,0.4)] hover:shadow-[0_6px_20px_rgba(255,184,48,0.5)] hover:-translate-y-0.5 active:translate-y-0">
+          Quero acessar
+        </CheckoutButton>
       </div>
     </nav>
   );

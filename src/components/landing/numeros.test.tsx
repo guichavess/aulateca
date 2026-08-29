@@ -5,6 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import HeroSection from './HeroSection';
 import FinalCTASection from './FinalCTASection';
 import HowItWorksSection from './HowItWorksSection';
+import LandingNavbar from './LandingNavbar';
 import { atividades } from '@/lib/atividades.data';
 
 /**
@@ -63,6 +64,18 @@ describe('os números que a landing anuncia', () => {
       expect(textoDe(container)).not.toContain('8.500');
       unmount();
     }
+  });
+
+  it('a navbar não promete um plano grátis que não existe', () => {
+    const { container } = renderComRotas(<LandingNavbar />);
+    expect(textoDe(container)).not.toMatch(/gr[áa]tis/i);
+  });
+
+  it('o CTA da navbar leva ao checkout, não à tela de login', () => {
+    renderComRotas(<LandingNavbar />);
+    const destinos = screen.getAllByRole('link').map((a) => a.getAttribute('href'));
+    // A raiz é protegida: apontar para '/' despeja quem quer comprar no login.
+    expect(destinos).not.toContain('/');
   });
 
   it('o botão de compra continua levando a algum lugar', () => {
