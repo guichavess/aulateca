@@ -1,5 +1,5 @@
 import CheckoutButton from "@/components/landing/CheckoutButton";
-import { totalAtividades } from "@/lib/acervo.stats";
+import TecaMascot from "@/components/brand/TecaMascot";
 
 const FinalCTASection = () => {
   return (
@@ -36,14 +36,15 @@ const FinalCTASection = () => {
         </h2>
 
         <p className="font-nunito text-base sm:text-lg text-white/80 mb-10 leading-relaxed">
-          São {totalAtividades} fichas prontas para imprimir, do 1° ao 9° ano —
-          baixe hoje e use na aula de amanhã.
+          São fichas prontas para imprimir, do 1° ao 9° ano — baixe hoje e use
+          na aula de amanhã.
         </p>
 
         <CheckoutButton
           className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-extrabold text-base sm:text-lg hover:brightness-105 transition-all shadow-[0_4px_20px_rgba(255,184,48,0.5)] hover:shadow-[0_8px_30px_rgba(255,184,48,0.6)] hover:-translate-y-1 active:translate-y-0"
         >
-          🐙 QUERO ACESSAR AS {totalAtividades} ATIVIDADES AGORA!
+          <TecaMascot size="xs" className="w-7 h-7 shrink-0" />
+          QUERO ACESSAR AS ATIVIDADES AGORA!
         </CheckoutButton>
 
         <p className="mt-4 text-white/60 text-sm font-nunito">

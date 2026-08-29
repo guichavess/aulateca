@@ -1,8 +1,21 @@
+import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
+import TecaMascot from "@/components/brand/TecaMascot";
 
-const steps = [
+// O passo 1 é o único que fala da marca ("crie sua senha"), e é onde a Teca de
+// verdade entra no lugar do emoji genérico de polvo. Os outros dois seguem
+// emoji: 📚 e ✨ ilustram a ação, não a marca, e trocar os três por vetor
+// deixaria a fileira pesada.
+interface Step {
+  icon?: ReactNode;
+  emoji?: string;
+  title: string;
+  description: string;
+}
+
+const steps: Step[] = [
   {
-    emoji: "🐙",
+    icon: <TecaMascot size="xs" className="w-11 h-11 mx-auto" />,
     // Não existe conta grátis: a conta nasce depois da compra, com o e-mail do
     // pagamento. O texto antigo prometia um tier que o produto não tem.
     title: "Crie sua senha em 30 segundos",
@@ -47,7 +60,7 @@ const HowItWorksSection = () => {
             <div key={i} className="flex items-start gap-4 lg:gap-0">
               {/* Card */}
               <div className="glass-card p-6 sm:p-8 text-center flex-1">
-                <div className="text-4xl mb-4">{step.emoji}</div>
+                <div className="text-4xl mb-4">{step.icon ?? step.emoji}</div>
                 <p className="text-xs font-nunito font-bold text-[#6366F1] uppercase tracking-wider mb-2">
                   Passo {i + 1}
                 </p>

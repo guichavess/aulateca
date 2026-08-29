@@ -8,23 +8,23 @@ import HeroSection from './HeroSection';
 import FinalCTASection from './FinalCTASection';
 import HowItWorksSection from './HowItWorksSection';
 import LandingNavbar from './LandingNavbar';
-import { atividades } from '@/lib/atividades.data';
 
 /**
- * Com a venda no ar, número na landing deixou de ser texto desatualizado e
- * virou promessa: o visitante paga esperando encontrar o que a página anunciou.
+ * Este arquivo já travou o oposto do que trava hoje, e a história importa para
+ * quem vier depois:
  *
- * Estes testes não travam a copy — travam a honestidade dela. A contagem vem do
- * acervo de verdade (`atividades.data.ts`, gerado pelo manifesto), e a landing
- * lê o mesmo acervo por `acervo.stats.ts`. Se a próxima leva de fichas mudar o
- * total e alguém esquecer a página de vendas, é aqui que aparece.
+ *   1. A landing anunciava "226+ atividades / 37 jogos / 47 exercícios" e "mais
+ *      de 8.500 professoras" — números inventados, nenhum deles sustentado pelo
+ *      acervo. Viraram a contagem real, lida de `acervo.stats.ts`.
+ *   2. Em 29/08/2026 o gestor decidiu que a página **não anuncia contagem
+ *      nenhuma**: dizer o total exato entrega ao concorrente o tamanho do
+ *      catálogo e ancora a compra num número em vez do que o material faz.
+ *
+ * O que se preserva das duas fases é a mesma regra: **a página não pode
+ * afirmar uma quantidade**. Antes ela mentia o número; agora ela não o diz. Um
+ * número inventado voltar seria tão reprovável quanto antes — por isso os
+ * guardas dos valores antigos continuam aqui.
  */
-
-const total = atividades.length;
-const ludicas = atividades.filter((a) => a.category === 'ludica').length;
-const exercicios = atividades.filter(
-  (a) => a.category === 'producao-texto' || a.category === 'interpretacao-texto',
-).length;
 
 const renderComRotas = (ui: React.ReactElement) =>
   render(<MemoryRouter>{ui}</MemoryRouter>);
@@ -33,31 +33,32 @@ const renderComRotas = (ui: React.ReactElement) =>
 const textoDe = (container: HTMLElement) =>
   (container.textContent ?? '').replace(/\s+/g, ' ');
 
-describe('os números que a landing anuncia', () => {
-  it('o Hero anuncia o total real do acervo, não um número inventado', () => {
-    const { container } = renderComRotas(<HeroSection />);
-    const texto = textoDe(container);
+/**
+ * "54 atividades", "30 jogos", "24 exercícios", "São 54 fichas" — qualquer
+ * forma de dizer quanto o acervo tem. Não pega "do 1° ao 9° ano" nem "7 dias de
+ * garantia", que são datas e faixas, não contagem de material.
+ */
+const CONTAGEM = /\d+\s*(atividades|fichas|jogos|exercícios)/i;
 
-    expect(texto).toContain(`${total} atividades`);
-    expect(texto).toContain(`${ludicas} jogos lúdicos`);
-    expect(texto).toContain(`${exercicios} exercícios`);
+describe('a landing não anuncia o tamanho do acervo', () => {
+  it('o Hero não diz quantas atividades existem', () => {
+    const { container } = renderComRotas(<HeroSection />);
+    expect(textoDe(container)).not.toMatch(CONTAGEM);
   });
 
-  it('o Hero não carrega mais os números antigos', () => {
-    const { container } = renderComRotas(<HeroSection />);
-    const texto = textoDe(container);
-
-    expect(texto).not.toContain('226+');
-    expect(texto).not.toContain('37 jogos');
-    expect(texto).not.toContain('47 exercícios');
-  });
-
-  it('o CTA final chama pelo total real', () => {
+  it('o CTA final não diz quantas fichas existem', () => {
     const { container } = renderComRotas(<FinalCTASection />);
-    const texto = textoDe(container);
+    expect(textoDe(container)).not.toMatch(CONTAGEM);
+  });
 
-    expect(texto).toContain(String(total));
-    expect(texto).not.toContain('226+');
+  it('o Hero continua dizendo o que a plataforma tem, sem número', () => {
+    const { container } = renderComRotas(<HeroSection />);
+    const texto = textoDe(container);
+    // A promessa qualitativa é o que sobrou no lugar da contagem: se ela também
+    // sumir, a seção deixou de dizer o que se está comprando.
+    expect(texto).toMatch(/atividades/i);
+    expect(texto).toMatch(/jogos lúdicos/i);
+    expect(texto).toMatch(/exercícios complementares/i);
   });
 
   it('nenhuma seção alega clientes que não existem', () => {
@@ -93,38 +94,56 @@ describe('os números que a landing anuncia', () => {
  * quase um dia depois de a landing ser corrigida — quatro vezes o acervo real,
  * na primeira tela que o cliente vê.
  *
- * Esta varredura fecha a classe inteira: nenhum arquivo de interface pode
- * carregar os números velhos, esteja ele em `landing/` ou não. Quem escrever a
- * próxima tela não precisa saber que este arquivo existe para ser pego por ele.
+ * Esta varredura fecha a classe inteira: ela lê o código-fonte, não o render, e
+ * por isso alcança telas que nenhum teste daqui monta.
  */
+const RAIZ_SRC = resolve(import.meta.dirname, '..', '..');
+
+const arquivosDeInterface = (dir = RAIZ_SRC): string[] => {
+  const encontrados: string[] = [];
+  for (const entrada of readdirSync(dir, { withFileTypes: true })) {
+    const caminho = join(dir, entrada.name);
+    if (entrada.isDirectory()) encontrados.push(...arquivosDeInterface(caminho));
+    else if (/\.tsx?$/.test(entrada.name) && !/\.test\.tsx?$/.test(entrada.name)) {
+      encontrados.push(caminho);
+    }
+  }
+  return encontrados;
+};
+
+const curto = (caminho: string) => relative(RAIZ_SRC, caminho).replace(/\\/g, '/');
+
 describe('as promessas antigas não sobreviveram em canto nenhum do código', () => {
   const promessasMortas = [
-    { texto: '226', motivo: 'total de atividades inflado (o acervo tem 54)' },
+    { texto: '226', motivo: 'total de atividades inflado' },
     { texto: '8.500', motivo: 'professoras que nunca existiram' },
     { texto: '37 jogos', motivo: 'contagem de jogos inflada' },
     { texto: '47 exercícios', motivo: 'contagem de exercícios inflada' },
   ];
 
-  const arquivosDeInterface = () => {
-    const raiz = resolve(import.meta.dirname, '..', '..');
-    const encontrados: string[] = [];
-    const varrer = (dir: string) => {
-      for (const entrada of readdirSync(dir, { withFileTypes: true })) {
-        const caminho = join(dir, entrada.name);
-        if (entrada.isDirectory()) varrer(caminho);
-        else if (/\.tsx?$/.test(entrada.name) && !/\.test\.tsx?$/.test(entrada.name)) {
-          encontrados.push(caminho);
-        }
-      }
-    };
-    varrer(raiz);
-    return encontrados;
-  };
-
   it.each(promessasMortas)('nenhuma tela diz "$texto" ($motivo)', ({ texto }) => {
     const culpados = arquivosDeInterface()
       .filter((caminho) => readFileSync(caminho, 'utf8').includes(texto))
-      .map((caminho) => relative(resolve(import.meta.dirname, '..', '..'), caminho));
+      .map(curto);
+
+    expect(culpados).toEqual([]);
+  });
+
+  /**
+   * `acervo.stats.ts` é a contagem real do acervo. Ela tem uso legítimo dentro
+   * do produto (ex.: um painel interno), mas em tela pública é justamente o que
+   * o gestor não quer expor. Proibir o import é mais confiável que caçar a
+   * string do número: pega antes de virar texto.
+   */
+  it('nenhuma tela pública importa a contagem do acervo', () => {
+    const publicas = arquivosDeInterface().filter((caminho) => {
+      const rel = curto(caminho);
+      return rel.startsWith('components/landing/') || rel.startsWith('pages/auth/');
+    });
+
+    const culpados = publicas
+      .filter((caminho) => readFileSync(caminho, 'utf8').includes('acervo.stats'))
+      .map(curto);
 
     expect(culpados).toEqual([]);
   });

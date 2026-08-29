@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import CheckoutButton from "@/components/landing/CheckoutButton";
+import TecaMascot from "@/components/brand/TecaMascot";
 
 const LandingNavbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -21,7 +22,7 @@ const LandingNavbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <Link to="/landing" className="flex items-center gap-2">
-          <span className="text-2xl">🐙</span>
+          <TecaMascot size="xs" className="w-8 h-8" />
           <span className="font-fredoka font-bold text-xl text-[#6366F1]">
             AulaTeca
           </span>

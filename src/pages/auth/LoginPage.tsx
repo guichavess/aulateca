@@ -8,7 +8,6 @@ import { authButtonClass, authInputClass, authLabelClass } from '@/components/au
 import FloatingOrbs from '@/components/layout/FloatingOrbs';
 import TecaMascot from '@/components/brand/TecaMascot';
 import loginBg from '@/assets/login-bg.png';
-import { totalAtividades } from '@/lib/acervo.stats';
 
 // A view 'register' saiu junto com o signup público: quem ainda não tem conta
 // passa por /criar-acesso, que confere a compra antes de criar o usuário.
@@ -130,10 +129,10 @@ const LoginPage: React.FC = () => {
         </h1>
 
         <p className="text-white/80 text-lg mb-12 max-w-md leading-relaxed animate-slide-up" style={{ animationDelay: '0.12s' }}>
-          {/* O número sai do acervo, igual à landing. Esta tela ficou de fora da
-              correção de 29/08/2026 e seguia anunciando o total inflado antigo —
-              por não morar em `components/landing/`, escapou daquela varredura. */}
-          {totalAtividades} atividades de produção textual e interpretação, prontas para imprimir e levar para a sala.
+          {/* Esta tela é pública: ela é o que aparece em `/`, antes de qualquer
+              sessão. Vale a mesma decisão da landing — nada de contagem do
+              acervo aqui. */}
+          Atividades de produção textual e interpretação, prontas para imprimir e levar para a sala.
         </p>
       </div>
 

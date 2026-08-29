@@ -1,10 +1,17 @@
 import CheckoutButton from "@/components/landing/CheckoutButton";
 import HeroPhone from "@/components/landing/HeroPhone";
-import {
-  totalAtividades,
-  totalJogosLudicos,
-  totalExerciciosTexto,
-} from "@/lib/acervo.stats";
+import TecaMascot from "@/components/brand/TecaMascot";
+
+/**
+ * A landing não anuncia mais a contagem do acervo. Decisão do gestor em
+ * 29/08/2026: dizer o total exato entrega ao concorrente o tamanho do catálogo
+ * e, do lado do cliente, ancora a compra num número em vez do que o material
+ * faz. A promessa passa a ser qualitativa — o que tem, para que ano, pronto
+ * para quando.
+ *
+ * Por isso nenhuma tela pública importa o módulo de contagem do acervo, e há
+ * um teste em `numeros.test.tsx` que reprova quem voltar a importá-lo.
+ */
 
 const HeroSection = () => {
   return (
@@ -61,7 +68,7 @@ const HeroSection = () => {
             <div className="text-center lg:text-left">
               {/* Logo + badge */}
               <div className="flex items-center gap-3 justify-center lg:justify-start mb-8">
-                <span className="text-3xl">🐙</span>
+                <TecaMascot size="xs" className="w-9 h-9" />
                 <span className="font-fredoka font-bold text-2xl text-white">
                   AulaTeca
                 </span>
@@ -73,18 +80,16 @@ const HeroSection = () => {
               {/* Headline */}
               <h1 className="font-fredoka font-bold text-display text-white mb-6">
                 Chega de perder noites montando aula.{" "}
-                <span className="text-[#FFB830]">{totalAtividades} atividades</span> de
+                <span className="text-[#FFB830]">Atividades</span> de
                 Produção de Textos prontas para usar AMANHÃ.
               </h1>
 
               {/* Corpo */}
               <p className="font-nunito text-base sm:text-lg text-white/85 leading-relaxed mb-4">
-                Acesse agora a plataforma completa com{" "}
-                <strong className="text-white">{totalAtividades} atividades</strong>,{" "}
-                <strong className="text-white">{totalJogosLudicos} jogos lúdicos</strong> e{" "}
-                <strong className="text-white">
-                  {totalExerciciosTexto} exercícios complementares
-                </strong>{" "}
+                Acesse agora a plataforma completa, com{" "}
+                <strong className="text-white">atividades</strong>,{" "}
+                <strong className="text-white">jogos lúdicos</strong> e{" "}
+                <strong className="text-white">exercícios complementares</strong>{" "}
                 de produção textual e interpretação de texto — fábula, crônica,
                 notícia, artigo de opinião, texto dissertativo-argumentativo,
                 cordel, charge, tirinha, biografia, debate, seminário, texto
@@ -95,7 +100,8 @@ const HeroSection = () => {
               <CheckoutButton
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#FFB830] text-[#1A1D2B] font-nunito font-extrabold text-base sm:text-lg hover:brightness-105 transition-all shadow-[0_4px_20px_rgba(255,184,48,0.5)] hover:shadow-[0_8px_30px_rgba(255,184,48,0.6)] hover:-translate-y-1 active:translate-y-0"
               >
-                🐙 QUERO ACESSAR AS {totalAtividades} ATIVIDADES AGORA!
+                <TecaMascot size="xs" className="w-7 h-7 shrink-0" />
+                QUERO ACESSAR AS ATIVIDADES AGORA!
               </CheckoutButton>
 
               {/* Subtexto CTA */}
