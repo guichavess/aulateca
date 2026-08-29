@@ -46,8 +46,8 @@ const NotFound: React.FC = () => {
           A Teca procurou com os oito braços
         </h1>
         <p className="text-muted-foreground mt-3 leading-relaxed max-w-md mx-auto">
-          E não achou esta página. Ou o link veio quebrado, ou o conteúdo mudou de lugar —
-          nos dois casos o problema é nosso, não seu.
+          E não achou nada por aqui. O link pode ter vindo quebrado ou o conteúdo
+          pode ter mudado de endereço — o erro é nosso, e o caminho de volta está logo abaixo.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">

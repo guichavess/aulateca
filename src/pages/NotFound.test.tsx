@@ -26,7 +26,7 @@ describe('NotFound', () => {
   it('fala português e não culpa quem chegou aqui', () => {
     renderPage();
     expect(screen.getByRole('heading', { name: /A Teca procurou com os oito braços/ })).toBeInTheDocument();
-    expect(screen.getByText(/o problema é nosso, não seu/)).toBeInTheDocument();
+    expect(screen.getByText(/o erro é nosso/)).toBeInTheDocument();
     expect(screen.queryByText(/Page not found/i)).not.toBeInTheDocument();
   });
 

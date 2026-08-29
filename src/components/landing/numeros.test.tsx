@@ -1,4 +1,6 @@
 import React from 'react';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, relative, resolve } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -81,5 +83,49 @@ describe('os números que a landing anuncia', () => {
   it('o botão de compra continua levando a algum lugar', () => {
     renderComRotas(<HeroSection />);
     expect(screen.getAllByRole('link').length).toBeGreaterThan(0);
+  });
+});
+
+/**
+ * Os testes acima renderizam componente por componente, e por isso só cobrem o
+ * que alguém lembrou de listar. Foi assim que a tela de login passou batido: ela
+ * não fica em `landing/`, e continuou anunciando "Mais de 226 atividades" por
+ * quase um dia depois de a landing ser corrigida — quatro vezes o acervo real,
+ * na primeira tela que o cliente vê.
+ *
+ * Esta varredura fecha a classe inteira: nenhum arquivo de interface pode
+ * carregar os números velhos, esteja ele em `landing/` ou não. Quem escrever a
+ * próxima tela não precisa saber que este arquivo existe para ser pego por ele.
+ */
+describe('as promessas antigas não sobreviveram em canto nenhum do código', () => {
+  const promessasMortas = [
+    { texto: '226', motivo: 'total de atividades inflado (o acervo tem 54)' },
+    { texto: '8.500', motivo: 'professoras que nunca existiram' },
+    { texto: '37 jogos', motivo: 'contagem de jogos inflada' },
+    { texto: '47 exercícios', motivo: 'contagem de exercícios inflada' },
+  ];
+
+  const arquivosDeInterface = () => {
+    const raiz = resolve(import.meta.dirname, '..', '..');
+    const encontrados: string[] = [];
+    const varrer = (dir: string) => {
+      for (const entrada of readdirSync(dir, { withFileTypes: true })) {
+        const caminho = join(dir, entrada.name);
+        if (entrada.isDirectory()) varrer(caminho);
+        else if (/\.tsx?$/.test(entrada.name) && !/\.test\.tsx?$/.test(entrada.name)) {
+          encontrados.push(caminho);
+        }
+      }
+    };
+    varrer(raiz);
+    return encontrados;
+  };
+
+  it.each(promessasMortas)('nenhuma tela diz "$texto" ($motivo)', ({ texto }) => {
+    const culpados = arquivosDeInterface()
+      .filter((caminho) => readFileSync(caminho, 'utf8').includes(texto))
+      .map((caminho) => relative(resolve(import.meta.dirname, '..', '..'), caminho));
+
+    expect(culpados).toEqual([]);
   });
 });

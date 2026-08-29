@@ -149,6 +149,35 @@ assinado**.
 Pendências técnicas que **não dependem de orçamento**, listadas aqui apenas para
 visibilidade da gestão. A execução é do time técnico.
 
+### O catálogo esteve aberto ao público até 29/08/2026
+
+Achado da varredura de 29/08/2026. É o item mais grave levantado até aqui e não constava
+deste documento, por isso entra agora.
+
+**O que aconteceu.** Qualquer pessoa com o endereço do banco conseguia ler o catálogo
+inteiro do Aulateca — as 54 fichas, com título, descrição, categoria e faixa de ano —
+**sem conta, sem login e sem ter comprado**. As regras de acesso pago estavam escritas e
+testadas no repositório, mas **nunca chegaram ao banco de produção**: ele parou de receber
+atualizações cinco versões atrás. O paywall existia no código e não existia no ar.
+
+**Evidência.** Uma consulta à tabela de materiais feita em 29/08/2026 **sem nenhuma
+credencial de usuário** devolveu as 66 linhas do catálogo. A tabela que registra tentativas
+de acesso indevido — criada pela mesma atualização que liga o bloqueio — não existia.
+
+**Qual foi o dano real.** Os PDFs **não vazaram por essa porta**: eles ainda não tinham
+sido enviados ao servidor de arquivos, então não havia o que baixar. O que ficou exposto
+foi a **lista do que o produto oferece** — o equivalente ao sumário, não ao material. E
+como ainda não há cliente pagante, ninguém pagou por um acesso que estava aberto. O
+prejuízo é de vantagem competitiva, não de dado pessoal nem de conteúdo.
+
+**Como foi corrigido.** Aplicando ao banco de produção as cinco atualizações que faltavam.
+O estado após a correção está registrado no item "Senha do banco de produção", abaixo.
+
+**O que continua frágil.** Nada avisa quando o repositório e o banco divergem — foi
+exatamente essa divergência silenciosa que produziu o problema. A conferência é manual
+hoje. Transformá-la em verificação automática a cada publicação é trabalho do time técnico,
+sem custo, e vale fazer antes do primeiro cliente.
+
 ### ~~Ambiente de produção indefinido~~ — resolvido em 29/08/2026
 
 **Qual projeto é o de produção: `jcjtkacusvufazuaemst`.** Não há ambiguidade: o
@@ -162,17 +191,24 @@ entrada nem chamada de OAuth no código. A decisão do gestor é que **a conta n
 venda**: quem compra na Cakto recebe o link, cria a senha e entra. Um provedor externo de
 login não tem papel nesse fluxo, e a opção pode continuar desligada no painel.
 
-### Senha do banco de produção
+### ~~Senha do banco de produção~~ — resolvido em 29/08/2026
 
-As migrations **012 a 017** ainda não foram aplicadas em produção. São elas que criam o
-acervo (`012`), o bucket privado e as regras de acesso pago (`015`, `016`) e o painel de
-vendas (`017`). Sem elas, mesmo com os PDFs no bucket, **a Home não lista ficha nenhuma**:
-o app cai no catálogo de emergência embutido no código, que mostra os cards mas não tem
-como entregar o arquivo.
+O banco de produção estava **cinco versões atrasado** em relação ao repositório: parou na
+atualização `012` e não recebeu as de `013` a `017`. Cada uma que faltava tinha uma
+consequência visível no produto:
 
-Aplicar é um comando (`supabase db push`), mas exige a **senha do banco** do projeto
-(Dashboard → Settings → Database). Mesma decisão da chave de serviço abaixo: quem segura a
-credencial. Sem custo.
+| O que faltava | O que isso causava |
+|---|---|
+| `013` — todo material vira PDF | 6 materiais ainda constavam como vídeo, formato que o produto não usa mais |
+| `014` — remoção do acervo de demonstração | 12 fichas fictícias, inventadas para teste, continuavam listadas como se fossem material real |
+| `015` — regras de acesso pago | **Nenhum bloqueio de acesso.** Ver o item "O catálogo esteve aberto ao público", acima |
+| `016` — arquivos no armazenamento privado | Os PDFs continuavam apontando para o endereço público antigo, que não existe mais |
+| `017` — painel de vendas | A área de acompanhamento de vendas não funcionava |
+
+As cinco foram aplicadas em 29/08/2026, e o resultado foi conferido consulta a consulta: o
+catálogo passou a responder vazio para quem não tem acesso, ficou com as 54 fichas reais
+(nenhuma fictícia, nenhuma em vídeo) e os 60 arquivos foram publicados no armazenamento
+privado.
 
 ### Acesso ao DNS do domínio e conta de e-mail transacional (Resend)
 
@@ -190,29 +226,27 @@ O que depende da gestão:
 2. **Definir o e-mail de suporte** que vai no `reply-to` (o remetente será
    `nao-responda@aulateca.com.br`). É para onde vai escrever quem pagou e não conseguiu
    entrar.
-3. **O link do checkout do produto na Cakto.** É o destino dos botões de compra da landing
-   (`VITE_CAKTO_CHECKOUT_URL`). Verificado em 29/08/2026: a variável **não está definida em
-   ambiente nenhum** — só existe como exemplo em `.env.frontend.example`. Enquanto o link
-   não chegar, todo botão de compra da landing cai na tela de login em vez de vender: a
-   página fica no ar sem caminho de compra. É o único item que falta do lado do
-   pagamento — o resto do fluxo (webhook, criação de conta, liberação de acesso) já está
-   pronto e testado.
+3. ~~**O link do checkout do produto na Cakto.**~~ — **resolvido em 29/08/2026.** O link
+   chegou e está configurado na máquina de desenvolvimento (`VITE_CAKTO_CHECKOUT_URL`).
+   Com isso, o lado do pagamento está completo: link de compra, webhook, criação de conta
+   e liberação de acesso.
 
-### Chave de serviço do Supabase para publicar o acervo
+   **Falta um passo de publicação, e ele é invisível:** o link está configurado *localmente*.
+   Para que os botões da landing **publicada** levem ao checkout, a mesma variável precisa
+   estar cadastrada no painel da Vercel — o serviço que hospeda o site. Se não estiver, o
+   site no ar continua mandando quem quer comprar para a tela de login, com todo o resto
+   pronto. É conferência de um minuto no painel, sem custo.
 
-Os 60 PDFs pagos (54 fichas lúdicas + 6 avaliações diagnósticas) saíram do
-repositório e passaram a viver no bucket privado `atividades`. Enquanto eles não
-forem enviados para o projeto de produção, **o botão "Baixar Recurso" não acha
-arquivo nenhum — inclusive para quem pagou**.
+### ~~Chave de serviço do Supabase para publicar o acervo~~ — resolvido em 29/08/2026
 
-O envio é um comando só (`node scripts/upload-atividades.mjs`), mas exige a
-**service role key** do projeto (Dashboard → Settings → API). É a credencial de
-maior privilégio do banco: ela ignora todas as regras de acesso, então não entra
-no repositório, não vai para o navegador e não circula por e-mail ou chat.
+A credencial chegou e os 60 PDFs pagos (54 fichas lúdicas + 6 avaliações diagnósticas)
+foram enviados para o armazenamento privado do projeto de produção. O botão "Baixar
+Recurso" passa a entregar arquivo de verdade, por um link temporário de 60 segundos gerado
+na hora, e só para quem tem acesso pago.
 
-O que depende da gestão: decidir **quem executa** — passar a chave por um cofre
-de senhas para o time técnico rodar, ou rodar o comando na máquina de quem já
-tem acesso ao painel. Sem custo; é uma decisão de quem segura a credencial.
+A chave continua sendo a credencial de maior privilégio do banco — ela ignora todas as
+regras de acesso. Ela **não** entrou no repositório, não vai para o navegador e não deve
+circular por e-mail ou chat. Fica só na máquina de quem publica o acervo.
 
 ### As 6 avaliações diagnósticas não aparecem, mesmo depois do upload
 
@@ -255,6 +289,14 @@ pelo mesmo script que monta os PDFs. **Se o acervo crescer, o texto da landing a
 sozinho** — e um teste automático reprova o build se algum número exibido deixar de bater
 com o acervo. A gestão não precisa se lembrar de atualizar a página a cada leva de fichas.
 
+**Um resto dessa correção só apareceu em 29/08/2026, ao conferir o produto rodando:** a
+**tela de login** continuava anunciando o total antigo, quatro vezes maior que o acervo
+real. Ela não fica na landing, e por isso escapou tanto da correção quanto do teste que
+deveria tê-la pego — o teste varria só as seções da página de vendas. A tela foi corrigida
+para ler o mesmo acervo, e a verificação passou a varrer **todas** as telas do produto, não
+uma lista de arquivos escolhida a dedo. É a primeira tela que o cliente vê depois de
+comprar; era o pior lugar possível para uma promessa inflada sobreviver.
+
 ---
 
 ## Virada PDF-only, sem IA e sem PRO
@@ -277,9 +319,10 @@ regenera assets, seed do banco e catálogo do app juntos.
 Três inconsistências que a mudança expôs e que **não foram alteradas** por estarem fora
 do pedido — ficam registradas para decisão da gestão:
 
-- **A landing promete garantia e plano grátis que não existem.** "✓ 7 dias de garantia ·
-  ✓ Cancele quando quiser · ✓ Comece grátis" aparece no hero e no CTA final, mas o produto
-  não tem assinatura, checkout nem tier gratuito implementado.
+- ~~**A landing promete garantia e plano grátis que não existem.**~~ Corrigido em
+  29/08/2026: "Comece grátis" e "Cancele quando quiser" saíram do hero, do CTA final e do
+  menu de navegação (ver "Decisão pendente: as promessas da landing", acima). Ficaram só os
+  "7 dias de garantia", que é o direito de arrependimento previsto no CDC (art. 49).
 - ~~**Os números da landing não batem com o acervo real desta leva.**~~ Corrigido em
   29/08/2026: a landing passou a ler a contagem do próprio acervo (ver "Decisão pendente:
   as promessas da landing", acima).
