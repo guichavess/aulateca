@@ -55,12 +55,22 @@ const HowItWorksSection = () => {
         </p>
 
         {/* 3 passos */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-4 items-start mb-20">
+        {/* `items-stretch` (padrão do grid) em vez de `items-start`: os três
+            passos têm descrições de tamanhos diferentes, e com altura natural o
+            card do passo 1 descia mais que os outros dois. Agora a linha inteira
+            tem a altura do maior, e a seta se centra sozinha nela — era o que o
+            `pt-16` mágico tentava fazer no olho. */}
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-4 mb-20">
           {steps.map((step, i) => (
-            <div key={i} className="flex items-start gap-4 lg:gap-0">
+            <div key={i} className="flex items-stretch gap-4 lg:gap-0">
               {/* Card */}
               <div className="glass-card p-6 sm:p-8 text-center flex-1">
-                <div className="text-4xl mb-4">{step.icon ?? step.emoji}</div>
+                {/* Altura fixa no slot do ícone: o emoji ocupa a linha do
+                    `text-4xl` (40px) e a Teca é um `<img>` de 44px. Sem isto,
+                    os 4px de diferença desalinham "PASSO 1" dos outros dois. */}
+                <div className="h-11 mb-4 flex items-center justify-center text-4xl leading-none">
+                  {step.icon ?? step.emoji}
+                </div>
                 <p className="text-xs font-nunito font-bold text-[#6366F1] uppercase tracking-wider mb-2">
                   Passo {i + 1}
                 </p>
@@ -74,7 +84,7 @@ const HowItWorksSection = () => {
 
               {/* Seta entre cards (não no último) */}
               {i < steps.length - 1 && (
-                <div className="hidden md:flex items-center justify-center px-2 pt-16">
+                <div className="hidden md:flex items-center justify-center px-2">
                   <ArrowRight className="w-6 h-6 text-[#6366F1]" />
                 </div>
               )}
