@@ -62,6 +62,33 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         // Supabase pode ter refrescado o token entre sessões; sincroniza.
         localStorage.setItem('token', session.access_token);
         setIsLoggedIn(true);
+
+        // E rebusca o perfil. Sem isto, `role` fica congelado no valor gravado
+        // no último login de verdade — possivelmente para sempre.
+        //
+        // O caminho do boot não passa por `login()` nem dispara `SIGNED_IN`: a
+        // biblioteca emite `INITIAL_SESSION` ao assinar `onAuthStateChange`, e
+        // o listener abaixo não trata esse evento. Como `TOKEN_REFRESHED`
+        // mantém a sessão viva indefinidamente, a pessoa pode passar semanas
+        // sem que o perfil em cache seja reconsultado.
+        //
+        // Isso mordeu nos dois sentidos. Quem foi promovido a ADMIN no banco
+        // depois do último login continuava com a role antiga: o PaidGuard
+        // mandava para `/acesso` e a tela acusava "não encontramos sua compra"
+        // — um admin barrado por uma compra que ele nunca precisou fazer, e que
+        // recarregar a página não corrigia. No sentido inverso, quem foi
+        // rebaixado seguia enxergando a área administrativa.
+        //
+        // Falha silenciosa de propósito: perfil ausente ou rede fora mantêm o
+        // que já estava em cache, que é melhor que derrubar a sessão.
+        authService
+          .fetchProfile(session.user.id, session.user.email ?? undefined)
+          .then((profile) => {
+            if (cancelled) return;
+            authService.saveSession(session.access_token, profile);
+            setUser(profile);
+          })
+          .catch(() => {/* mantém o perfil em cache */});
       }
     });
 
