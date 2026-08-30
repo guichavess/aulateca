@@ -149,6 +149,57 @@ assinado**.
 Pendências técnicas que **não dependem de orçamento**, listadas aqui apenas para
 visibilidade da gestão. A execução é do time técnico.
 
+### Decisão pendente: o bloco de oferta pedido para o CTA da landing
+
+Pedido do gestor, via Caio, em 26/08/2026: reproduzir no CTA final da landing um bloco de
+oferta — preço riscado, preço promocional e lista de benefícios — a partir de uma captura
+de tela do site `apostilasef.shop`, que é **de outro produto**.
+
+**O bloco foi implementado** com a identidade do AulaTeca (a referência serviu de
+layout, não de conteúdo) e com o preço de **R$ 37,90** definido pelo gestor. Os
+benefícios listados descrevem o produto real; nenhuma frase da captura foi reaproveitada.
+
+**Resta uma divergência aberta, e ela precisa ser fechada antes de publicar.** O checkout
+que a aplicação realmente abre (`VITE_CAKTO_CHECKOUT_URL`) ainda cobra outra coisa:
+
+| O que a landing passa a anunciar | O que o checkout cobra hoje |
+|---|---|
+| R$ 37,90/mês (+ R$ 0,99 de taxa = R$ 38,89) | **R$ 5,00/mês** (+ R$ 0,99 = R$ 5,99) |
+
+E, para registro, o que da captura **não** foi aproveitado, por descrever outro produto:
+"+300 páginas de atividades" (contagem, e de outro acervo), "acesso vitalício" (o oposto
+de assinatura), "material atualizado 2025" (estamos em 2026) e "somente hoje" (urgência que
+se repetiria todo dia). Um teste automático reprova a volta de qualquer uma delas.
+
+Enquanto essa oferta na Cakto não for trocada, **a landing anuncia R$ 37,90 e o checkout
+cobra R$ 5,00/mês**. Anunciar um valor e cobrar outro é problema mesmo quando o cobrado é
+mais barato: quebra a confiança exatamente no passo do cartão. Um sinal de que a oferta de
+R$ 5,00 está mesmo obsoleta é que o próprio checkout a exibe como **"Oferta finalizada"**,
+com o cronômetro zerado.
+
+**Quatro coisas precisam de resposta da gestão:**
+
+1. **Trocar a oferta na Cakto para R$ 37,90**, ou mandar o link da oferta nova para
+   substituir `VITE_CAKTO_CHECKOUT_URL`. Sem isso, quem clicar compra a oferta antiga.
+2. **É assinatura mensal ou compra única?** Hoje o card escreve "R$ 37,90/mês, com
+   renovação automática", porque assinatura é o que o produto vende (o próprio código
+   trata `kind: 'subscription'` e cancelamento valendo até o fim do período pago). Se os
+   R$ 37,90 forem **cobrança única**, é uma linha para mudar — mas precisa vir do gestor,
+   porque muda o que o cliente paga.
+3. **Conferir a taxa de serviço da oferta nova.** Os R$ 0,99 exibidos foram medidos na
+   oferta de R$ 5,00. A Cakto calcula a taxa por oferta; se mudar, o total anunciado fica
+   errado.
+4. **Os R$ 97 valem como preço riscado?** O gestor confirmou que foram praticados, e o
+   card já sabe desenhar o riscado — está desligado esperando **a data** em que valeram.
+   Preço-âncora é o item que se questiona depois, e a defesa é a data.
+
+**Um achado colateral, e é o mais sério.** Este documento registra que "Cancele quando
+quiser" saiu do CTA final porque **"não existe assinatura"**. Existe: o checkout cobra
+renovação mensal. A remoção foi feita sobre premissa errada, e o resultado é que **a
+landing não avisa em lugar nenhum que a cobrança é recorrente**. Cobrança recorrente não
+informada antes da compra é problema por si só, sem nenhuma relação com o bloco de
+desconto pedido. Precisa ser corrigido mesmo que a oferta nova nunca saia do papel.
+
 ### O catálogo esteve aberto ao público até 29/08/2026
 
 Achado da varredura de 29/08/2026. É o item mais grave levantado até aqui e não constava
