@@ -57,7 +57,7 @@ const AdminUsersPage: React.FC = () => {
                 <tr key={u.id} className="hover:bg-secondary/30 transition-colors">
                   <td className="px-4 py-3 font-medium">{u.name}</td>
                   <td className="px-4 py-3 hidden md:table-cell text-xs text-muted-foreground tabular-nums">
-                    {new Date(u.createdAt).toLocaleDateString('pt-BR')}
+                    {u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '—'}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end">

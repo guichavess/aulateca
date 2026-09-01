@@ -50,7 +50,10 @@ export interface PublicActivity {
   startsAt: string | null;
   endsAt: string | null;
   isActive: boolean;
-  createdAt: string;
+  // Nulo no tipo porque o banco declara a coluna assim, mesmo com DEFAULT now().
+  // Fingir que nunca é nulo é o que fazia `new Date(null)` virar 31/12/1969 na
+  // tela em vez de um traço honesto.
+  createdAt: string | null;
 }
 
 export interface ActivityEnrollment {
@@ -75,7 +78,7 @@ type ActivityRow = {
   starts_at: string | null;
   ends_at: string | null;
   is_active: boolean;
-  created_at: string;
+  created_at: string | null;
 };
 
 const toActivity = (r: ActivityRow): PublicActivity => ({
@@ -314,7 +317,7 @@ export interface AdminUserRow {
   name: string;
   role: 'PROFESSOR' | 'PAI_MAE' | 'TERAPEUTA' | 'ADMIN';
   avatarUrl: string | null;
-  createdAt: string;
+  createdAt: string | null;
 }
 
 export const adminUsersService = {
