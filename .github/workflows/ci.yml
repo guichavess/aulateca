@@ -1,0 +1,48 @@
+# Rede de segurança do Aulateca.
+#
+# Existe por causa de um incidente real: uma barra invertida perdida transformou
+# o guard do Meta Pixel em comentário, o `vite build` passou feliz (ele transpila,
+# não checa tipos) e só a suíte de testes pegou. Sem este arquivo, "rodar o teste
+# antes do merge" depende de alguém lembrar.
+#
+# A ordem dos passos é do mais barato para o mais caro: typecheck falha em
+# segundos, build leva minutos. Quem quebrou o tipo descobre rápido.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Testes
+        run: npm test
+
+      # `npm run build` roda o typecheck de novo (ver package.json) — de propósito:
+      # é o mesmo comando que o Vercel executa, e queremos testar o comando real,
+      # não uma variação que só existe no CI.
+      #
+      # As variáveis abaixo não são segredo: o build só precisa que elas existam
+      # para não quebrar na leitura. O Supabase de verdade é configurado no Vercel.
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://exemplo.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: chave-de-ci-sem-valor
