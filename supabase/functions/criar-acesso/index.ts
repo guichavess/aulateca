@@ -21,14 +21,8 @@
  *   supabase functions deploy criar-acesso --no-verify-jwt
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import {
-  hasActiveEntitlement,
-  hashIp,
-  isAlreadyRegistered,
-  parseRequest,
-  rateLimitExceeded,
-  rateLimitWindowStart,
-} from './conta.ts';
+import { clientIp, hashIp, rateLimitExceeded, rateLimitWindowStart } from '../_shared/rateLimit.ts';
+import { hasActiveEntitlement, isAlreadyRegistered, parseRequest } from './conta.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -72,9 +66,7 @@ Deno.serve(async (req: Request) => {
   });
 
   // ── 1. Rate limit ────────────────────────────────────────────────────────
-  // x-forwarded-for vem da borda do Supabase; o primeiro item é o cliente.
-  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'desconhecido';
-  const ipHash = IP_SALT ? await hashIp(ip, IP_SALT) : null;
+  const ipHash = IP_SALT ? await hashIp(clientIp(req.headers), IP_SALT) : null;
   const desde = rateLimitWindowStart();
 
   const [porIp, porEmail] = await Promise.all([

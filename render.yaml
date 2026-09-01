@@ -20,5 +20,11 @@ services:
       # Usado para validar o token do usuário logado antes de gastar IA.
       - key: SUPABASE_JWT_SECRET
         sync: false
+      # URL e anon key do mesmo projeto: o /chat pergunta ao banco, com o token
+      # do próprio usuário, se ele tem compra viva (rpc has_active_access).
+      - key: SUPABASE_URL
+        value: https://jcjtkacusvufazuaemst.supabase.co
+      - key: SUPABASE_ANON_KEY
+        sync: false
       - key: FRONTEND_URL
         value: https://aulateca.com.br,https://www.aulateca.com.br

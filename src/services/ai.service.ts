@@ -51,6 +51,24 @@ export async function streamTecaChat({
         onError('Ops, meus tentáculos se enrolaram 🐙 Muitas requisições! Tente novamente em alguns segundos.');
         return;
       }
+      // 403: autenticado, mas sem compra viva. O backend confere o acesso pago
+      // a cada conversa — o token continuar válido não basta.
+      if (resp.status === 403) {
+        onError('Seu acesso ao Aulateca não está ativo 🐙 Dá uma olhada em /acesso para voltar a conversar comigo.');
+        return;
+      }
+      // 422: os tetos de tamanho do /chat (mensagens demais, ou conversa longa
+      // demais no total). Sem mensagem própria o usuário não sabe o que fazer.
+      if (resp.status === 422) {
+        onError('Essa conversa ficou longa demais para os meus tentáculos 🐙 Comece uma nova que eu te acompanho.');
+        return;
+      }
+      // 503: não deu para confirmar o acesso — o backend falha fechado de
+      // propósito, então é instabilidade, não bloqueio.
+      if (resp.status === 503) {
+        onError('Não consegui confirmar seu acesso agora 🐙 Tente de novo em instantes.');
+        return;
+      }
       onError('Ops, meus tentáculos se enrolaram 🐙 Tente novamente em alguns segundos!');
       return;
     }

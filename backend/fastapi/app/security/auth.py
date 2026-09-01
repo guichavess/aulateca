@@ -58,6 +58,9 @@ def get_current_user(
             detail="Token sem identificação de usuário.",
         )
 
-    # Disponibiliza o id para o rate-limiter (chave por usuário).
+    # Disponibiliza o id para o rate-limiter (chave por usuário) e o token cru
+    # para a checagem de acesso pago (`require_paid_access`), que conversa com o
+    # PostgREST em nome do próprio usuário.
     request.state.user_id = user_id
+    request.state.access_token = credentials.credentials
     return user_id

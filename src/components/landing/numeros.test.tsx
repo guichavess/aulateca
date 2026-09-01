@@ -37,8 +37,12 @@ const textoDe = (container: HTMLElement) =>
  * "54 atividades", "30 jogos", "24 exercícios", "São 54 fichas" — qualquer
  * forma de dizer quanto o acervo tem. Não pega "do 1° ao 9° ano" nem "7 dias de
  * garantia", que são datas e faixas, não contagem de material.
+ *
+ * `recursos` entrou junto com o celular do hero: a Home real imprime "54
+ * recursos disponíveis", e é justamente a linha que um celular espelhando a
+ * Home traria de volta para a landing sem ninguém notar.
  */
-const CONTAGEM = /\d+\s*(atividades|fichas|jogos|exercícios)/i;
+const CONTAGEM = /\d+\s*(atividades|fichas|jogos|exercícios|recursos)/i;
 
 describe('a landing não anuncia o tamanho do acervo', () => {
   it('o Hero não diz quantas atividades existem', () => {

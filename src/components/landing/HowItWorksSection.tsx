@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import TecaMascot from "@/components/brand/TecaMascot";
+import AccessTutorialPhone from "./AccessTutorialPhone";
 
 // O passo 1 é o único que fala da marca ("crie sua senha"), e é onde a Teca de
 // verdade entra no lugar do emoji genérico de polvo. Os outros dois seguem
@@ -92,25 +93,18 @@ const HowItWorksSection = () => {
           ))}
         </div>
 
-        {/* Bloco de vídeo */}
+        {/* O primeiro acesso, tela a tela.
+            Aqui havia public/landing/tutorial.mp4: 11,3 MB gravados em 22/06, antes
+            da virada PDF-only — um vídeo de uma ferramenta que não existe mais.
+            No lugar entra o mesmo celular do hero, percorrendo o caminho onde o
+            comprador de fato trava: e-mail → criar senha → dentro do app. */}
         <div className="bg-[#6366F1] rounded-2xl p-8 sm:p-12 text-center">
-          <h3 className="font-fredoka font-bold text-xl sm:text-2xl text-white mb-2">
-            Veja em 2 minutos como é simples
+          <h3 className="font-fredoka font-bold text-xl sm:text-2xl text-white mb-8">
+            Do pagamento à primeira ficha, em 3 telas
           </h3>
-          <p className="text-white/70 font-nunito text-sm mb-8">▼</p>
 
-          {/* Placeholder para embed de vídeo */}
-          <div className="max-w-sm mx-auto">
-            <div className="relative rounded-xl overflow-hidden shadow-2xl shadow-black/20 bg-black">
-              <video
-                className="w-full h-auto"
-                controls
-                preload="metadata"
-                playsInline
-              >
-                <source src="/landing/tutorial.mp4" type="video/mp4" />
-              </video>
-            </div>
+          <div className="flex justify-center">
+            <AccessTutorialPhone />
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from app.models.schemas import ChatRequest
-from app.security.auth import get_current_user
+from app.security.access import require_paid_access
 from app.security.rate_limit import limiter
 from app.services.ai_service import stream_ai_response
 
@@ -19,7 +19,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 async def chat(
     request: Request,
     body: ChatRequest,
-    user_id: str = Depends(get_current_user),
+    user_id: str = Depends(require_paid_access),
 ):
     async def event_generator():
         # Cada chunk é serializado como JSON para preservar quebras de linha,

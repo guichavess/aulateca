@@ -14,12 +14,26 @@
  * Este arquivo roda em Deno e aquele em Vite: não dá para importar um do outro.
  */
 
-export const PASSWORD_MIN_LENGTH = 10;
+import { isEmailShaped, normalizeEmail } from '../_shared/rateLimit.ts';
 
-/** Máximo de tentativas por hora. Ver `access_attempts` na migration 015. */
-export const RATE_LIMIT_PER_IP = 10;
-export const RATE_LIMIT_PER_EMAIL = 5;
-export const RATE_LIMIT_WINDOW_MINUTES = 60;
+/**
+ * O freio de abuso mudou de casa: agora mora em `../_shared/rateLimit.ts`,
+ * porque `recuperar-senha` e `entrar` contam tentativas na mesma tabela e com
+ * a mesma janela. Fica reexportado aqui para nenhum import existente quebrar —
+ * o `index.ts` ao lado e os testes continuam pedindo tudo a `conta.ts`.
+ */
+export {
+  hashIp,
+  isEmailShaped,
+  normalizeEmail,
+  rateLimitExceeded,
+  rateLimitWindowStart,
+  RATE_LIMIT_PER_EMAIL,
+  RATE_LIMIT_PER_IP,
+  RATE_LIMIT_WINDOW_MINUTES,
+} from '../_shared/rateLimit.ts';
+
+export const PASSWORD_MIN_LENGTH = 10;
 
 const COMMON = new Set([
   '123456', '1234567', '12345678', '123456789', '1234567890',
@@ -116,17 +130,6 @@ export function resolveRole(roleKey: unknown): UserRole {
   return (typeof roleKey === 'string' && map[roleKey]) || 'PROFESSOR';
 }
 
-/** Mesmo tratamento do trigger `cakto_normalize_entitlement` (011:130). */
-export function normalizeEmail(value: unknown): string {
-  return typeof value === 'string' ? value.trim().toLowerCase() : '';
-}
-
-/** Validação de formato suficiente para o que fazemos: a titularidade já foi
- *  provada no pagamento, aqui só barramos lixo antes de consultar o banco. */
-export function isEmailShaped(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-}
-
 export interface EntitlementRow {
   status: string;
   expires_at: string | null;
@@ -146,15 +149,6 @@ export function isEntitlementActive(e: EntitlementRow, now: Date = new Date()): 
 
 export function hasActiveEntitlement(rows: EntitlementRow[], now: Date = new Date()): boolean {
   return rows.some((e) => isEntitlementActive(e, now));
-}
-
-export function rateLimitExceeded(counts: { byIp: number; byEmail: number }): boolean {
-  return counts.byIp >= RATE_LIMIT_PER_IP || counts.byEmail >= RATE_LIMIT_PER_EMAIL;
-}
-
-/** Início da janela do rate limit, em ISO, para a query em `access_attempts`. */
-export function rateLimitWindowStart(now: Date = new Date()): string {
-  return new Date(now.getTime() - RATE_LIMIT_WINDOW_MINUTES * 60_000).toISOString();
 }
 
 export interface ParsedRequest {
@@ -190,16 +184,6 @@ export function parseRequest(body: unknown, now: Date = new Date()): ParseResult
 
   void now; // assinatura estável para os testes; a validação não depende de tempo
   return { ok: true, value: { email, password, name, role: resolveRole(raw.role) } };
-}
-
-/**
- * Hash do IP para `access_attempts`. O IP em claro é dado pessoal e não
- * acrescenta nada: para contar tentativas, o hash serve igual.
- */
-export async function hashIp(ip: string, salt: string): Promise<string> {
-  const data = new TextEncoder().encode(`${salt}:${ip}`);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**

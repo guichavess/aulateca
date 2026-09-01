@@ -1,7 +1,7 @@
 import React from 'react';
 import FloatingOrbs from '@/components/layout/FloatingOrbs';
 import TecaMascot from '@/components/brand/TecaMascot';
-import loginBg from '@/assets/login-bg.png';
+import loginBg from '@/assets/login-bg.webp';
 
 interface AuthShellProps {
   title: string;

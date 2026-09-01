@@ -1,4 +1,4 @@
-import { Category } from './types';
+import { AgeRange, Category } from './types';
 import { atividades } from './atividades.data';
 
 export const resources = atividades;
@@ -15,6 +15,16 @@ export const categories: Category[] = [
   // menu sem uma ficha sequer, e quem clicava caía numa tela vazia. O banco
   // continua aceitando as duas (migration 009), então voltam à navegação no
   // mesmo commit em que a primeira ficha delas existir.
+];
+
+// As faixas de ano da Home. Moram aqui, junto de `categories`, porque são a
+// outra metade do mesmo par de filtros — e porque o celular da landing confere
+// em teste (`HeroPhone.test.tsx`) que os chips que ele desenha são estes.
+export const AGES: { id: AgeRange; label: string }[] = [
+  { id: 'all', label: 'Todas' },
+  { id: '6-8', label: '1° ao 3° ano' },
+  { id: '9-11', label: '4° e 5° ano' },
+  { id: '12-14', label: '6° ao 9° ano' },
 ];
 
 // Alinhado à paleta da Teca (ver :root em src/index.css). Fica em hex porque

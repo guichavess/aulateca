@@ -7,7 +7,7 @@ import AuthAlert from '@/components/auth/AuthAlert';
 import { authButtonClass, authInputClass, authLabelClass } from '@/components/auth/authStyles';
 import FloatingOrbs from '@/components/layout/FloatingOrbs';
 import TecaMascot from '@/components/brand/TecaMascot';
-import loginBg from '@/assets/login-bg.png';
+import loginBg from '@/assets/login-bg.webp';
 
 // A view 'register' saiu junto com o signup público: quem ainda não tem conta
 // passa por /criar-acesso, que confere a compra antes de criar o usuário.

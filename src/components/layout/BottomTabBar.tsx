@@ -1,12 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Heart, CircleUser } from 'lucide-react';
-
-const tabs = [
-  { path: '/', label: 'Início', icon: Home },
-  { path: '/favorites', label: 'Favoritos', icon: Heart },
-  { path: '/profile', label: 'Perfil', icon: CircleUser },
-];
+import { tabs } from './navTabs';
 
 /**
  * Barra de navegação do celular.

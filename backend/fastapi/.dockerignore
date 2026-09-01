@@ -1,0 +1,15 @@
+# O Dockerfile faz `COPY . .`. Sem esta lista, `backend/fastapi/.env` — com as
+# chaves de Gemini/OpenAI e o SUPABASE_JWT_SECRET — vira uma camada da imagem,
+# legível por qualquer um que tenha a imagem. O arquivo está fora do git; o
+# buraco era só o build.
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+*.log

@@ -3,6 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Pixel da Meta (869796945790520). Fica no topo do head, antes de
+         qualquer outro script, porque o fbevents.js precisa estar carregando
+         enquanto o resto da pagina monta: PageView disparado tarde perde
+         visita curta, e visita curta e a maioria do trafego frio de anuncio.
+
+         O index.html e unico (SPA), entao o pixel valeria para o site inteiro
+         -- e e por isso que a lista abaixo existe. O pixel manda para a Meta a
+         URL completa da pagina, e tres rotas carregam dado do comprador na
+         propria URL: /criar-acesso?e= traz o e-mail em base64 (que e
+         codificacao, nao criptografia: qualquer um decodifica), e as rotas de
+         senha trazem o code PKCE do link do e-mail. Mandar isso para a Meta
+         nao traz nada de marketing -- quem esta nessas telas ja comprou -- e
+         entrega dado pessoal a terceiro sem base legal. Entao o pixel nao roda
+         nelas, nem carrega o fbevents.
+
+         O <noscript> no <body> pode ficar solto: ele so leva o id do pixel, e
+         a URL da pagina iria no cabecalho Referer -- que o Referrer-Policy do
+         vercel.json ja corta para so a origem.
+
+         A CSP em vercel.json libera este script pelo hash sha256; mexer numa
+         virgula aqui sem regerar o hash derruba o pixel em producao. O teste
+         em src/test/metaPixel.test.ts trava as duas coisas. -->
+    <!-- Meta Pixel Code -->
+    <script>
+(function () {
+  var privadas = ['/criar-acesso', '/redefinir-senha', '/recuperar-senha'];
+  var caminho = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (privadas.indexOf(caminho) !== -1) return;
+
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '869796945790520');
+fbq('track', 'PageView');
+})();
+    </script>
+    <!-- O <noscript> do pixel mora no <body>, nao aqui: dentro do <head> so
+         valem link/style/meta, e um <img> ali faz o parser do Vite abortar o
+         build. -->
+    <!-- End Meta Pixel Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -35,6 +81,9 @@
   </head>
 
   <body>
+    <noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=869796945790520&ev=PageView&noscript=1"
+/></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
