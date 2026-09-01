@@ -5,7 +5,7 @@ Cada item traz o **motivo** em linguagem de negócio, a **evidência** que o sus
 **custo** e a **ação esperada**. Itens sem custo ficam separados no fim, para não se
 misturarem à decisão de orçamento.
 
-_Última atualização: 29/08/2026._
+_Última atualização: 01/09/2026._
 
 ## Resumo das ações
 
@@ -148,6 +148,117 @@ assinado**.
 
 Pendências técnicas que **não dependem de orçamento**, listadas aqui apenas para
 visibilidade da gestão. A execução é do time técnico.
+
+### Três informações que a gestão precisa fornecer antes do lançamento (01/09/2026)
+
+O app ganhou canal de suporte e monitoramento de erro. O código está pronto; o que
+falta são três valores que só a gestão tem, configurados nas variáveis do projeto no
+Vercel. **Enquanto não forem preenchidos, o recurso simplesmente não aparece** — sem
+erro, sem aviso.
+
+| Variável | O que é | O que acontece sem ela |
+|---|---|---|
+| `VITE_SUPORTE_EMAIL` | E-mail de atendimento ao professor | O bloco "falar com a gente" some. Cliente pago bloqueado volta a não ter com quem falar |
+| `VITE_SUPORTE_WHATSAPP` | Número com DDI e DDD, só dígitos | O atalho do WhatsApp some. O e-mail continua, se estiver preenchido |
+| `VITE_SENTRY_DSN` | Endereço do projeto no Sentry (plano gratuito) | Nenhum erro é reportado. Toda tela branca volta a ser invisível |
+
+**Por que isso importa comercialmente:** até aqui, um erro de tela derrubava o app em
+silêncio e o professor não tinha nenhum canal para avisar — nem na tela de acesso
+bloqueado, que chegava a dizer "fale com a gente" sem oferecer ninguém. Os dois
+buracos se alimentavam: falha invisível de um lado, cliente sem saída do outro.
+
+Depois de configurar, **conferir na prática**: abrir a tela `/acesso` e clicar nos dois
+canais; e provocar um erro para ver o evento chegar no painel do Sentry. O CSP do site
+bloqueia envio para host não autorizado **sem dar erro visível** — se o DSN for de uma
+região fora da lista em `vercel.json`, o painel fica vazio parecendo que nada quebrou.
+
+### O acervo de demonstração agora é uma escolha, não um acidente
+
+Antes, quando o banco de dados voltava vazio — inclusive **por estar fora do ar** — o
+app preenchia a tela com o acervo fictício embutido no próprio site. O professor via a
+grade cheia, clicava, e o download não acontecia: os arquivos de verdade dependem do
+banco que estava caído. Um erro honesto virava um produto que parece funcionar.
+
+Agora isso só acontece com `VITE_DEMO_FALLBACK="true"`, e a tela avisa em letras que é
+demonstração. **Em produção fica desligado.** Ligar apenas para apresentação comercial
+com banco vazio — e lembrar de desligar depois.
+
+### A busca de recursos existe, a paginação ainda não
+
+A tela "Explorar" ganhou busca por texto (era o jeito como o professor procura: pelo
+assunto da aula de amanhã, não pela categoria). Ela carrega até 60 materiais de uma vez,
+o que cobre o acervo atual de 54 com folga.
+
+**Quando o acervo passar de ~60 fichas, isso vira um problema**: o professor deixa de
+ver o que passar do limite, sem nenhum aviso na tela. O que a página vai precisar aí é
+de paginação de verdade — não de um número maior. Registrado aqui para não ser
+descoberto pelo cliente.
+
+### Dois freios de abuso que ficaram de fora da varredura de 30/08/2026
+
+A varredura de segurança de 30/08/2026 fechou sete pontos (entre eles o mais grave:
+**a IA da Teca não sabia o que era acesso pago** — quem pedia reembolso perdia o acervo
+mas continuava gastando as chaves pagas de IA para sempre). Dois itens foram
+deliberadamente deixados de fora, e ficam registrados aqui para não se perderem.
+
+**1. Login e "esqueci minha senha" não têm freio próprio.** Hoje quem tenta adivinhar
+senha na tela de entrada, ou dispara e-mails de recuperação em massa, esbarra só nos
+limites nativos do serviço de autenticação do Supabase (o GoTrue) — que existem, mas não
+são nossos, não são configuráveis e não deixam registro que a gente consiga consultar. O
+banco já tem a tabela para registrar essas tentativas (`access_attempts`) e já prevê o
+tipo `recuperar_senha`, mas **ninguém grava nela nesse caso**. A saída é uma função
+própria de recuperação de senha, que passa a registrar as tentativas antes de repassar ao
+Supabase. É trabalho do time técnico, sem custo; ficou fora por ser mudança de fluxo de
+login, e mexer em login junto com sete outras correções é como se descobre tarde que a
+porta de entrada quebrou.
+
+**2. O limite de requisições da IA zera quando o servidor hiberna.** O microsserviço da
+Teca conta as requisições **na própria memória**. O plano gratuito do Render desliga o
+serviço quando ele fica ocioso, e ao voltar a contagem começa do zero — então o teto de 20
+requisições por minuto é, na prática, furado. Resolver de verdade exigiria um serviço
+externo de contagem (Redis), que é custo novo. **Não é urgente**, e a razão é o que foi
+feito nesta mesma leva: a IA agora só responde a quem tem compra viva, e cada pedido tem
+teto de tamanho. Um contador furado protegendo uma porta trancada custa muito menos do que
+custava ontem.
+
+### Pixel da Meta instalado em 01/09/2026 — uma decisão ficou em aberto
+
+O código base do Pixel `869796945790520` ("PIXEL APOSTILA") entrou no `index.html`,
+disparando `PageView`. Como o site é uma página só (SPA), o pixel valeria para o site
+inteiro — e foi aí que apareceu um problema que valia a pena resolver antes de subir.
+
+**O pixel manda para a Meta a URL completa de cada página visitada.** Três rotas do
+Aulateca carregam dado do comprador na própria URL:
+
+- `/criar-acesso?e=...` — o link que o comprador recebe por e-mail depois de pagar. O
+  `e=` é **o e-mail dele em base64**, que é codificação e não criptografia: qualquer
+  pessoa decodifica em um segundo. Sem a trava, o e-mail de cada comprador iria para a
+  Meta no momento em que ele clicasse no link da compra.
+- `/redefinir-senha` e `/recuperar-senha` — trazem o código do link de recuperação.
+
+Nenhuma das três tem valor de marketing (quem chega nelas já comprou), então **o pixel
+simplesmente não roda nessas rotas** — nem carrega o script da Meta. O teste
+`src/test/metaPixel.test.ts` trava isso, junto com a assinatura de segurança que
+autoriza o pixel a rodar: mexer no bloco sem regerar a assinatura derrubaria o pixel só
+em produção, onde ninguém olha o console.
+
+Fica **uma decisão para a gestão**, no painel da Meta, não no código:
+
+**Correspondência avançada automática.** O último passo da instalação oferece ligar esse
+recurso: ele envia à Meta os dados que o visitante digita nos formulários do site
+(e-mail, telefone), embaralhados, para casar a visita com a conta dele. Melhora a
+atribuição de conversões e, com isso, a otimização das campanhas — e é tratamento de dado
+pessoal de professor, com o dever de constar na política de privacidade (LGPD). **Foi
+deixado desligado**; ligar é decisão da gestão. Vale notar a incoerência de ligar isso
+depois do parágrafo acima: a trava de rotas existe justamente para o e-mail do comprador
+não chegar à Meta.
+
+E fica **um trabalho técnico sem custo**, esperando definição: nenhum evento de conversão
+foi instrumentado. Só `PageView` sai daqui. Eventos como `Lead` (criou acesso) e
+`Purchase` (pagou) ainda não existem no código — o "Iniciar finalização da compra" que
+aparece no painel vem da plataforma de pagamento, não do site. Sem `Purchase` no pixel,
+a campanha não consegue otimizar por compra. Falta a gestão definir quais eventos quer
+medir.
 
 ### Decisão pendente: o bloco de oferta pedido para o CTA da landing
 
