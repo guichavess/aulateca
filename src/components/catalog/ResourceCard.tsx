@@ -66,7 +66,15 @@ const ResourceCard: React.FC<ResourceCardProps> = ({ resource, index, onClick })
         <p className="text-sm text-muted-foreground line-clamp-2 mb-3 leading-relaxed">{resource.description}</p>
         <div className="flex items-center justify-between pt-3 border-t-2 border-border">
           <span className="text-xs text-muted-foreground truncate mr-2">{resource.author}</span>
-          <span className="text-xs font-bold text-ink shrink-0">⭐ {resource.rating}</span>
+          {/* Prova social só quando existe prova.
+              Todo o acervo de estreia tem nota 0 (honestamente — ninguém avaliou
+              ainda, e não há UI de avaliar), e "⭐ 0" em 54 cards faz o catálogo
+              inteiro parecer abandonado no dia do lançamento. Zero não é uma nota
+              ruim, é a ausência de nota: então some. Volta sozinho no dia em que
+              houver avaliação de verdade. */}
+          {resource.rating > 0 && (
+            <span className="text-xs font-bold text-ink shrink-0">⭐ {resource.rating}</span>
+          )}
         </div>
       </div>
     </div>

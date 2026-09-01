@@ -111,7 +111,18 @@ const ResourceModal: React.FC<ResourceModalProps> = ({ resource, onClose }) => {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold text-foreground truncate">{resource.author}</div>
-              <div className="text-[11px] text-muted-foreground"><span className="font-bold text-ink">⭐ {resource.rating}</span> • {resource.downloads.toLocaleString()} downloads</div>
+              {/* Mesma regra do card: nota e contador só aparecem quando têm o
+                  que dizer. Se os dois forem zero, a linha inteira some — em vez
+                  de anunciar "⭐ 0 • 0 downloads" logo abaixo do autor. */}
+              {(resource.rating > 0 || resource.downloads > 0) && (
+                <div className="text-[11px] text-muted-foreground">
+                  {resource.rating > 0 && (
+                    <span className="font-bold text-ink">⭐ {resource.rating}</span>
+                  )}
+                  {resource.rating > 0 && resource.downloads > 0 && ' • '}
+                  {resource.downloads > 0 && `${resource.downloads.toLocaleString()} downloads`}
+                </div>
+              )}
             </div>
           </div>
 

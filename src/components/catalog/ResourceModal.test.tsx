@@ -51,6 +51,23 @@ describe('ResourceModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  /**
+   * O acervo de estreia inteiro tem nota 0 e download 0. Mostrar isso é pior que
+   * não mostrar nada: sugere um material que ninguém quis, quando na verdade
+   * ninguém avaliou ainda.
+   */
+  it('esconde nota e downloads enquanto forem zero', () => {
+    render(<ResourceModal resource={{ ...recurso, rating: 0, downloads: 0 }} onClose={() => {}} />);
+    expect(screen.queryByText(/⭐/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/downloads/)).not.toBeInTheDocument();
+  });
+
+  it('mostra nota e downloads quando existem de verdade', () => {
+    render(<ResourceModal resource={recurso} onClose={() => {}} />);
+    expect(screen.getByText(/⭐ 4.8/)).toBeInTheDocument();
+    expect(screen.getByText(/120 downloads/)).toBeInTheDocument();
+  });
+
   it('o botão de favorito diz o que faz e em que estado está', () => {
     render(<ResourceModal resource={recurso} onClose={() => {}} />);
     const fav = screen.getByRole('button', { name: /Salvar .* nos favoritos/ });
