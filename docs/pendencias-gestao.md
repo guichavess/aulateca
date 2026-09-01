@@ -158,9 +158,13 @@ erro, sem aviso.
 
 | Variável | O que é | O que acontece sem ela |
 |---|---|---|
-| `VITE_SUPORTE_EMAIL` | E-mail de atendimento ao professor | O bloco "falar com a gente" some. Cliente pago bloqueado volta a não ter com quem falar |
+| `VITE_SUPORTE_EMAIL` | E-mail de atendimento ao professor — **definido: `aulatecabr@gmail.com`** | O bloco "falar com a gente" some. Cliente pago bloqueado volta a não ter com quem falar |
 | `VITE_SUPORTE_WHATSAPP` | Número com DDI e DDD, só dígitos | O atalho do WhatsApp some. O e-mail continua, se estiver preenchido |
 | `VITE_SENTRY_DSN` | Endereço do projeto no Sentry (plano gratuito) | Nenhum erro é reportado. Toda tela branca volta a ser invisível |
+
+O e-mail já está configurado no ambiente local. **Falta preenchê-lo nas variáveis
+do Vercel** — é lá que o professor vai vê-lo. O WhatsApp e o Sentry seguem em aberto;
+o app funciona sem eles, apenas sem o atalho e sem o monitoramento.
 
 **Por que isso importa comercialmente:** até aqui, um erro de tela derrubava o app em
 silêncio e o professor não tinha nenhum canal para avisar — nem na tela de acesso
