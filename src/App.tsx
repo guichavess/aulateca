@@ -6,6 +6,7 @@ import { AppProvider, useApp } from "@/lib/context";
 import { Toaster } from "@/components/ui/sonner";
 import PaidGuard from "@/components/auth/PaidGuard";
 import RouteFallback from "@/components/layout/RouteFallback";
+import ErrorBoundary from "@/components/system/ErrorBoundary";
 import LoginPage from "./pages/auth/LoginPage";
 import MainLayout from "./components/layout/MainLayout";
 
@@ -47,6 +48,19 @@ const queryClient = new QueryClient({
   },
 });
 
+/**
+ * Rota de teste do ErrorBoundary, só em desenvolvimento.
+ *
+ * Um anteparo contra tela branca que ninguém nunca viu funcionar é só uma
+ * promessa. Aqui dá para ver a tela de erro de verdade, conferir o código do
+ * evento e checar se ele chegou no painel do Sentry — sem quebrar nada de
+ * propósito no código real. `import.meta.env.DEV` é estático, então o bloco
+ * inteiro some do bundle de produção.
+ */
+const Boom: React.FC = () => {
+  throw new Error('Erro proposital para testar o ErrorBoundary');
+};
+
 const AdminGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useApp();
   if (user?.role !== 'ADMIN') return <Navigate to="/" replace />;
@@ -69,11 +83,18 @@ const RecoveryGate: React.FC = () => {
 
 const AppRoutes = () => {
   const { isLoggedIn } = useApp();
+  const { pathname } = useLocation();
 
   return (
     <Suspense fallback={<RouteFallback />}>
       <RecoveryGate />
+      {/* Boundary interno: um erro dentro de uma página não derruba o app
+          inteiro, e o botão "voltar ao início" continua sendo um caminho real.
+          A `key` pela rota reseta o estado de erro ao navegar — sem ela, a tela
+          quebrada gruda e a pessoa precisa recarregar para sair dela. */}
+      <ErrorBoundary origem="página" mostrarVoltar key={pathname}>
       <Routes>
+        {import.meta.env.DEV && <Route path="/__boom" element={<Boom />} />}
         {/* Faixa 1 — sempre disponíveis, com ou sem sessão.
             /redefinir-senha PRECISA estar aqui: o link de recuperação chega com
             sessão ativa, e deixá-la só na área logada a esconderia atrás do
@@ -142,11 +163,15 @@ const AppRoutes = () => {
           <Route path="*" element={<LoginPage />} />
         )}
       </Routes>
+      </ErrorBoundary>
     </Suspense>
   );
 };
 
 const App = () => (
+  // Boundary externo: pega o que quebra fora das rotas — provider, contexto,
+  // o próprio router. É o último anteparo antes da tela branca.
+  <ErrorBoundary origem="app">
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AppProvider>
@@ -162,6 +187,7 @@ const App = () => (
       </AppProvider>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

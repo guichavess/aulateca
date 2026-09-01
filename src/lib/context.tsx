@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { supabase } from '@/integrations/supabase/client';
 import { authService, type AuthUser } from '@/services/auth.service';
 import { favoritesService } from '@/services/favorites.service';
+import { identificarUsuario } from '@/lib/monitoring';
 
 interface AppState {
   isLoggedIn: boolean;
@@ -143,6 +144,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       subscription.unsubscribe();
     };
   }, []);
+
+  // Diz ao Sentry de quem é a sessão — só o id, nunca o e-mail. É o que
+  // permite saber se um erro atingiu uma pessoa ou trezentas.
+  useEffect(() => {
+    identificarUsuario(user?.id);
+  }, [user?.id]);
 
   // Carrega favoritos do backend quando o usuário estiver autenticado
   useEffect(() => {
