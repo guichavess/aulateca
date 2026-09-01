@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CircleUser, LogOut, Shield } from 'lucide-react';
+import { CircleUser, LifeBuoy, LogOut, Shield } from 'lucide-react';
 import { useApp } from '@/lib/context';
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { suporteMailto, suporteWhatsappUrl } from '@/lib/suporte';
 
 interface UserMenuProps {
   className?: string;
@@ -29,6 +30,10 @@ const UserMenu: React.FC<UserMenuProps> = ({ className }) => {
   const navigate = useNavigate();
   const [avatarFailed, setAvatarFailed] = React.useState(false);
   const avatarUrl = avatarFailed ? undefined : user?.avatarUrl;
+
+  const ajudaHref =
+    suporteMailto('Aulateca — ajuda', user?.email ? `Conta: ${user.email}` : undefined) ??
+    suporteWhatsappUrl(`Ajuda no Aulateca${user?.email ? ` — ${user.email}` : ''}`);
 
   const initials = userName
     ? userName.split(' ').filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase()
@@ -78,6 +83,17 @@ const UserMenu: React.FC<UserMenuProps> = ({ className }) => {
           <DropdownMenuItem onSelect={() => navigate('/admin')}>
             <Shield className="w-4 h-4" aria-hidden="true" />
             Painel administrativo
+          </DropdownMenuItem>
+        )}
+
+        {/* Ajuda dentro do app, não só na tela de bloqueio: quem trava numa
+            atividade que não baixa está logado e navegando, e não tem por que
+            descobrir o suporte só depois de perder o acesso. Prefere o e-mail;
+            cai no WhatsApp se só ele estiver configurado. */}
+        {ajudaHref && (
+          <DropdownMenuItem onSelect={() => { window.location.href = ajudaHref; }}>
+            <LifeBuoy className="w-4 h-4" aria-hidden="true" />
+            Ajuda e suporte
           </DropdownMenuItem>
         )}
 

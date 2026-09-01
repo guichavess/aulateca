@@ -4,6 +4,7 @@ import { useApp } from '@/lib/context';
 import { useAccess } from '@/hooks/useAccess';
 import { accessService, isEntitlementActive, type Entitlement } from '@/services/access.service';
 import AuthShell from '@/components/auth/AuthShell';
+import SuporteLinks from '@/components/support/SuporteLinks';
 import { authButtonClass } from '@/components/auth/authStyles';
 
 const CHECKOUT_URL = import.meta.env.VITE_CAKTO_CHECKOUT_URL ?? '';
@@ -152,6 +153,21 @@ const AcessoEncerradoPage: React.FC = () => {
         >
           Atualizar
         </button>
+
+        {/* O suporte fica em TODOS os motivos, não só no chargeback.
+            O texto do chargeback dizia "fale com a gente" sem oferecer ninguém,
+            mas o beco sem saída é o mesmo em qualquer um dos casos: quem chega
+            nesta tela pagou por algo que não abre. O assunto já vem com o motivo
+            para o chamado chegar triado. */}
+        <SuporteLinks
+          className="pt-2 border-t-2 border-border"
+          titulo="Algo aqui não bate com o que você comprou?"
+          assunto={`Aulateca — ${motivo.title}`}
+          contexto={[
+            user?.email ? `Conta: ${user.email}` : null,
+            `Situação: ${motivo.title}`,
+          ]}
+        />
       </div>
     </AuthShell>
   );
