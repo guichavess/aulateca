@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { X } from 'lucide-react';
-import { categories, resources as mockResources } from '@/lib/data';
+import { AGES, categories, resources as mockResources } from '@/lib/data';
 import { CategoryId, AgeRange, Resource } from '@/lib/types';
 import { useApp } from '@/lib/context';
 import { resourcesService } from '@/services/resources.service';
@@ -10,13 +10,9 @@ import ResourceModal from '@/components/catalog/ResourceModal';
 import FilterChipGroup, { FilterOption } from '@/components/catalog/FilterChipGroup';
 import { Button } from '@/components/ui/button';
 import EmptyState from '@/components/ui/EmptyState';
-
-const AGES: FilterOption<AgeRange>[] = [
-  { id: 'all', label: 'Todas' },
-  { id: '6-8', label: '1° ao 3° ano' },
-  { id: '9-11', label: '4° e 5° ano' },
-  { id: '12-14', label: '6° ao 9° ano' },
-];
+import DemoAcervoAviso from '@/components/catalog/DemoAcervoAviso';
+import { demoFallbackAtivo } from '@/lib/demoFallback';
+import { useBancoVazio } from '@/hooks/useBancoVazio';
 
 const HomePage: React.FC = () => {
   const { userName } = useApp();
@@ -43,17 +39,14 @@ const HomePage: React.FC = () => {
     placeholderData: keepPreviousData,
   });
 
-  // Sonda sem filtro nenhum: serve só para saber se o banco está vazio.
-  // Antes o fallback de mock era decidido pelo resultado *filtrado*, então
-  // qualquer combinação sem resultado no banco real fazia os recursos
-  // fictícios reaparecerem — o usuário filtrava e via dados que não existem.
-  const { data: probe, isLoading: probeLoading } = useQuery({
-    queryKey: ['resources', 'probe'],
-    queryFn: () => resourcesService.fetchAll({ limit: 1 }),
-    staleTime: 5 * 60 * 1000,
-  });
+  // A sonda que nasceu aqui virou `useBancoVazio` e agora serve as quatro telas
+  // do catálogo — Explorar e Categoria decidiam pelo resultado filtrado e
+  // repetiam o bug que esta página já tinha corrigido.
+  const { bancoVazio } = useBancoVazio();
 
-  const databaseIsEmpty = !probeLoading && probe?.total === 0;
+  // Banco vazio já não basta: o acervo fictício exige a flag explícita. Em
+  // produção ela fica desligada, então banco vazio aparece como banco vazio.
+  const databaseIsEmpty = demoFallbackAtivo && bancoVazio;
 
   const resources: Resource[] = useMemo(() => {
     if (databaseIsEmpty) {
@@ -107,6 +100,8 @@ const HomePage: React.FC = () => {
           Explore os recursos selecionados abaixo.
         </p>
       </div>
+
+      {databaseIsEmpty && <DemoAcervoAviso />}
 
       {/* Filtros */}
       <div className="space-y-4 animate-slide-up" style={{ animationDelay: '0.08s' }}>

@@ -8,6 +8,9 @@ import ResourceCard from '@/components/catalog/ResourceCard';
 import ResourceModal from '@/components/catalog/ResourceModal';
 import EmptyState from '@/components/ui/EmptyState';
 import Chip from '@/components/ui/chip';
+import DemoAcervoAviso from '@/components/catalog/DemoAcervoAviso';
+import { demoFallbackAtivo } from '@/lib/demoFallback';
+import { useBancoVazio } from '@/hooks/useBancoVazio';
 
 const ages: { id: AgeRange; label: string }[] = [
   { id: 'all', label: 'Todas' },
@@ -34,13 +37,19 @@ const CategoryPage: React.FC = () => {
     enabled: !!category,
   });
 
+  // Antes do early return: hook não pode ficar depois de um `return`.
+  const { bancoVazio } = useBancoVazio();
+
   if (!category) {
     return <Navigate to="/" replace />;
   }
 
+  // Mesmo critério da Explorar: acervo fictício só com a flag ligada E o banco
+  // comprovadamente vazio. "Esta categoria não tem nada" é uma resposta legítima
+  // — e era ela que o fallback antigo escondia.
   const remoteResources = data?.data ?? [];
-  const usingMock = !isLoading && !isError && remoteResources.length === 0;
-  const resources: Resource[] = usingMock
+  const usandoDemo = demoFallbackAtivo && bancoVazio && !isError;
+  const resources: Resource[] = usandoDemo
     ? mockResources.filter(
         (r) =>
           r.category === categoryId &&
@@ -67,6 +76,8 @@ const CategoryPage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {usandoDemo && <DemoAcervoAviso />}
 
       {isLoading ? (
         <EmptyState tone="loading" title="Carregando recursos…" />

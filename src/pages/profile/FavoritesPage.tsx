@@ -9,6 +9,7 @@ import ResourceCard from '@/components/catalog/ResourceCard';
 import ResourceModal from '@/components/catalog/ResourceModal';
 import EmptyState from '@/components/ui/EmptyState';
 import { Button } from '@/components/ui/button';
+import { demoFallbackAtivo } from '@/lib/demoFallback';
 
 const FavoritesPage: React.FC = () => {
   const { favorites } = useApp();
@@ -21,12 +22,16 @@ const FavoritesPage: React.FC = () => {
     enabled: ids.length > 0,
   });
 
-  // FALLBACK MOCK — se algum ID favoritado não veio do Supabase (ex: usuário
-  // favoritou um recurso mockado da HomePage durante a demo), procura em
-  // mockResources para a tela não perder esse item.
-  // Uma falha no Supabase não pode esconder favoritos que temos localmente.
+  // Favorito de demonstração — só com a flag ligada.
+  //
+  // O caso real é estreito: durante uma demo a pessoa favorita um recurso
+  // fictício (id '1', '2'…, que nem passa pelo filtro de uuid do serviço) e a
+  // tela ficaria sem ele. Fora da demo, este ramo só serviria para ressuscitar
+  // na lista um item que o banco não tem mais — e cujo download não funciona.
   const remoteIds = new Set(remoteFavs.map((r) => r.id));
-  const mockFavs = mockResources.filter((r) => ids.includes(r.id) && !remoteIds.has(r.id));
+  const mockFavs = demoFallbackAtivo
+    ? mockResources.filter((r) => ids.includes(r.id) && !remoteIds.has(r.id))
+    : [];
   const favResources: Resource[] = [...remoteFavs, ...mockFavs];
 
   return (
