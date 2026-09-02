@@ -23,11 +23,13 @@
  *   supabase secrets set CAKTO_WEBHOOK_SECRET='<segredo>'
  *   supabase secrets set RESEND_API_KEY='re_...' APP_URL='https://aulateca.com.br'
  *   supabase secrets set ACCESS_LINK_SECRET='<segredo longo>' SUPPORT_EMAIL='...'
+ *   supabase secrets set META_PIXEL_ID='...' META_CAPI_TOKEN='...'
  *   supabase functions deploy cakto-webhook --no-verify-jwt
  */
 import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.49.4';
-import { decide, normalize, parseSecrets, secretMatches, type Decision } from './cakto.ts';
+import { decide, normalize, parseSecrets, secretMatches, type Decision, type NormalizedEvent } from './cakto.ts';
 import { buildAccessLink, decideEmail, renderAccessEmail, type EntitlementEmailState } from './email.ts';
+import { configDoAmbiente, deveEnviar, enviarPurchase, montarEventoPurchase } from './meta.ts';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -39,6 +41,18 @@ const APP_URL = Deno.env.get('APP_URL') ?? 'https://aulateca.com.br';
 const ACCESS_LINK_SECRET = Deno.env.get('ACCESS_LINK_SECRET') ?? '';
 const SUPPORT_EMAIL = Deno.env.get('SUPPORT_EMAIL') ?? '';
 const EMAIL_FROM = Deno.env.get('ACCESS_EMAIL_FROM') ?? 'Aulateca <nao-responda@aulateca.com.br>';
+
+// `null` quando pixel ou token não estão configurados — a venda continua
+// funcionando sem a Meta, que é o comportamento certo em ambiente local.
+const META = configDoAmbiente((k) => Deno.env.get(k));
+
+/**
+ * Preço anunciado, em reais, para quando o payload da Cakto vier sem `amount`.
+ *
+ * Precisa acompanhar `src/lib/oferta.ts` (valor + taxa de serviço). Duplicado
+ * de propósito: a Edge Function roda no Deno e não importa do bundle do front.
+ */
+const VALOR_PADRAO_EM_REAIS = 38.89;
 
 // `EdgeRuntime` é global do runtime do Supabase e não existe nos tipos do Deno.
 declare const EdgeRuntime: { waitUntil(promise: Promise<unknown>): void } | undefined;
@@ -129,6 +143,7 @@ Deno.serve(async (req: Request) => {
     // Depois da resposta, nunca antes: a Cakto não faz retentativa e não pode
     // receber erro por causa de um e-mail.
     agendar(notificarComprador(supabase, decision, result.entitlement ?? null, evt.customerName));
+    agendar(avisarMeta(decision.action, evt));
 
     // A linha do acesso fica de fora do corpo: a resposta vai para a Cakto e não
     // há motivo para devolver a ela dados da nossa base.
@@ -247,6 +262,40 @@ async function apply(supabase: SupabaseClient, decision: Decision): Promise<Appl
     .eq('id', row.id);
   if (error) throw new Error(`cancelamento falhou: ${error.message}`);
   return { canceled: decision.sourceKey, accessUntil: row.expires_at ?? now };
+}
+
+// ── aviso à Meta ───────────────────────────────────────────────────────────
+
+/**
+ * Manda o `Purchase` para a API de Conversões, só em compra aprovada.
+ *
+ * Roda depois da resposta e nunca lança: o acesso do comprador não pode
+ * depender do graph.facebook.com estar de pé. Falha aqui é perda de dado de
+ * anúncio, que é ruim, mas é ordens de grandeza menos grave do que uma venda
+ * marcada como não entregue para a Cakto, que não faz retentativa.
+ */
+async function avisarMeta(acao: string, evt: NormalizedEvent): Promise<void> {
+  if (!deveEnviar(acao)) return;
+
+  if (!META) {
+    // Log e não erro: sem pixel/token configurados o certo é seguir em frente.
+    console.log('META_PIXEL_ID/META_CAPI_TOKEN ausentes — Purchase não enviado');
+    return;
+  }
+
+  const evento = await montarEventoPurchase(evt, {
+    valorPadrao: VALOR_PADRAO_EM_REAIS,
+    urlDaLoja: APP_URL,
+  });
+
+  const resultado = await enviarPurchase(META, evento);
+  if (resultado.ok) {
+    console.log(`Purchase enviado à Meta (event_id ${evento.event_id})`);
+  } else {
+    // Fica no log com o event_id: dá para reenviar manualmente pelo gerenciador
+    // ou reprocessar o evento, que continua gravado em `cakto_events`.
+    console.error(`Purchase não chegou à Meta (event_id ${evento.event_id}):`, resultado.detalhe);
+  }
 }
 
 // ── aviso ao comprador ─────────────────────────────────────────────────────
