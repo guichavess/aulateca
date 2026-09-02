@@ -257,12 +257,25 @@ deixado desligado**; ligar é decisão da gestão. Vale notar a incoerência de 
 depois do parágrafo acima: a trava de rotas existe justamente para o e-mail do comprador
 não chegar à Meta.
 
-E fica **um trabalho técnico sem custo**, esperando definição: nenhum evento de conversão
-foi instrumentado. Só `PageView` sai daqui. Eventos como `Lead` (criou acesso) e
-`Purchase` (pagou) ainda não existem no código — o "Iniciar finalização da compra" que
-aparece no painel vem da plataforma de pagamento, não do site. Sem `Purchase` no pixel,
-a campanha não consegue otimizar por compra. Falta a gestão definir quais eventos quer
-medir.
+Os eventos de conversão **foram instrumentados** depois deste registro, e o funil hoje
+sai completo do site: `PageView` na visita, `InitiateCheckout` no clique do CTA (com o
+valor total que a Cakto cobra) e `Purchase` quando o pagamento é confirmado. O
+`Purchase` não sai do navegador, e sim do webhook da Cakto pela API de Conversões da
+Meta — quem clica no CTA ainda pode desistir com o cartão na mão, e contar isso como
+compra faria a Meta otimizar para quem clica em vez de quem paga. Reembolso, chargeback
+e cancelamento não viram evento: não são venda negativa para a Meta, e mandá-los
+inventaria receita.
+
+Restam **duas coisas**, e as duas dependem da gestão:
+
+- **`META_PIXEL_ID` e `META_CAPI_TOKEN` precisam ser cadastrados** como segredos do
+  Supabase (`supabase secrets set`), não da Vercel. O token sai do Gerenciador de
+  Eventos → pixel → Configurações → API de Conversões → Gerar token. Enquanto isso não
+  for feito, a venda continua funcionando normalmente, mas o `Purchase` não chega ao
+  painel da Meta — e sem ele a campanha não consegue otimizar por compra.
+- **`Lead` (criou acesso) não existe**, e é decisão de gestão se vale medir. Ele mede
+  quem chegou até o cadastro, o que só é útil se houver alguma campanha otimizando por
+  isso.
 
 ### Decisão pendente: o bloco de oferta pedido para o CTA da landing
 
