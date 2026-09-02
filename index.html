@@ -49,6 +49,51 @@ fbq('track', 'PageView');
          valem link/style/meta, e um <img> ali faz o parser do Vite abortar o
          build. -->
     <!-- End Meta Pixel Code -->
+
+    <!-- Utmify: pixel de conversao (6a977262fbf5cc13655ac28a) + rastreador de
+         UTM. O snippet que a Utmify entrega vem ofuscado -- base64 com XOR em
+         cima, montando o <script> em runtime. Aqui esta o mesmo carregamento
+         escrito por extenso, porque codigo que ninguem le e codigo que ninguem
+         audita, e porque a CSP precisa liberar a origem pelo nome de qualquer
+         jeito.
+
+         Vale a mesma exclusao de rota do pixel da Meta logo acima: a Utmify
+         manda a URL completa da pagina, e /criar-acesso?e= carrega o e-mail do
+         comprador em base64 e as rotas de senha carregam o code do link. Quem
+         chega nessas telas ja comprou -- nao ha o que atribuir -- entao aqui
+         nao carrega nada.
+
+         script-src e connect-src em vercel.json precisam de cdn.utmify.com.br
+         e api.utmify.com.br; este bloco inline entra na CSP pelo segundo hash
+         sha256 (o primeiro continua sendo o da Meta, que o teste le). -->
+    <script>
+      (function () {
+        var privadas = ['/criar-acesso', '/redefinir-senha', '/recuperar-senha'];
+        var caminho = window.location.pathname.replace(/\/+$/, '') || '/';
+        if (privadas.indexOf(caminho) !== -1) return;
+
+        window.pixelId = '6a977262fbf5cc13655ac28a';
+
+        function carregar(src, atributos) {
+          var s = document.createElement('script');
+          s.src = src;
+          s.async = true;
+          s.defer = true;
+          (atributos || []).forEach(function (nome) {
+            s.setAttribute(nome, '');
+          });
+          document.head.appendChild(s);
+        }
+
+        carregar('https://cdn.utmify.com.br/scripts/pixel/pixel.js');
+        carregar('https://cdn.utmify.com.br/scripts/utms/latest.js', [
+          'data-utmify-prevent-xcod-sck',
+          'data-utmify-prevent-subids',
+        ]);
+      })();
+    </script>
+    <!-- End Utmify -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">

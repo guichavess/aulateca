@@ -30,3 +30,6 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+
+# diretorio local do CLI da Vercel (projectId/orgId da maquina)
+.vercel/

@@ -27,6 +27,21 @@ function lerScriptDoPixel(): string {
   return achado[0].slice('<script>'.length, -'</script>'.length);
 }
 
+function lerScriptDaUtmify(): string {
+  const html = readFileSync(resolve(raizDoProjeto, 'index.html'), 'utf8');
+  const achado = html.match(/<script>\n {6}\(function \(\)[\s\S]*?<\/script>/);
+  if (!achado) throw new Error('bloco inline da Utmify não encontrado no index.html');
+  return achado[0].slice('<script>'.length, -'</script>'.length);
+}
+
+function hashesDaCSP(): string[] {
+  const vercel = JSON.parse(readFileSync(resolve(raizDoProjeto, 'vercel.json'), 'utf8'));
+  const csp = vercel.headers[0].headers.find(
+    (h: { key: string }) => h.key === 'Content-Security-Policy',
+  ).value as string;
+  return Array.from(csp.matchAll(/'(sha256-[^']+)'/g)).map((m) => m[1]);
+}
+
 function hashDaCSP(): string {
   const vercel = JSON.parse(readFileSync(resolve(raizDoProjeto, 'vercel.json'), 'utf8'));
   const csp = vercel.headers[0].headers.find(
@@ -98,5 +113,57 @@ describe('o pixel da Meta no index.html', () => {
     const real = 'sha256-' + createHash('sha256').update(lerScriptDoPixel(), 'utf8').digest('base64');
 
     expect(hashDaCSP()).toBe(real);
+  });
+});
+
+/**
+ * A Utmify carrega ao lado da Meta e corre os mesmos dois riscos: mandar a URL
+ * de /criar-acesso (com o e-mail do comprador) para um terceiro, e cair calada
+ * em produção se o hash da CSP não acompanhar uma edição do bloco inline.
+ */
+describe('o pixel da Utmify no index.html', () => {
+  const scriptsDaUtmify = () =>
+    document.querySelectorAll('script[src*="cdn.utmify.com.br"]');
+
+  afterEach(() => {
+    document.head.innerHTML = '';
+    delete (window as unknown as Record<string, unknown>).pixelId;
+    window.history.replaceState({}, '', '/');
+  });
+
+  function rodarUtmifyEm(caminho: string): void {
+    window.history.replaceState({}, '', caminho);
+    new Function(lerScriptDaUtmify())();
+  }
+
+  it('carrega o pixel e o rastreador de UTM nas rotas públicas', () => {
+    rodarUtmifyEm('/landing');
+
+    const srcs = Array.from(scriptsDaUtmify()).map((s) => s.getAttribute('src'));
+    expect(srcs).toEqual([
+      'https://cdn.utmify.com.br/scripts/pixel/pixel.js',
+      'https://cdn.utmify.com.br/scripts/utms/latest.js',
+    ]);
+    expect((window as unknown as { pixelId?: string }).pixelId).toBe(
+      '6a977262fbf5cc13655ac28a',
+    );
+  });
+
+  it.each(['/criar-acesso', '/redefinir-senha', '/recuperar-senha', '/criar-acesso/'])(
+    'não roda em %s, que leva dado do comprador na URL',
+    (rota) => {
+      rodarUtmifyEm(rota);
+
+      expect(scriptsDaUtmify()).toHaveLength(0);
+      expect((window as unknown as { pixelId?: string }).pixelId).toBeUndefined();
+    },
+  );
+
+  it('o hash do bloco está na CSP do vercel.json', () => {
+    const real =
+      'sha256-' +
+      createHash('sha256').update(lerScriptDaUtmify(), 'utf8').digest('base64');
+
+    expect(hashesDaCSP()).toContain(real);
   });
 });
