@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { rastrearInicioDeCheckout } from '@/lib/rastreio';
 
 /**
  * URL do checkout do produto na Cakto. Vem do ambiente porque muda entre a
@@ -26,6 +27,15 @@ interface CheckoutButtonProps {
  * visitante que queria comprar acabava num formulário de entrar. Agora vai para
  * o checkout da Cakto — e, se a URL não estiver configurada, cai no login em
  * vez de virar um link morto.
+ *
+ * Todos os CTAs da landing passam por aqui (navbar, hero e card de oferta), o
+ * que faz deste o único ponto onde o `InitiateCheckout` precisa ser disparado.
+ * Um CTA novo que não use este componente sai do funil calado — se aparecer
+ * um, ele vem para cá em vez de ganhar um `fbq` próprio.
+ *
+ * O rastreio não roda no caminho do `/login`: ali o visitante não está indo
+ * comprar, está indo entrar, e contar isso como início de checkout sujaria o
+ * funil com quem já é cliente.
  */
 const CheckoutButton: React.FC<CheckoutButtonProps> = ({ children, className }) => {
   if (!CHECKOUT_URL) {
@@ -37,7 +47,7 @@ const CheckoutButton: React.FC<CheckoutButtonProps> = ({ children, className }) 
   }
 
   return (
-    <a href={CHECKOUT_URL} className={className}>
+    <a href={CHECKOUT_URL} className={className} onClick={rastrearInicioDeCheckout}>
       {children}
     </a>
   );
