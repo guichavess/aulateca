@@ -61,6 +61,11 @@ A venda é pela Cakto: o webhook cria a conta e libera o acesso. O fluxo, os cam
 o que fazer quando um pagamento não libera estão em
 [`docs/integracao-cakto.md`](docs/integracao-cakto.md).
 
+As URLs que o produto depende não moram no repositório: são cadastradas em cinco painéis
+(Vercel, Supabase secrets, Supabase Auth, Cakto, Render), e nenhum build reclama quando uma
+delas está errada. A checklist de conferência antes do lançamento está em
+[`docs/urls-de-producao.md`](docs/urls-de-producao.md).
+
 ## Pendências
 
 O que depende de decisão ou credencial do gestor — chaves, senha do banco de produção, domínio,

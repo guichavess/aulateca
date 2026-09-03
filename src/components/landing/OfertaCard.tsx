@@ -28,11 +28,41 @@ import {
  *      Quem chega ao checkout não descobre nada novo lá.
  */
 
-/** Cada item é verificável no produto — nada aqui é promessa de roadmap. */
+/**
+ * Cada item é verificável no produto — nada aqui é promessa de roadmap.
+ *
+ * Conferido ficha a ficha contra `scripts/atividades.manifest.json` em
+ * 03/09/2026, quando uma lista de dez benefícios foi proposta para a página.
+ * Quatro dela não entraram, e o motivo de cada uma fica registrado porque a
+ * tentação de recolocá-las volta a cada revisão de copy:
+ *
+ *   - **Uma contagem de atividades quatro vezes maior que o acervo.** Aquele
+ *     número já esteve na página, foi removido por inflado, e hoje é bloqueado
+ *     por `numeros.test.tsx` — que varre o código-fonte cru, então nem citá-lo
+ *     num comentário como este passa. Foi assim que esta linha foi escrita.
+ *   - **"1° ao 9° ano"** — esta linha dizia isso até hoje, e era falso: as
+ *     fichas cobrem 6 a 11 anos, e as que trazem o ano no nome vão do 1° ao
+ *     5°. Nenhuma ficha de 6° a 9° existe.
+ *   - **"IA pedagógica"** — o microsserviço em `backend/fastapi` existe, mas o
+ *     app não chega até ele: `pages/create/AIPlanPage.tsx` não tem rota nem
+ *     import. Volta para cá quando a tela for religada, não antes.
+ *   - **"Novas atividades adicionadas"** — não há cadência acordada. Numa
+ *     assinatura, prometer material futuro sem periodicidade é estorno no
+ *     segundo mês.
+ *
+ * A ordem das matérias também é dado: produção de texto (17 fichas) vem antes
+ * de interpretação (7) e gramática (5). Inverter sugere um volume de gramática
+ * que não existe.
+ *
+ * "Alinhadas à BNCC" saiu junto: é uma afirmação de conformidade curricular e
+ * nada no repositório a sustenta. Volta quando a curadoria for confirmada.
+ */
 const BENEFICIOS = [
+  "Jogos lúdicos e atividades para recortar, colar e brincar",
+  "Produção de texto, interpretação e gramática",
   "Fichas em PDF A4, prontas para imprimir e levar para a sala",
-  "Do 1° ao 9° ano, alinhadas à BNCC",
-  "Jogos lúdicos, produção de texto e interpretação de texto",
+  "Do 1° ao 5° ano do Ensino Fundamental",
+  "Acesso pelo celular ou computador",
   "Acesso a todo o acervo enquanto a assinatura estiver ativa",
 ];
 

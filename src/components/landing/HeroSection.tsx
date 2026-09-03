@@ -73,7 +73,7 @@ const HeroSection = () => {
                   AulaTeca
                 </span>
                 <span className="px-3 py-1 rounded-full bg-white/15 text-white/90 text-xs font-nunito font-semibold backdrop-blur-sm">
-                  Ensino Fundamental 1 e 2
+                  Ensino Fundamental 1
                 </span>
               </div>
 
@@ -90,10 +90,8 @@ const HeroSection = () => {
                 <strong className="text-white">atividades</strong>,{" "}
                 <strong className="text-white">jogos lúdicos</strong> e{" "}
                 <strong className="text-white">exercícios complementares</strong>{" "}
-                de produção textual e interpretação de texto — fábula, crônica,
-                notícia, artigo de opinião, texto dissertativo-argumentativo,
-                cordel, charge, tirinha, biografia, debate, seminário, texto
-                estilo ENEM e muito mais. Do 1° ao 9° ano.
+                de produção textual e interpretação de texto — narrativa, personagem,
+                carta, jornal, rimas e leitura com perguntas. Do 1° ao 5° ano.
               </p>
 
               {/* CTA */}

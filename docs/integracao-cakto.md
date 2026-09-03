@@ -156,14 +156,38 @@ Vale configurar também o **SMTP customizado do Supabase Auth**, que é o
 responsável pelo e-mail de **recuperação de senha** (`/recuperar-senha`) — esse
 não passa pela nossa função.
 
-### 5. Desligar o cadastro público
+### 5. URLs permitidas do Supabase Auth
+
+Dashboard → Authentication → **URL Configuration**:
+
+```
+Site URL:       https://aulateca.com.br
+Redirect URLs:  https://aulateca.com.br/redefinir-senha
+                http://localhost:3000/redefinir-senha
+```
+
+Esta etapa é fácil de esquecer porque nada no repositório aponta para ela, e a
+falha é silenciosa do lado errado: o e-mail de recuperação **sai normalmente**,
+e só quando a pessoa clica é que o GoTrue recusa o destino.
+
+O front pede o retorno com a própria origem — `redirectTo:
+${window.location.origin}/redefinir-senha`, em `src/services/auth.service.ts` —
+e a Edge Function `recuperar-senha` confere que o caminho é `/redefinir-senha`.
+Nenhuma das duas decide nada: quem aceita ou recusa a URL é esta lista. Uma
+origem que não esteja aqui devolve o comprador para a Site URL sem o token, e
+ele vê a tela de redefinição pedindo um código que nunca chegou.
+
+O `localhost` na lista é o que mantém o fluxo testável na máquina de
+desenvolvimento sem uma variável de ambiente por origem.
+
+### 6. Desligar o cadastro público
 
 **Por último, e só depois de a `criar-acesso` estar publicada e testada:**
 Dashboard → Authentication → Providers → Email → desmarcar *Enable signup*.
 
 Fora de ordem, isso derruba o único caminho de entrada que existe.
 
-### 6. Subir o acervo pago
+### 7. Subir o acervo pago
 
 Os PDFs não estão no repositório: vivem no bucket privado `atividades`.
 
