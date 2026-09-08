@@ -516,3 +516,62 @@ do pedido — ficam registradas para decisão da gestão:
   que fiz erra nas duas direções (aponta dobra onde não há e não vê onde há), então
   qualquer corte automático arriscaria decepar desenho. A correção limpa é refazer a arte
   dessas seis em dois arquivos separados — decisão de quem produz o material.
+
+---
+
+## Segunda leva do acervo (07/09/2026): 74 fichas novas
+
+A pasta `atividades ludicas` do gestor tinha 135 arquivos; 54 já estavam no produto.
+Dos 81 restantes, **74 entraram** e **7 ficaram de fora por serem a mesma atividade que
+o acervo já tem, redesenhada** na identidade "Atividades 4D": Correio das Frases,
+Quebra-Cabeça dos Parágrafos, Máquina do Antes e Depois, Cartas das Emoções, Hospital
+das Frases, Fábrica de Personagens e Guarda-Roupa das Palavras. O conteúdo pedagógico é
+o mesmo dos PNGs de agosto — mudou só a arte.
+
+**Decisão da gestão pendente:** publicar a versão nova dessas 7 no lugar da antiga é
+troca de arte, não atividade nova. Vale fazer? Se sim, é substituir o `source` no
+manifesto e rodar o build; o uuid, o slug e os favoritos de quem já usa continuam os
+mesmos. Se não, os 7 arquivos ficam parados na pasta.
+
+O acervo passou de **54 para 128 fichas** (79 lúdicas, 34 de produção de texto, 15 de
+interpretação). As capas versionadas em `public/` foram de 3,7 MB para 10,6 MB.
+
+Três pontos que a leva trouxe e que ficam registrados:
+
+- **As fichas novas já vieram em PDF.** Não houve conversão: cada arquivo é um PDF de
+  uma página com a ficha inteira embutida como imagem, e vai inteiro para o bucket. O
+  `scripts/build-atividades.mjs` ganhou esse caminho — para fonte PDF ele copia o
+  arquivo e extrai a imagem só para gerar a capa do card. Fonte PNG continua igual.
+- **O seed novo é a migration 019, não a 012.** A 012 já rodou em produção e migration
+  aplicada não roda de novo; acrescentar linhas nela deixaria repositório e banco
+  divergentes de novo. A 019 traz só as 74 linhas novas.
+- **Repetição dentro do próprio acervo.** Entre as fichas novas há quatro variações de
+  "Classifique as Palavras", quatro de "Varal das Frases" e cinco caça-palavras
+  temáticos. São folhas diferentes (outro banco de palavras, outro layout) e viraram
+  cards separados, com o título diferenciado por subtítulo para a professora saber qual
+  é qual na busca. Se a gestão preferir agrupar variações num card só, isso muda o
+  modelo de dados — hoje é um PDF por card.
+
+**Falta subir os PDFs para o bucket.** `node scripts/upload-atividades.mjs` precisa da
+`SUPABASE_SERVICE_ROLE_KEY` no `.env` da raiz e grava direto em produção, então não foi
+executado aqui. Sem ele as 74 fichas aparecem no catálogo e o botão "Baixar Recurso"
+não acha o arquivo. Rodar o upload **e** aplicar a migration 019 antes de anunciar as
+atividades novas.
+
+### Sobre a lista de benefícios da página de compras
+
+A mesma lista de dez benefícios de 03/09 foi proposta de novo. Continuam fora, pelos
+motivos já registrados em `OfertaCard.tsx`: a contagem de atividades (a landing não
+anuncia quantidade, por decisão de 29/08, e o número proposto segue maior que o acervo
+real mesmo depois de ele dobrar), "1° ao 9° ano" (o acervo vai do 1° ao 5°), "IA
+pedagógica" (a tela existe no repositório mas não tem rota) e "novas atividades
+adicionadas" (verdadeiro sobre hoje, mas numa assinatura é lido como promessa de
+cadência, e cadência nenhuma foi combinada).
+
+Entrou **"Menos tempo criando atividades do zero"** — descreve o resultado sem afirmar
+quantidade nem funcionalidade. E a linha de matérias virou **"Gramática, produção de
+texto e interpretação"**: a leva nova é majoritariamente gramática, e a ordem antiga
+prometia mais redação do que o acervo hoje tem.
+
+**Decisão da gestão pendente:** se a intenção é mesmo anunciar cadência de novas
+atividades, defina a periodicidade (mensal? quinzenal?) e a linha volta para o card.
